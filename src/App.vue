@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { Button } from 'ant-design-vue';
-
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  hello :)
-  <Button> I am a button from ant design :) </Button>
+  <main class="h-screen">
+    <RouterView />
+  </main>
 </template>
