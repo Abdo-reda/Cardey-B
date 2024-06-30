@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Avatar, Button, Form, FormItem, Input } from 'ant-design-vue';
+import { Avatar, Form, FormItem, Input } from 'ant-design-vue';
 import { reactive } from 'vue'
 import router from '@/plugins/router'
+import { RoutesEnum } from '@/core/enums/routesEnum'
 
 interface FormState {
     name: string;
@@ -34,7 +35,7 @@ const { validate } = Form.useForm(joinFormState, rulesRef);
 function handleHostGameClick() {
   validate()
     .then(() =>{
-      router.push({ name: 'create-game' });
+      router.push({ name: RoutesEnum.CREATE_GAME });
     })
     .catch(() => {
       console.log("Validation failed")
@@ -44,12 +45,13 @@ function handleHostGameClick() {
 function handleJoinGameClick() {
     validate()
       .then(() =>{
-        router.push({ name: 'join-game' });
+        router.push({ name: RoutesEnum.JOIN_GAME });
       })
       .catch(() => {
         console.log("Validation failed")
       })
 }
+
 </script>
 
 <template>
@@ -71,10 +73,10 @@ function handleJoinGameClick() {
                     </div>
                     <div class="flex items-center justify-center gap-4">
                         <FormItem>
-                            <Button @click="handleHostGameClick()" type="primary" html-type="submit"> Host Game </Button>
+                            <AButton @click="handleHostGameClick()" type="primary" html-type="submit"> Host Game </AButton>
                         </FormItem>
                         <FormItem>
-                            <Button @click="handleJoinGameClick()" type="dashed" html-type="submit"> Join Game </Button>
+                            <AButton @click="handleJoinGameClick()" type="dashed" html-type="submit"> Join Game </AButton>
                         </FormItem>
                     </div>
                 </div>
