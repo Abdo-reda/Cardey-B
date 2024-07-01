@@ -1,4 +1,5 @@
 import { RoutesEnum } from '@/core/enums/routesEnum'
+import BeginGameView from '@/views/BeginGameView.vue'
 import CreateGameView from '@/views/CreateGameView.vue'
 import HomeView from '@/views/HomeView.vue'
 import JoinGameView from '@/views/JoinGameView.vue'
@@ -27,6 +28,11 @@ const router = createRouter({
       path: '/lobby',
       name: RoutesEnum.LOBBY,
       component: LobbyView
+    },
+    {
+      path: '/begin-game',
+      name: RoutesEnum.BEGIN_GAME,
+      component: BeginGameView
     }
   ]
 })
