@@ -12,15 +12,6 @@ const joinFormState = reactive<FormState>({
     name: '',
 });
 
-
-function onSumbit() {
-    console.log("I am submitttingggg!!!!")
-}
-
-function onFail() {
-    console.log("I am failinggggg!!!!")
-}
-
 const rulesRef = reactive({
   name: [
     {
@@ -60,8 +51,7 @@ function handleJoinGameClick() {
             <p class="font-semibold text-3xl"> Cardey-B Game </p>
         </div>
         <div class="flex flex-col h-5/6 bg-red-200 items-center justify-center m-4 p-4">
-            <Form
-              :model="joinFormState" @finish="onSumbit" @finish-failed="onFail">
+            <Form :model="joinFormState">
                 <div class="flex flex-col justify-center items-center">
                     <Avatar class="hover:cursor-pointer size-32">
                     </Avatar>

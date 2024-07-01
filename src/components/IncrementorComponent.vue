@@ -9,7 +9,7 @@ interface IIncrementerProps{
 }
 
 const props = withDefaults(defineProps<IIncrementerProps>(), {
-  min: 0,
+  min: 1,
   max: 50,
   factor: 1,
 });
