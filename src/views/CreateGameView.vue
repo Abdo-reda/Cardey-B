@@ -11,13 +11,6 @@ const numberOfTeams = ref(3);
 const timePerRound = ref(60);
 const wordsPerPlayer = ref(5);
 
-
-// const errorInfo: ValidateInfo = reactive({
-//   help: 'ok',
-//   validateStatus: "error",
-//   required: true 
-// });
-
 const errorInfo = ref<ValidateInfo|undefined>();
 
 function goToLobby(): void {
