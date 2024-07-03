@@ -99,12 +99,19 @@ function copyLink() {
     message.info('Linked Copied Successfully');
 }
 
+function copyCode() {
+    navigator.clipboard.writeText("Code copied");
+    console.log("--- copy code ---");
+    message.info('Code Copied Successfully');
+}
+
 
 </script>
 
 <template>
     <div class="flex flex-col justify-center items-center p-4">
-        <p class="font-semibold text-3xl"> Lobby - [GameCODE] </p>
+        <p class="font-semibold text-3xl"> Lobby - <span class="hover:cursor-pointer underline italic"
+                @click="copyCode"> [GameCODE] </span> </p>
         <div class="my-6">
             <div v-for="team in teams" :key="team.id">
                 <p class="text-lg text-center p-2"> Team {{ team.id }}</p>

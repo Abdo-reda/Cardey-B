@@ -4,6 +4,10 @@ import { RouterView } from 'vue-router'
 
 <template>
   <main class="h-screen">
-    <RouterView />
+    <RouterView v-slot="{ Component }">
+      <!-- <Transition name="fade"> -->
+      <component :is="Component" />
+      <!-- </Transition> -->
+    </RouterView>
   </main>
 </template>

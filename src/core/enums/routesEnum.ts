@@ -3,5 +3,6 @@ export enum RoutesEnum {
   CREATE_GAME = 'create-game',
   LOBBY = 'lobby',
   JOIN_GAME = 'join-game',
-  BEGIN_GAME = 'begin-game'
+  BEGIN_GAME = 'begin-game',
+  GAME_PHASE = 'game-phase'
 }
