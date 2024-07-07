@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RoutesEnum } from '@/core/enums/routesEnum';
 import router from '@/plugins/router';
-import { Avatar, AvatarGroup, Button, Divider, message } from 'ant-design-vue';
+import { Avatar, AvatarGroup, Button, Card, Divider, message } from 'ant-design-vue';
 import { ref } from 'vue';
 
 
@@ -105,6 +105,8 @@ function copyCode() {
     message.info('Code Copied Successfully');
 }
 
+const isHost = ref(true);
+
 
 </script>
 
@@ -113,24 +115,24 @@ function copyCode() {
         <p class="font-semibold text-3xl"> Lobby - <span class="hover:cursor-pointer underline italic"
                 @click="copyCode"> [GameCODE] </span> </p>
         <div class="my-6">
-            <div v-for="team in teams" :key="team.id">
-                <p class="text-lg text-center p-2"> Team {{ team.id }}</p>
-                <div class="flex justify-between items-center gap-x-4">
-                    <AvatarGroup :max-count="3" size="large">
-                        <Avatar v-for="member in team.members" :key="member.id">
-                            {{ member.name }}
-                        </Avatar>
-                    </AvatarGroup>
-                    <Button v-if="joinedTeam !== team.id" :danger="false" @click="joinedTeam = team.id">
-                        Join </Button>
-                    <Button v-else :danger="true" @click="joinedTeam = -1"> Leave </Button>
-                </div>
-                <Divider class="my-8" />
+            <div class="w-72 my-2" v-for="team in teams" :key="team.id">
+                <Card :title="`Team ${team.id}`">
+                    <div class="flex justify-between items-center">
+                        <AvatarGroup :max-count="3" size="large">
+                            <Avatar v-for="member in team.members" :key="member.id">
+                                {{ member.name }}
+                            </Avatar>
+                        </AvatarGroup>
+                        <Button v-if="joinedTeam !== team.id" :danger="false" @click="joinedTeam = team.id">
+                            Join </Button>
+                        <Button v-else :danger="true" @click="joinedTeam = -1"> Leave </Button>
+                    </div>
+                </Card>
             </div>
         </div>
         <div class="flex gap-x-8">
             <Button size="large" type="link" @click="copyLink"> Copy Link </Button>
-            <Button size="large" type="primary" @click="startGame"> Start Game </Button>
+            <Button v-if="isHost" size="large" type="primary" @click="startGame"> Start Game </Button>
         </div>
     </div>
 </template>

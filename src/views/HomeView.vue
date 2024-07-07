@@ -50,7 +50,7 @@ function handleJoinGameClick() {
     <div class="text-center p-4">
       <p class="font-semibold text-3xl"> Cardey-B Game </p>
     </div>
-    <div class="flex flex-col h-5/6 bg-red-200 items-center justify-center m-4 p-4">
+    <div class="flex flex-col h-5/6 items-center justify-center m-4 p-4">
       <Form :model="joinFormState">
         <div class="flex flex-col justify-center items-center">
           <Avatar class="hover:cursor-pointer size-32">
@@ -62,10 +62,10 @@ function handleJoinGameClick() {
           </div>
           <div class="flex items-center justify-center gap-4">
             <FormItem>
-              <AButton @click="handleHostGameClick()" type="primary" html-type="submit"> Host Game </AButton>
+              <AButton @click="handleJoinGameClick()" type="dashed" html-type="submit"> Join Game </AButton>
             </FormItem>
             <FormItem>
-              <AButton @click="handleJoinGameClick()" type="dashed" html-type="submit"> Join Game </AButton>
+              <AButton @click="handleHostGameClick()" type="primary" html-type="submit"> Host Game </AButton>
             </FormItem>
           </div>
         </div>

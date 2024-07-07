@@ -3,7 +3,7 @@ import IncrementorComponent from '@/components/IncrementorComponent.vue'
 import { ref } from 'vue'
 import router from '@/plugins/router'
 import { RoutesEnum } from '@/core/enums/routesEnum'
-import { FormItem } from 'ant-design-vue';
+import { Button, Card, FormItem } from 'ant-design-vue';
 import type { ValidateInfo } from 'ant-design-vue/es/form/useForm';
 
 const numberOfPlayers = ref(5);
@@ -33,14 +33,14 @@ function getError(msg: string): ValidateInfo {
 </script>
 
 <template>
-  <div class="flex flex-col justify-center items-center p-6">
-    <ACard title="Configure settings for the game">
+  <div class="flex flex-col justify-center items-center p-6 text-center">
+    <Card title="Configure settings for the game">
       <IncrementorComponent title="Number of players" v-model="numberOfPlayers" />
       <IncrementorComponent title="Number of teams" v-model="numberOfTeams" />
       <IncrementorComponent title="Time per round (seconds)" :max="300" :factor="10" v-model="timePerRound" />
       <IncrementorComponent title="Words per player" v-model="wordsPerPlayer" />
       <FormItem class="w-full text-center" v-bind="errorInfo"> </FormItem>
-    </ACard>
-    <AButton @click="goToLobby" class="mt-4" type="primary">Start Game</AButton>
+    </Card>
+    <Button @click="goToLobby" class="mt-4" type="primary">Start Game</Button>
   </div>
 </template>
