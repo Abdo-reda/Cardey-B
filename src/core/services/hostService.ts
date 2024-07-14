@@ -10,8 +10,9 @@ import {
 } from 'firebase/firestore';
 import { cardeyBFireStore } from '@/core/services/firebaseService';
 import { FirestoreConstants } from '../constants/firestoreConstants';
+import { ChannelsEnum } from '../enums/channelsEnum';
 
-//maybe create a wrapper for peer connection? extension methods and so on ...
+//maybe create a wrapper for peer connection? extension methods and so on ... I am not sure
 
 export class HostService implements IHostService {
 	roomId: Ref<string>;
@@ -63,34 +64,13 @@ export class HostService implements IHostService {
 			snapshot.docChanges().forEach(async (change) => {
 				if (change.type === 'added') {
 					const joinRequestDoc = change.doc.ref;
-					const joinRequestData = change.doc.data();
-					console.log(
-						'A new join request has been added: ',
-						joinRequestDoc,
-						joinRequestData
-					);
+					console.log('A new join request has been added: ', joinRequestDoc);
 					if (joinRequestDoc) {
 						await this.createPeerConnectionAsync(joinRequestDoc);
 					}
 				}
 			});
 		});
-	}
-
-	private createGameDataChannel(playerId: string, pc: RTCPeerConnection) {
-		console.log('--- Creating Data Channel');
-		const dataChannel = pc.createDataChannel(`Game_Data`);
-
-		dataChannel.onopen = () => {
-			console.log(`Data channel open with player ${playerId}`);
-			this.sendMessageToAllExcept(`New Player Joined, say hi! ${playerId}`);
-		};
-
-		dataChannel.onmessage = (event) => {
-			console.log(`Received data from player ${playerId}:`, event.data);
-		};
-
-		this.dataChannels.set(playerId, dataChannel);
 	}
 
 	/**
@@ -111,7 +91,6 @@ export class HostService implements IHostService {
 		this.createGameDataChannel(joinRequestDoc.id, pc);
 
 		pc.onicecandidate = async (event) => {
-			console.log('==== setting offer candidates event', event);
 			if (event.candidate) await addDoc(offerCandidates, event.candidate.toJSON());
 		};
 
@@ -131,6 +110,27 @@ export class HostService implements IHostService {
 		this.peerConnections.set(joinRequestDoc.id, pc);
 	}
 
+	private createGameDataChannel(playerId: string, pc: RTCPeerConnection) {
+		console.log('--- Creating Data Channel');
+		const dataChannel = pc.createDataChannel(ChannelsEnum.GAME_DATA);
+
+		dataChannel.onopen = () => {
+			console.log(`Data channel open with player ${playerId}`);
+			this.sendMessageToAllExcept(`New Player Joined, say hi! ${playerId}`);
+		};
+
+		dataChannel.onmessage = (event) => {
+			console.log(`Received data from player ${playerId}:`, event.data);
+		};
+
+		this.dataChannels.set(playerId, dataChannel);
+	}
+
+	/**
+	 * Listens to answer candidates and sets the remote description of the peer connection
+	 * @param pc
+	 * @param joinRequestDoc
+	 */
 	private listenToAnswerCandidates(
 		pc: RTCPeerConnection,
 		joinRequestDoc: DocumentReference<DocumentData>
