@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { Avatar, Divider } from 'ant-design-vue';
-import { ref } from 'vue';
 
+interface IGamePhaseProps {
+    currentPhase: number;
+    description: string;
+}
 
-const currentPhase = ref(1);
-const description = ref('This is the description of the game phase');
+defineProps<IGamePhaseProps>();
 
 </script>
 

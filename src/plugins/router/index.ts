@@ -5,6 +5,8 @@ import CreateGameView from '@/views/CreateGameView.vue'
 import HomeView from '@/views/HomeView.vue'
 import JoinGameView from '@/views/JoinGameView.vue'
 import LobbyView from '@/views/LobbyView.vue'
+import TeamReadyView from '@/views/TeamReadyView.vue'
+import PlayingWordView from '@/views/PlayingWordView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -39,6 +41,20 @@ const router = createRouter({
       path: '/game-phase',
       name: RoutesEnum.GAME_PHASE,
       component: GamePhaseView
+    },
+    {
+      path: '/team-ready',
+      name: RoutesEnum.TEAM_READY,
+      component: TeamReadyView
+    },
+    {
+      path: '/playing-word',
+      name: RoutesEnum.PLAYING_WORD,
+      component: PlayingWordView
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: { name: RoutesEnum.HOME }
     }
   ]
 })
