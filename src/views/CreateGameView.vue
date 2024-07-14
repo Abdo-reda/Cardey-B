@@ -1,21 +1,15 @@
 <script setup lang="ts">
 import IncrementorComponent from '@/components/IncrementorComponent.vue'
-import { inject, reactive, ref } from 'vue'
+import { inject, ref } from 'vue'
 import router from '@/plugins/router'
 import { RoutesEnum } from '@/core/enums/routesEnum'
 import { Button, Card, FormItem } from 'ant-design-vue';
 import type { ValidateInfo } from 'ant-design-vue/es/form/useForm';
-import { GameServiceKey, HostServiceKey } from '@/core/constants/injectionKeys';
-import type { IGameSettings } from '@/core/interfaces/gameSettingsInterface';
-
-const gameSettings = reactive<IGameSettings>({
-  numberOfPlayers: 5,
-  numberOfTeams: 3,
-  timePerRound: 60,
-  wordsPerPlayer: 5
-});
+import { GameServiceKey } from '@/core/constants/injectionKeys';
 
 const gameService = inject(GameServiceKey)!;
+const gameSettings = gameService.gameState.gameSettings;
+
 const errorInfo = ref<ValidateInfo | undefined>();
 
 async function goToLobby(): Promise<void> {
@@ -24,7 +18,7 @@ async function goToLobby(): Promise<void> {
     return;
   }
 
-  await gameService.CreateGameAsync(gameSettings);
+  await gameService.createGameAsync(gameSettings);
   router.push({ name: RoutesEnum.LOBBY });
 }
 

@@ -1,22 +1,16 @@
 <script setup lang="ts">
 import { Form, FormItem, Input } from 'ant-design-vue';
-import { reactive, ref } from 'vue'
+import { inject, reactive, ref } from 'vue'
 import router from '@/plugins/router'
 import { RoutesEnum } from '@/core/enums/routesEnum'
 import AvatarComponent from '@/components/AvatarComponent.vue'
 import { ColorsEnum } from '@/core/enums/colorsEnum';
 import { AvatarsEnum } from '@/core/enums/avatarsEnum';
+import { PlayerServiceKey } from '@/core/constants/injectionKeys';
 
-interface FormState {
-  name: string;
-}
 
+const playerService = inject(PlayerServiceKey)!;
 const avatarsList = Object.values(AvatarsEnum);
-const currentAvatar = ref(avatarsList[0]);
-
-const joinFormState = reactive<FormState>({
-  name: '',
-});
 
 const rulesRef = reactive({
   name: [
@@ -27,7 +21,7 @@ const rulesRef = reactive({
   ]
 });
 
-const { validate } = Form.useForm(joinFormState, rulesRef);
+const { validate } = Form.useForm(playerService.player, rulesRef);
 
 function handleHostGameClick() {
   validate()
@@ -51,10 +45,9 @@ function handleJoinGameClick() {
 
 function changeAvatarIcon() {
   console.log("Avatar Icon Changed")
-  const currentIndex = avatarsList.indexOf(currentAvatar.value);
+  const currentIndex = avatarsList.indexOf(playerService.player.avatar);
   const nextIndex = (currentIndex + 1) % avatarsList.length;
-  currentAvatar.value = avatarsList[nextIndex];
-  console.log(currentAvatar.value)
+  playerService.player.avatar = avatarsList[nextIndex];
 }
 
 </script>
@@ -65,13 +58,13 @@ function changeAvatarIcon() {
       <p class="font-semibold text-3xl"> Cardey-B Game </p>
     </div>
     <div class="flex flex-col h-5/6 items-center justify-center m-4 p-4">
-      <Form :model="joinFormState">
+      <Form :model="playerService.player">
         <div class="flex flex-col justify-center items-center">
           <AvatarComponent @click="changeAvatarIcon" class="size-32 hover:cursor-pointer" :color="ColorsEnum.GRAY"
-            :avatar-icon="currentAvatar" />
+            :avatar-icon="playerService.player.avatar" />
           <div class="flex flex-row items-center justify-center m-4 gap-4">
             <FormItem class="m-0" name="name" :rules="[{ required: true, message: 'Please input your name' }]">
-              <Input placeholder="name" v-model:value="joinFormState.name" />
+              <Input placeholder="name" v-model:value="playerService.player.name" />
             </FormItem>
           </div>
           <div class="flex items-center justify-center gap-4">

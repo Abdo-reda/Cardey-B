@@ -1,7 +1,8 @@
 import type { AvatarsEnum } from '../enums/avatarsEnum';
 
 export interface IPlayer {
-	id: number;
+	id: string;
 	name: string;
 	avatar: AvatarsEnum;
+	isHost: boolean;
 }
