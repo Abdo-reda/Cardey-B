@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { HostServiceKey } from '@/core/constants/injectionKeys';
 import { RoutesEnum } from '@/core/enums/routesEnum';
 import router from '@/plugins/router';
 import { Avatar, AvatarGroup, Button, Card, Divider, message } from 'ant-design-vue';
-import { ref } from 'vue';
+import { inject, ref } from 'vue';
 
 
 // const numberOfTeams = 8;
@@ -87,6 +88,7 @@ const teams = [
 ]
 
 const joinedTeam = ref(-1);
+const hostService = inject(HostServiceKey)!;
 
 function startGame() {
     console.log("--- start game ---");
@@ -100,7 +102,7 @@ function copyLink() {
 }
 
 function copyCode() {
-    navigator.clipboard.writeText("Code copied");
+    navigator.clipboard.writeText(hostService.roomId.value);
     console.log("--- copy code ---");
     message.info('Code Copied Successfully');
 }
@@ -113,7 +115,7 @@ const isHost = ref(true);
 <template>
     <div class="flex flex-col justify-center items-center p-4">
         <p class="font-semibold text-3xl"> Lobby - <span class="hover:cursor-pointer underline italic"
-                @click="copyCode"> [GameCODE] </span> </p>
+                @click="copyCode"> {{ hostService.roomId }} </span> </p>
         <div class="my-6">
             <div class="w-72 my-2" v-for="team in teams" :key="team.id">
                 <Card :title="`Team ${team.id}`">
