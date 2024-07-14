@@ -11,6 +11,7 @@ import {
 import { cardeyBFireStore } from '@/core/services/firebaseService';
 import { FirestoreConstants } from '../constants/firestoreConstants';
 import { ChannelsEnum } from '../enums/channelsEnum';
+import { message } from 'ant-design-vue';
 
 //maybe create a wrapper for peer connection? extension methods and so on ... I am not sure
 
@@ -18,6 +19,9 @@ export class HostService implements IHostService {
 	roomId: Ref<string>;
 	peerConnections: Reactive<Map<string, RTCPeerConnection>>;
 	dataChannels: Reactive<Map<string, RTCDataChannel>>;
+
+	onPlayerJoinedDataChannel?: (playerId: string) => void;
+	onPlayerJoinedRecievedMessage?: (playerId: string, message: string) => void;
 
 	constructor() {
 		this.roomId = ref('');
@@ -117,10 +121,13 @@ export class HostService implements IHostService {
 		dataChannel.onopen = () => {
 			console.log(`Data channel open with player ${playerId}`);
 			this.sendMessageToAllExcept(`New Player Joined, say hi! ${playerId}`);
+			if (this.onPlayerJoinedDataChannel) this.onPlayerJoinedDataChannel(playerId);
 		};
 
 		dataChannel.onmessage = (event) => {
 			console.log(`Received data from player ${playerId}:`, event.data);
+			if (this.onPlayerJoinedRecievedMessage)
+				this.onPlayerJoinedRecievedMessage(playerId, event.data);
 		};
 
 		this.dataChannels.set(playerId, dataChannel);

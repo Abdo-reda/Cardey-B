@@ -1,47 +1,30 @@
 <script setup lang="ts">
 import IncrementorComponent from '@/components/IncrementorComponent.vue'
-import { inject, ref } from 'vue'
+import { inject, reactive, ref } from 'vue'
 import router from '@/plugins/router'
 import { RoutesEnum } from '@/core/enums/routesEnum'
 import { Button, Card, FormItem } from 'ant-design-vue';
 import type { ValidateInfo } from 'ant-design-vue/es/form/useForm';
-import { HostServiceKey } from '@/core/constants/injectionKeys';
+import { GameServiceKey, HostServiceKey } from '@/core/constants/injectionKeys';
+import type { IGameSettings } from '@/core/interfaces/gameSettingsInterface';
 
-const numberOfPlayers = ref(5);
-const numberOfTeams = ref(3);
-const timePerRound = ref(60);
-const wordsPerPlayer = ref(5);
+const gameSettings = reactive<IGameSettings>({
+  numberOfPlayers: 5,
+  numberOfTeams: 3,
+  timePerRound: 60,
+  wordsPerPlayer: 5
+});
 
-
-const hostService = inject(HostServiceKey)!;
-
-/*
-//===== HOST
-  - roomId
-  - peerConnections[] //dictionary -- mapping joinRequestId / playerId
-  - dataChannels[] //dictionary -- mapping joinRequestId / playerId
-
-  - sendMessage(playerIds[]?)
-  - sendToAll(excludePlayerIds[]?)
-  - createNewRoom()
-
-  - 
-*/
-
-//could we need multiple hosts? in the same instance of our application?
-//sessionStorage (tab specific) 
-
-
+const gameService = inject(GameServiceKey)!;
 const errorInfo = ref<ValidateInfo | undefined>();
 
 async function goToLobby(): Promise<void> {
-  if (numberOfPlayers.value < numberOfTeams.value) {
+  if (gameSettings.numberOfPlayers < gameSettings.numberOfTeams) {
     errorInfo.value = getError('Number of players cannot be less than number of teams')
     return;
   }
 
-  await hostService.createNewRoomAsync();
-
+  await gameService.CreateGameAsync(gameSettings);
   router.push({ name: RoutesEnum.LOBBY });
 }
 
@@ -58,10 +41,11 @@ function getError(msg: string): ValidateInfo {
 <template>
   <div class="flex flex-col justify-center items-center p-6 text-center">
     <Card title="Configure settings for the game">
-      <IncrementorComponent title="Number of players" v-model="numberOfPlayers" />
-      <IncrementorComponent title="Number of teams" v-model="numberOfTeams" />
-      <IncrementorComponent title="Time per round (seconds)" :max="300" :factor="10" v-model="timePerRound" />
-      <IncrementorComponent title="Words per player" v-model="wordsPerPlayer" />
+      <IncrementorComponent title="Number of players" v-model="gameSettings.numberOfPlayers" />
+      <IncrementorComponent title="Number of teams" v-model="gameSettings.numberOfTeams" />
+      <IncrementorComponent title="Time per round (seconds)" :max="300" :factor="10"
+        v-model="gameSettings.timePerRound" />
+      <IncrementorComponent title="Words per player" v-model="gameSettings.wordsPerPlayer" />
       <FormItem class="w-full text-center" v-bind="errorInfo"> </FormItem>
     </Card>
     <Button @click="goToLobby" class="mt-4" type="primary">Start Game</Button>
