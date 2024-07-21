@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import AvatarComponent from '@/components/AvatarComponent.vue';
 import { GameServiceKey, HostServiceKey, PlayerServiceKey } from '@/core/constants/injectionKeys';
+import { AvatarsEnum } from '@/core/enums/avatarsEnum';
+import { ColorsEnum } from '@/core/enums/colorsEnum';
 import { RoutesEnum } from '@/core/enums/routesEnum';
 import router from '@/plugins/router';
 import { Avatar, AvatarGroup, Button, Card, message } from 'ant-design-vue';
@@ -28,26 +31,56 @@ function copyCode() {
     message.info('Code Copied Successfully');
 }
 
+
+// setInterval(() => {
+//     gameService.gameState.players.push({
+//         id: Math.random().toString(),
+//         name: 'Player ' + Math.random().toString(),
+//         avatar: AvatarsEnum.BUTTERFLY,
+//         isHost: false,
+//         roomId: '1234',
+//     });
+// }, 4000);
+
 </script>
 
 <template>
     <div class="flex flex-col justify-center items-center p-4">
         <p class="font-semibold text-2xl"> Lobby - <span class="hover:cursor-pointer underline italic"
                 @click="copyCode"> {{ hostService.roomId }} </span> </p>
-        <div class="my-6">
-            <div class="w-72 my-2" v-for="team in gameService.gameState.teams" :key="team.id">
-                <Card :title="`Team ${team.id}`">
-                    <div class="flex justify-between items-center">
-                        <AvatarGroup :max-count="3" size="large">
-                            <Avatar v-for="player in team.players" :key="player.id">
-                                {{ player.name }}
-                            </Avatar>
-                        </AvatarGroup>
-                        <Button v-if="joinedTeamId !== team.id" :danger="false" @click="joinedTeamId = team.id">
-                            Join </Button>
-                        <Button v-else :danger="true" @click="joinedTeamId = ''"> Leave </Button>
+        <div class="my-6 w-full flex gap-x-4 justify-center">
+            <div class="h-full">
+                <Card v-auto-animate size="small" title="Players">
+                    <div v-auto-animate v-if="gameService.gameState.players.length"
+                        class="flex flex-col gap-y-4 justify-center items-center">
+                        <div v-for="player in gameService.gameState.players" :key="player.id">
+                            <AvatarComponent class="size-10" :avatar-icon="player.avatar" :color="ColorsEnum.GRAY"
+                                :tooltip="player.name" />
+                        </div>
+                    </div>
+                    <div v-else>
+                        <p class="text-center text-gray-500 text-lg"> ... </p>
                     </div>
                 </Card>
+            </div>
+            <div class="w-4/6 flex flex-col gap-y-2">
+                <div class="w-full" v-for="team in gameService.gameState.teams" :key="team.id">
+                    <Card>
+                        <template #title>
+                            <div> {{ `Team ${team.id}` }} </div>
+                        </template>
+                        <div class="flex justify-between items-center">
+                            <AvatarGroup :max-count="3" size="large">
+                                <Avatar v-for="player in team.players" :key="player.id">
+                                    {{ player.name }}
+                                </Avatar>
+                            </AvatarGroup>
+                            <Button v-if="joinedTeamId !== team.id" :danger="false" @click="joinedTeamId = team.id">
+                                Join </Button>
+                            <Button v-else :danger="true" @click="joinedTeamId = ''"> Leave </Button>
+                        </div>
+                    </Card>
+                </div>
             </div>
         </div>
         <div class="flex gap-x-8">

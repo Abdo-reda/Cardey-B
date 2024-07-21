@@ -7,6 +7,7 @@ import type { IHostService } from '../interfaces/hostServiceInterface';
 import { GameState } from '../models/gameState';
 import type { IPlayerService } from '../interfaces/playerServiceInterface';
 import type { IPlayer } from '../interfaces/playerInterface';
+import { ColorsEnum } from '../enums/colorsEnum';
 
 export class GameService implements IGameService {
 	hostService: IHostService;
@@ -24,6 +25,7 @@ export class GameService implements IGameService {
 		this.playerService = playerService;
 		this.gameState = reactive(new GameState());
 		this.setupHostService();
+		this.initTeams(5); //todo: remove this
 	}
 
 	async createGameAsync(gameSettings: IGameSettings): Promise<void> {
@@ -32,6 +34,7 @@ export class GameService implements IGameService {
 		this.playerService.player.id = roomId;
 		this.playerService.player.isHost = true;
 		this.gameState.players.push(this.playerService.player);
+		this.initTeams(gameSettings.numberOfTeams);
 	}
 
 	private setupHostService(): void {
@@ -50,6 +53,18 @@ export class GameService implements IGameService {
 	addPlayer(player: IPlayer) {
 		this.gameState.players.push(player);
 		//sync game state
+	}
+
+	private initTeams(numberOfTeams: number): void {
+		const colors = Object.values(ColorsEnum);
+		for (let i = 0; i < numberOfTeams; i++) {
+			this.gameState.teams.push({
+				id: i.toString(),
+				score: 0,
+				color: colors[i],
+				players: []
+			});
+		}
 	}
 
 	// getPlayer(): IPlayer {
