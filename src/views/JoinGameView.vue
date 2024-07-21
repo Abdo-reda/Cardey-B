@@ -31,7 +31,7 @@ const { validate } = Form.useForm(joinFormState, rulesRef);
 async function handleJoinGameClick() {
   validate()
     .then(async () => {
-      await clientService.joinRoomAsync(joinFormState.roomId);
+      await clientService.createJoinRequestAsync(joinFormState.roomId);
       router.push({ name: RoutesEnum.JOIN_GAME });
     })
     .catch((error) => {

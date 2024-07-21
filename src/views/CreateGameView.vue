@@ -8,7 +8,7 @@ import type { ValidateInfo } from 'ant-design-vue/es/form/useForm';
 import { GameServiceKey } from '@/core/constants/injectionKeys';
 
 const gameService = inject(GameServiceKey)!;
-const gameSettings = gameService.gameState.gameSettings;
+const gameSettings = gameService.gameState.value.gameSettings;
 
 const errorInfo = ref<ValidateInfo | undefined>();
 

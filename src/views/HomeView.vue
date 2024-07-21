@@ -56,7 +56,7 @@ async function handleJoinGameClick() {
     showRoomId.value = true;
     if (isJoining.value) {
       loadingJoin.value = true;
-      await clientService.joinRoomAsync(playerService.player.roomId);
+      await playerService.joinGameAsync();
       loadingJoin.value = false;
       router.push({ name: RoutesEnum.LOBBY });
     }

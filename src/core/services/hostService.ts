@@ -11,7 +11,7 @@ import {
 import { cardeyBFireStore } from '@/core/services/firebaseService';
 import { FirestoreConstants } from '../constants/firestoreConstants';
 import { ChannelsEnum } from '../enums/channelsEnum';
-import { message } from 'ant-design-vue';
+import type { IMessage } from '../interfaces/messageInterface';
 
 //maybe create a wrapper for peer connection? extension methods and so on ... I am not sure
 
@@ -21,7 +21,7 @@ export class HostService implements IHostService {
 	dataChannels: Reactive<Map<string, RTCDataChannel>>;
 
 	onPlayerJoinedDataChannel?: (playerId: string) => void;
-	onPlayerJoinedRecievedMessage?: (playerId: string, message: string) => void;
+	onRecievedMessage?: (playerId: string, message: IMessage<any>) => void;
 
 	constructor() {
 		this.roomId = ref('');
@@ -29,17 +29,18 @@ export class HostService implements IHostService {
 		this.dataChannels = reactive(new Map());
 	}
 
-	sendMessageToPlayers(message: string, playerIds: string[] = []): void {
+	sendMessageToPlayers<T>(message: IMessage<T>, playerIds: string[] = []): void {
 		playerIds.forEach((playerId) => {
 			const dataChannel = this.dataChannels.get(playerId);
-			if (dataChannel && dataChannel.readyState === 'open') dataChannel.send(message);
+			if (dataChannel && dataChannel.readyState === 'open')
+				dataChannel.send(JSON.stringify(message));
 		});
 	}
 
-	sendMessageToAllExcept(message: string, exlucdedPlayerIds: string[] = []): void {
+	sendMessageToAllExcept<T>(message: IMessage<T>, exlucdedPlayerIds: string[] = []): void {
 		this.dataChannels.forEach((dataChannel, playerId) => {
 			if (!exlucdedPlayerIds.includes(playerId) && dataChannel.readyState === 'open') {
-				dataChannel.send(message);
+				dataChannel.send(JSON.stringify(message));
 			}
 		});
 	}
@@ -120,14 +121,14 @@ export class HostService implements IHostService {
 
 		dataChannel.onopen = () => {
 			console.log(`Data channel open with player ${playerId}`);
-			this.sendMessageToAllExcept(`New Player Joined, say hi! ${playerId}`);
+			// this.sendMessageToAllExcept(`New Player Joined, say hi! ${playerId}`);
 			if (this.onPlayerJoinedDataChannel) this.onPlayerJoinedDataChannel(playerId);
 		};
 
-		dataChannel.onmessage = (event) => {
+		dataChannel.onmessage = (event: MessageEvent<string>) => {
 			console.log(`Received data from player ${playerId}:`, event.data);
-			if (this.onPlayerJoinedRecievedMessage)
-				this.onPlayerJoinedRecievedMessage(playerId, event.data);
+			const message = JSON.parse(event.data) as IMessage<any>;
+			if (this.onRecievedMessage) this.onRecievedMessage(playerId, message);
 		};
 
 		this.dataChannels.set(playerId, dataChannel);

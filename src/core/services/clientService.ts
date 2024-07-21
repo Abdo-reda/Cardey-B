@@ -13,17 +13,20 @@ import {
 import { cardeyBFireStore } from './firebaseService';
 import { FirestoreConstants } from '../constants/firestoreConstants';
 import { ChannelsEnum } from '../enums/channelsEnum';
+import type { IMessage } from '../interfaces/messageInterface';
 
 export class ClientService implements IClientService {
 	roomId: Ref<string>;
 	peerConnection: RTCPeerConnection | undefined;
 	dataChannel: RTCDataChannel | undefined;
+	onRecievedMessage?: (message: IMessage<any>) => void;
+	onDataChannelOpen?: () => void;
 
 	constructor() {
 		this.roomId = ref('');
 	}
 
-	async joinRoomAsync(roomId: string): Promise<void> {
+	async createJoinRequestAsync(roomId: string): Promise<void> {
 		const joinRequestRef = await this.addJoinRequestAsync(roomId);
 		this.listenForJoinRequestChanges(joinRequestRef);
 	}
@@ -95,11 +98,13 @@ export class ClientService implements IClientService {
 
 			dataChannel.onopen = () => {
 				console.log('Data channel open');
-				dataChannel.send('new player joined');
+				if (this.onDataChannelOpen) this.onDataChannelOpen();
 			};
 
-			dataChannel.onmessage = (event) => {
-				console.log('Received data:', event.data);
+			dataChannel.onmessage = (event: MessageEvent<string>) => {
+				console.log('Client Service - Received data:', event.data);
+				const message = JSON.parse(event.data) as IMessage<any>;
+				if (this.onRecievedMessage) this.onRecievedMessage(message);
 			};
 		};
 	}
@@ -137,5 +142,9 @@ export class ClientService implements IClientService {
 				}
 			});
 		});
+	}
+
+	sendMessageToHost<T>(message: IMessage<T>): void {
+		this.dataChannel?.send(JSON.stringify(message));
 	}
 }

@@ -1,8 +1,12 @@
 import type { Ref } from 'vue';
+import type { IMessage } from './messageInterface';
 
 export interface IClientService {
 	peerConnection: RTCPeerConnection | undefined;
 	dataChannel: RTCDataChannel | undefined;
 	roomId: Ref<string>;
-	joinRoomAsync: (roomId: string) => Promise<void>;
+	onRecievedMessage?: (message: IMessage<any>) => void;
+	onDataChannelOpen?: () => void;
+	createJoinRequestAsync: (roomId: string) => Promise<void>;
+	sendMessageToHost: <T>(message: IMessage<T>) => void;
 }
