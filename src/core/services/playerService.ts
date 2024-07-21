@@ -10,7 +10,8 @@ export class PlayerService {
 			id: '',
 			name: '',
 			avatar: AvatarsEnum.BIRD,
-			isHost: false
+			isHost: false,
+			roomId: ''
 		});
 	}
 }

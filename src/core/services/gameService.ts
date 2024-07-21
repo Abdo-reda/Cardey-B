@@ -1,4 +1,4 @@
-import { reactive, watchEffect, type Reactive } from 'vue';
+import { reactive, type Reactive } from 'vue';
 import type { IClientService } from '../interfaces/clientServiceInterface';
 import type { IGameService } from '../interfaces/gameServiceInterface';
 import type { IGameSettings } from '../interfaces/gameSettingsInterface';
@@ -12,7 +12,7 @@ export class GameService implements IGameService {
 	hostService: IHostService;
 	clientService: IClientService;
 	playerService: IPlayerService;
-	gameState: Reactive<IGameState>; //make it reactive? ¯\_(ツ)_/¯
+	gameState: Reactive<IGameState>;
 
 	constructor(
 		hostService: IHostService,

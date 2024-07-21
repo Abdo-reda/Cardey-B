@@ -5,4 +5,5 @@ export interface IPlayer {
 	name: string;
 	avatar: AvatarsEnum;
 	isHost: boolean;
+	roomId: string;
 }

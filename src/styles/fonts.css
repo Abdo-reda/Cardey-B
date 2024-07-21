@@ -1,0 +1,9 @@
+@layer base {
+    @font-face {
+        font-family: 'Origami';
+        font-style: normal;
+        font-weight: normal;
+        font-display: swap;
+        src: url(/src/assets/fonts/Origami.ttf) format('truetype');
+    }
+}

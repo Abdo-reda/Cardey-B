@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { FirestoreConstants } from '@/core/constants/firestoreConstants';
 import { ClientServiceKey } from '@/core/constants/injectionKeys';
 import { RoutesEnum } from '@/core/enums/routesEnum';
-import { cardeyBFireStore } from '@/core/services/firebaseService';
 import router from '@/plugins/router';
 import { Form, FormItem, Input } from 'ant-design-vue';
-import { addDoc, collection, doc, DocumentReference, getDoc, onSnapshot, updateDoc, type DocumentData } from 'firebase/firestore';
-import { inject, reactive, ref } from 'vue';
+import { inject, reactive } from 'vue';
 
 //TODO: make the client peer listen to the offer candidates of the host, and add them to peer connection candidates
 
@@ -19,14 +16,6 @@ const joinFormState = reactive<FormState>({
 });
 
 const clientService = inject(ClientServiceKey)!;
-
-
-
-
-/*
-  - roomId
-  - joinGame(roomId): void
-*/
 
 const rulesRef = reactive({
   roomId: [
