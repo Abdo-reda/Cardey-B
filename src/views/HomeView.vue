@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Button, Form, FormItem, Input } from 'ant-design-vue';
+import { Button, Form, FormItem, Input, message } from 'ant-design-vue';
 import { inject, reactive, ref, watch } from 'vue'
 import router from '@/plugins/router'
 import { RoutesEnum } from '@/core/enums/routesEnum'
@@ -51,19 +51,24 @@ async function handleJoinGameClick() {
 
   if (showRoomId.value) isJoining.value = true;
 
-  validate()
-    .then(async () => {
-      showRoomId.value = true;
-      if (isJoining.value) {
-        loadingJoin.value = true;
-        await clientService.joinRoomAsync(playerService.player.roomId);
-        loadingJoin.value = false;
-        // router.push({ name: RoutesEnum.JOIN_GAME });
-      }
-    })
-    .catch(() => {
-      console.log("Validation failed")
-    })
+  try {
+    await validate();
+    showRoomId.value = true;
+    if (isJoining.value) {
+      loadingJoin.value = true;
+      await clientService.joinRoomAsync(playerService.player.roomId);
+      loadingJoin.value = false;
+      router.push({ name: RoutesEnum.LOBBY });
+    }
+  } catch (error) {
+    loadingJoin.value = false;
+    if (error instanceof Error) {
+      message.error(error.message);
+      //TODO: add custom error message for form control
+    }
+    console.log("Validation failed", error)
+  }
+
 }
 
 function changeAvatarIcon(): void {

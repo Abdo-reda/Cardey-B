@@ -32,7 +32,7 @@ function copyCode() {
 
 <template>
     <div class="flex flex-col justify-center items-center p-4">
-        <p class="font-semibold text-3xl"> Lobby - <span class="hover:cursor-pointer underline italic"
+        <p class="font-semibold text-2xl"> Lobby - <span class="hover:cursor-pointer underline italic"
                 @click="copyCode"> {{ hostService.roomId }} </span> </p>
         <div class="my-6">
             <div class="w-72 my-2" v-for="team in gameService.gameState.teams" :key="team.id">

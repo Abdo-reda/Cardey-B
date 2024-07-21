@@ -34,13 +34,13 @@ function getError(msg: string): ValidateInfo {
 
 <template>
   <div class="flex flex-col justify-center items-center p-6 text-center">
-    <Card title="Configure settings for the game">
+    <Card title="Configure Game Settings">
       <IncrementorComponent title="Number of players" v-model="gameSettings.numberOfPlayers" />
       <IncrementorComponent title="Number of teams" v-model="gameSettings.numberOfTeams" />
       <IncrementorComponent title="Time per round (seconds)" :max="300" :factor="10"
         v-model="gameSettings.timePerRound" />
       <IncrementorComponent title="Words per player" v-model="gameSettings.wordsPerPlayer" />
-      <FormItem class="w-full text-center" v-bind="errorInfo"> </FormItem>
+      <FormItem class="w-full text-center m-0 p-0" v-bind="errorInfo"> </FormItem>
     </Card>
     <Button @click="goToLobby" class="mt-4" type="primary">Start Game</Button>
   </div>

@@ -5,6 +5,7 @@ import {
 	collection,
 	doc,
 	DocumentReference,
+	getDoc,
 	onSnapshot,
 	updateDoc,
 	type DocumentData
@@ -34,6 +35,13 @@ export class ClientService implements IClientService {
 
 		const roomsCollection = collection(cardeyBFireStore, FirestoreConstants.roomsCollection);
 		const roomRef = doc(roomsCollection, roomId);
+		const roomSnapshot = await getDoc(roomRef);
+		if (roomSnapshot.exists()) {
+			console.log('Room exists:', roomSnapshot.data());
+		} else {
+			console.log('Room does not exist');
+			throw new Error('Room does not exist');
+		}
 
 		const joinRequestsCollection = collection(
 			roomRef,
