@@ -10,7 +10,6 @@ import { inject, ref } from 'vue';
 
 const playerService = inject(PlayerServiceKey)!;
 const gameService = inject(GameServiceKey)!;
-const joinedTeamId = ref('');
 const hostService = inject(HostServiceKey)!;
 
 function startGame() {
@@ -28,6 +27,10 @@ function copyCode() {
     navigator.clipboard.writeText(hostService.roomId.value);
     console.log("--- copy code ---");
     message.info('Code Copied Successfully');
+}
+
+function joinTeam(teamId: string) {
+    gameService.joinTeam(teamId);
 }
 
 
@@ -70,13 +73,13 @@ function copyCode() {
                         </template>
                         <div class="flex justify-between items-center">
                             <AvatarGroup :max-count="3" size="large">
-                                <Avatar v-for="player in team.players" :key="player.id">
-                                    {{ player.name }}
+                                <Avatar v-for="player in team.players" :key="player">
+                                    {{ gameService.getPlayer(player).name }}
                                 </Avatar>
                             </AvatarGroup>
-                            <Button v-if="joinedTeamId !== team.id" :danger="false" @click="joinedTeamId = team.id">
+                            <Button v-if="playerService.player.teamId !== team.id" :danger="false" @click="joinTeam(team.id)">
                                 Join </Button>
-                            <Button v-else :danger="true" @click="joinedTeamId = ''"> Leave </Button>
+                            <Button v-else :danger="true" > Leave </Button>
                         </div>
                     </Card>
                 </div>

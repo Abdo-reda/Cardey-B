@@ -136,6 +136,10 @@ export class GameService implements IGameService {
 		//sync game state
 	}
 
+	getPlayer(playerId: string): IPlayer{
+		return this.gameState.value.players.find(player => player.id === playerId)!;
+	}
+
 	private initTeams(numberOfTeams: number): void {
 		const colors = Object.values(ColorsEnum);
 		for (let i = 0; i < numberOfTeams; i++) {
