@@ -35,9 +35,9 @@ export class GameService implements IGameService {
 	joinTeam(teamId: string): void {
 		const player = this.playerService.player;
 		this.pushPlayerToTeam(player, teamId);
-		if(player.isHost){
+		if (player.isHost) {
 			this.sendSyncGameState();
-		}else{
+		} else {
 			this.playerService.sendMessage<IJoinTeam>({
 				method: MethodsEnum.JOIN_TEAM,
 				senderId: player.id,
@@ -46,19 +46,19 @@ export class GameService implements IGameService {
 					teamId: teamId
 				}
 			});
-		}	
+		}
 	}
 
-	private pushPlayerToTeam(player: IPlayer, teamId: string): void{
+	private pushPlayerToTeam(player: IPlayer, teamId: string): void {
 		const currentTeam = player.teamId;
 
-		if(!currentTeam){
-			const team = this.gameState.value.teams.find(t => t.id === teamId);
-			team?.players.push(player.id);
-		}else{
-			const oldTeam = this.gameState.value.teams.find(t => t.id === currentTeam)!
-			oldTeam.players = oldTeam.players.filter(playerId => playerId !== player.id)
+		if (currentTeam) {
+			const oldTeam = this.gameState.value.teams.find((t) => t.id === currentTeam)!;
+			oldTeam.players = oldTeam.players.filter((playerId) => playerId !== player.id);
 		}
+
+		const team = this.gameState.value.teams.find((t) => t.id === teamId);
+		team?.players.push(player.id);
 		player.teamId = teamId;
 	}
 
@@ -79,8 +79,13 @@ export class GameService implements IGameService {
 				this.playerJoinedGame(message.data);
 			}
 
-			if(message.method === MethodsEnum.JOIN_TEAM){
-				this.pushPlayerToTeam(this.gameState.value.players.find(player => player.id === message.data.playerId)!, message.data.teamId)
+			if (message.method === MethodsEnum.JOIN_TEAM) {
+				this.pushPlayerToTeam(
+					this.gameState.value.players.find(
+						(player) => player.id === message.data.playerId
+					)!,
+					message.data.teamId
+				);
 			}
 			this.sendSyncGameState();
 		};
@@ -136,8 +141,8 @@ export class GameService implements IGameService {
 		//sync game state
 	}
 
-	getPlayer(playerId: string): IPlayer{
-		return this.gameState.value.players.find(player => player.id === playerId)!;
+	getPlayer(playerId: string): IPlayer {
+		return this.gameState.value.players.find((player) => player.id === playerId)!;
 	}
 
 	private initTeams(numberOfTeams: number): void {
