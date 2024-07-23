@@ -10,6 +10,7 @@ import type { IPlayer } from '../interfaces/playerInterface';
 import { ColorsEnum } from '../enums/colorsEnum';
 import type { IMessage } from '../interfaces/messageInterface';
 import { MethodsEnum } from '../enums/methodsEnum';
+import type { IJoinTeam } from '../interfaces/dataMessagesInterfaces/joinTeamInterface';
 
 export class GameService implements IGameService {
 	hostService: IHostService;
@@ -31,6 +32,36 @@ export class GameService implements IGameService {
 		// this.initTeams(5); //todo: remove this
 	}
 
+	joinTeam(teamId: string): void {
+		const player = this.playerService.player;
+		this.pushPlayerToTeam(player, teamId);
+		if(player.isHost){
+			this.sendSyncGameState();
+		}else{
+			this.playerService.sendMessage<IJoinTeam>({
+				method: MethodsEnum.JOIN_TEAM,
+				senderId: player.id,
+				data: {
+					playerId: player.id,
+					teamId: teamId
+				}
+			});
+		}	
+	}
+
+	private pushPlayerToTeam(player: IPlayer, teamId: string): void{
+		const currentTeam = player.teamId;
+
+		if(!currentTeam){
+			const team = this.gameState.value.teams.find(t => t.id === teamId);
+			team?.players.push(player.id);
+		}else{
+			const oldTeam = this.gameState.value.teams.find(t => t.id === currentTeam)!
+			oldTeam.players = oldTeam.players.filter(playerId => playerId !== player.id)
+		}
+		player.teamId = teamId;
+	}
+
 	async createGameAsync(gameSettings: IGameSettings): Promise<void> {
 		this.gameState.value.gameSettings = gameSettings;
 		const roomId = await this.hostService.createNewRoomAsync();
@@ -46,6 +77,10 @@ export class GameService implements IGameService {
 			console.log('==== host', message.method);
 			if (message.method === MethodsEnum.JOIN_GAME) {
 				this.playerJoinedGame(message.data);
+			}
+
+			if(message.method === MethodsEnum.JOIN_TEAM){
+				this.pushPlayerToTeam(this.gameState.value.players.find(player => player.id === message.data.playerId)!, message.data.teamId)
 			}
 			this.sendSyncGameState();
 		};

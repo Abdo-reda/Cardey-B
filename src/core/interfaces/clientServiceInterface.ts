@@ -7,6 +7,6 @@ export interface IClientService {
 	roomId: Ref<string>;
 	onRecievedMessage?: (message: IMessage<any>) => void;
 	onDataChannelOpen?: () => void;
-	createJoinRequestAsync: (roomId: string) => Promise<void>;
+	createJoinRequestAsync: (roomId: string) => Promise<string>;
 	sendMessageToHost: <T>(message: IMessage<T>) => void;
 }

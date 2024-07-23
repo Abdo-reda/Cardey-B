@@ -11,4 +11,5 @@ export interface IGameService {
 
 	createGameAsync: (gameSettings: IGameSettings) => void;
 	getSettings: () => IGameSettings;
+	joinTeam: (teamId: string) => void;
 }

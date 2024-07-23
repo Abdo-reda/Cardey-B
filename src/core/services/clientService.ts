@@ -26,9 +26,10 @@ export class ClientService implements IClientService {
 		this.roomId = ref('');
 	}
 
-	async createJoinRequestAsync(roomId: string): Promise<void> {
+	async createJoinRequestAsync(roomId: string): Promise<string> {
 		const joinRequestRef = await this.addJoinRequestAsync(roomId);
 		this.listenForJoinRequestChanges(joinRequestRef);
+		return joinRequestRef.id;
 	}
 
 	private async addJoinRequestAsync(

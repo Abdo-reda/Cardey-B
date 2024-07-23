@@ -17,7 +17,8 @@ export class PlayerService implements IPlayerService {
 			name: '',
 			avatar: AvatarsEnum.BIRD,
 			isHost: false,
-			roomId: ''
+			roomId: '',
+			teamId: ''
 		});
 		this.hostService = hostService;
 		this.clientService = clientService;
@@ -32,6 +33,7 @@ export class PlayerService implements IPlayerService {
 	}
 
 	async joinGameAsync(): Promise<void> {
-		await this.clientService.createJoinRequestAsync(this.player.roomId);
+		const id = await this.clientService.createJoinRequestAsync(this.player.roomId);
+		this.player.id = id;
 	}
 }

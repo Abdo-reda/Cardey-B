@@ -5,5 +5,5 @@ export interface ITeam {
 	id: string;
 	score: number;
 	color: ColorsEnum;
-	players: IPlayer[];
+	players: string[];
 }
