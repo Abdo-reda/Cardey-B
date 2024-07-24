@@ -71,7 +71,7 @@ export class GameService implements IGameService {
 	}
 
 	private setupListenerHost(): void {
-		this.hostService.onRecievedMessage = (playerId: string, message: IMessage<any>) => {
+		this.hostService.onReceivedMessage = (playerId: string, message: IMessage<any>) => {
 			console.log('--- Message recieved from player (client): ', playerId, message);
 			console.log('==== host', message.method);
 			if (message.method === MethodsEnum.JOIN_GAME) {
@@ -91,7 +91,7 @@ export class GameService implements IGameService {
 	}
 
 	private setupListnerClient(): void {
-		this.clientService.onRecievedMessage = (message: IMessage<any>) => {
+		this.clientService.onReceivedMessage = (message: IMessage<any>) => {
 			console.log('--- Message recieved from host: ', message);
 			console.log('==== client', message.method);
 			if (message.method === MethodsEnum.SYNC) {

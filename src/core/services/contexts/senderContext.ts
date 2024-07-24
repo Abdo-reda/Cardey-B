@@ -1,4 +1,4 @@
-import type { ISenderContext } from '@/core/services/contexts/senderContextInterface'
+import type { ISenderContext } from '@/core/interfaces/contexts/senderContextInterface'
 import type { IClientsSender } from '@/core/interfaces/client/messageSenders/clientSenderInterface'
 import type { IHostSender } from '@/core/interfaces/host/messageSenders/hostSender.interface'
 import { HostSender } from '@/core/services/host/messageSenders/hostSenderService'

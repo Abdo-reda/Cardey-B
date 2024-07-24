@@ -19,7 +19,7 @@ export class ClientService implements IClientService {
 	roomId: Ref<string>;
 	peerConnection: RTCPeerConnection | undefined;
 	dataChannel: RTCDataChannel | undefined;
-	onRecievedMessage?: (message: IMessage<any>) => void;
+	onReceivedMessage?: (message: IMessage<any>) => void;
 	onDataChannelOpen?: () => void;
 
 	constructor() {
@@ -105,7 +105,7 @@ export class ClientService implements IClientService {
 			dataChannel.onmessage = (event: MessageEvent<string>) => {
 				console.log('Client Service - Received data:', event.data);
 				const message = JSON.parse(event.data) as IMessage<any>;
-				if (this.onRecievedMessage) this.onRecievedMessage(message);
+				if (this.onReceivedMessage) this.onReceivedMessage(message);
 			};
 		};
 	}

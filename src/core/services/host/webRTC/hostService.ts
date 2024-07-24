@@ -21,7 +21,7 @@ export class HostService implements IHostService {
 	dataChannels: Reactive<Map<string, RTCDataChannel>>;
 
 	onPlayerJoinedDataChannel?: (playerId: string) => void;
-	onRecievedMessage?: (playerId: string, message: IMessage<any>) => void;
+	onReceivedMessage?: (playerId: string, message: IMessage<any>) => void;
 
 	constructor() {
 		this.roomId = ref('');
@@ -128,7 +128,7 @@ export class HostService implements IHostService {
 		dataChannel.onmessage = (event: MessageEvent<string>) => {
 			console.log(`Received data from player ${playerId}:`, event.data);
 			const message = JSON.parse(event.data) as IMessage<any>;
-			if (this.onRecievedMessage) this.onRecievedMessage(playerId, message);
+			if (this.onReceivedMessage) this.onReceivedMessage(playerId, message);
 		};
 
 		this.dataChannels.set(playerId, dataChannel);

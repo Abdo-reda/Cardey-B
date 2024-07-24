@@ -7,8 +7,8 @@ export interface IHostService {
 	dataChannels: Reactive<Map<string, RTCDataChannel>>;
 
 	onPlayerJoinedDataChannel?: (playerId: string) => void;
-	onRecievedMessage?: (playerId: string, message: IMessage<any>) => void;
+	onReceivedMessage?: (playerId: string, message: IMessage<any>) => void;
 	sendMessageToPlayers: <T>(message: IMessage<T>, playerIds: string[]) => void;
-	sendMessageToAllExcept: <T>(message: IMessage<T>, exlucdedPlayerIds: string[]) => void;
+	sendMessageToAllExcept: <T>(message: IMessage<T>, excludedPlayerIds: string[]) => void;
 	createNewRoomAsync: () => Promise<string>;
 }
