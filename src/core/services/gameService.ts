@@ -29,7 +29,6 @@ export class GameService implements IGameService {
 		this.gameState = ref(new GameState());
 		this.setupListenerHost();
 		this.setupListnerClient();
-		// this.initTeams(5); //todo: remove this
 	}
 
 	joinTeam(teamId: string): void {
@@ -136,11 +135,6 @@ export class GameService implements IGameService {
 		return this.gameState.value.gameSettings;
 	}
 
-	addPlayer(player: IPlayer) {
-		this.gameState.value.players.push(player);
-		//sync game state
-	}
-
 	getPlayer(playerId: string): IPlayer {
 		return this.gameState.value.players.find((player) => player.id === playerId)!;
 	}
@@ -156,8 +150,4 @@ export class GameService implements IGameService {
 			});
 		}
 	}
-
-	// getPlayer(): IPlayer {
-	// 	return this.gameState.teams.flatMap((team) => team.players).find((player) => player.isHost);
-	// }
 }
