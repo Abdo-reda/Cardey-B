@@ -26,11 +26,17 @@ watch(
 </script>
 
 <template>
-    <Tooltip>
+    <Avatar v-if="!tooltip"
+        class="bg-white dark:bg-gray-800 shadow-md border border-gray-100 flex justify-center items-center">
+        <template #icon>
+            <component height="60%" width="60%" :color="color" :fill-opacity="0.3" :is="svgComponent" />
+        </template>
+    </Avatar>
+    <Tooltip v-else :color="color">
         <template #title>
             {{ tooltip }}
         </template>
-        <Avatar class="bg-white shadow-md border border-gray-100 flex justify-center items-center">
+        <Avatar class="bg-white dark:bg-gray-800 shadow-md border border-gray-100 flex justify-center items-center">
             <template #icon>
                 <component height="60%" width="60%" :color="color" :fill-opacity="0.3" :is="svgComponent" />
             </template>

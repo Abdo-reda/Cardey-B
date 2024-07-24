@@ -148,10 +148,11 @@ export class GameService implements IGameService {
 	private initTeams(numberOfTeams: number): void {
 		const colors = Object.values(ColorsEnum);
 		for (let i = 0; i < numberOfTeams; i++) {
+			const teamId = i + 1;
 			this.gameState.value.teams.push({
-				id: i.toString(),
+				id: teamId.toString(),
 				score: 0,
-				color: colors[i],
+				color: colors[teamId],
 				players: []
 			});
 		}

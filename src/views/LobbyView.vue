@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import AvatarComponent from '@/components/AvatarComponent.vue';
 import { GameServiceKey, HostServiceKey, PlayerServiceKey } from '@/core/constants/injectionKeys';
+import { AvatarsEnum } from '@/core/enums/avatarsEnum';
 import { ColorsEnum } from '@/core/enums/colorsEnum';
 import { RoutesEnum } from '@/core/enums/routesEnum';
 import router from '@/plugins/router';
-import { Avatar, AvatarGroup, Button, Card, message } from 'ant-design-vue';
-import { inject, ref } from 'vue';
+import { AvatarGroup, Button, Card, message } from 'ant-design-vue';
+import { inject } from 'vue';
 
 
 const playerService = inject(PlayerServiceKey)!;
@@ -33,17 +34,6 @@ function joinTeam(teamId: string) {
     gameService.joinTeam(teamId);
 }
 
-
-// setInterval(() => {
-//     gameService.gameState.players.push({
-//         id: Math.random().toString(),
-//         name: 'Player ' + Math.random().toString(),
-//         avatar: AvatarsEnum.BUTTERFLY,
-//         isHost: false,
-//         roomId: '1234',
-//     });
-// }, 1000);
-
 </script>
 
 <template>
@@ -52,16 +42,19 @@ function joinTeam(teamId: string) {
                 @click="copyCode"> {{ hostService.roomId }} </span> </p>
         <div class="my-6 w-full flex gap-x-4 justify-center">
             <div class="h-full">
-                <Card v-auto-animate size="small" title="Players">
-                    <div v-auto-animate v-if="gameService.gameState.value.players.length"
-                        class="flex flex-col gap-y-4 justify-center items-center">
-                        <div v-for="player in gameService.gameState.value.players" :key="player.id">
-                            <AvatarComponent class="size-10" :avatar-icon="player.avatar" :color="ColorsEnum.GRAY"
-                                :tooltip="player.name" />
+                <Card size="small" title="Players">
+                    <div v-auto-animate>
+                        <div v-auto-animate v-if="gameService.gameState.value.players.filter(p => !p.teamId).length"
+                            class="flex flex-col gap-y-4 justify-center items-center">
+                            <div v-for="player in gameService.gameState.value.players.filter(p => !p.teamId)"
+                                :key="player.id">
+                                <AvatarComponent class="size-10" :avatar-icon="player.avatar" :color="ColorsEnum.GRAY"
+                                    :tooltip="player.name" />
+                            </div>
                         </div>
-                    </div>
-                    <div v-else>
-                        <p class="text-center text-gray-500 text-lg"> ... </p>
+                        <div v-else>
+                            <p class="text-center text-gray-500 text-lg"> ... </p>
+                        </div>
                     </div>
                 </Card>
             </div>
@@ -73,13 +66,17 @@ function joinTeam(teamId: string) {
                         </template>
                         <div class="flex justify-between items-center">
                             <AvatarGroup :max-count="3" size="large">
-                                <Avatar v-for="player in team.players" :key="player">
-                                    {{ gameService.getPlayer(player).name }}
-                                </Avatar>
+                                <template v-for="player in team.players" :key="player">
+                                    <AvatarComponent :avatar-icon="gameService.getPlayer(player).avatar"
+                                        :color="team.color" :tooltip="gameService.getPlayer(player).name">
+                                        {{ gameService.getPlayer(player).name }}
+                                    </AvatarComponent>
+                                </template>
                             </AvatarGroup>
-                            <Button v-if="playerService.player.teamId !== team.id" :danger="false" @click="joinTeam(team.id)">
+                            <Button v-if="playerService.player.teamId !== team.id" :danger="false"
+                                @click="joinTeam(team.id)">
                                 Join </Button>
-                            <Button v-else :danger="true" > Leave </Button>
+                            <Button v-else :danger="true"> Leave </Button>
                         </div>
                     </Card>
                 </div>
