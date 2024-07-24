@@ -1,3 +1,7 @@
+@import url('transition.css');
+@import url('background.css');
+@import url('fonts.css');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
