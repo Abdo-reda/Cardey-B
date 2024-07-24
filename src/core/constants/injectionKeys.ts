@@ -1,8 +1,8 @@
 import type { InjectionKey } from 'vue';
-import type { IHostService } from '../interfaces/hostServiceInterface';
-import type { IClientService } from '../interfaces/clientServiceInterface';
-import type { IGameService } from '../interfaces/gameServiceInterface';
-import type { IPlayerService } from '../interfaces/playerServiceInterface';
+import type { IHostService } from '../interfaces/host/webRTC/hostServiceInterface';
+import type { IClientService } from '../interfaces/client/webRTC/clientServiceInterface';
+import type { IGameService } from '../interfaces/game/gameState/gameServiceInterface';
+import type { IPlayerService } from '../interfaces/game/player/playerServiceInterface';
 
 export const HostServiceKey = Symbol() as InjectionKey<IHostService>;
 export const ClientServiceKey = Symbol() as InjectionKey<IClientService>;

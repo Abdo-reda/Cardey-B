@@ -1,5 +1,5 @@
 import type { Ref } from 'vue';
-import type { IMessage } from './messageInterface';
+import type { IMessage } from '../../common/messageInterface';
 
 export interface IClientService {
 	peerConnection: RTCPeerConnection | undefined;

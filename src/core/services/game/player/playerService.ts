@@ -1,10 +1,10 @@
 import { reactive, type Reactive } from 'vue';
-import type { IPlayer } from '../interfaces/playerInterface';
-import { AvatarsEnum } from '../enums/avatarsEnum';
-import type { IMessage } from '../interfaces/messageInterface';
-import type { IHostService } from '../interfaces/hostServiceInterface';
-import type { IClientService } from '../interfaces/clientServiceInterface';
-import type { IPlayerService } from '../interfaces/playerServiceInterface';
+import type { IPlayer } from '../../../interfaces/game/entities/playerInterface';
+import { AvatarsEnum } from '../../../enums/avatarsEnum';
+import type { IMessage } from '../../../interfaces/common/messageInterface';
+import type { IHostService } from '../../../interfaces/host/webRTC/hostServiceInterface';
+import type { IClientService } from '../../../interfaces/client/webRTC/clientServiceInterface';
+import type { IPlayerService } from '../../../interfaces/game/player/playerServiceInterface';
 
 export class PlayerService implements IPlayerService {
 	player: Reactive<IPlayer>;

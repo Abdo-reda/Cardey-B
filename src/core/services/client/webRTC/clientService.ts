@@ -1,5 +1,5 @@
 import { ref, type Ref } from 'vue';
-import type { IClientService } from '../interfaces/clientServiceInterface';
+import type { IClientService } from '../../../interfaces/client/webRTC/clientServiceInterface';
 import {
 	addDoc,
 	collection,
@@ -10,10 +10,10 @@ import {
 	updateDoc,
 	type DocumentData
 } from 'firebase/firestore';
-import { cardeyBFireStore } from './firebaseService';
-import { FirestoreConstants } from '../constants/firestoreConstants';
-import { ChannelsEnum } from '../enums/channelsEnum';
-import type { IMessage } from '../interfaces/messageInterface';
+import { cardeyBFireStore } from '../../firebaseService';
+import { FirestoreConstants } from '../../../constants/firestoreConstants';
+import { ChannelsEnum } from '../../../enums/channelsEnum';
+import type { IMessage } from '../../../interfaces/common/messageInterface';
 
 export class ClientService implements IClientService {
 	roomId: Ref<string>;

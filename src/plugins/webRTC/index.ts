@@ -4,10 +4,10 @@ import {
 	HostServiceKey,
 	PlayerServiceKey
 } from '@/core/constants/injectionKeys';
-import { ClientService } from '@/core/services/clientService';
-import { GameService } from '@/core/services/gameService';
-import { HostService } from '@/core/services/hostService';
-import { PlayerService } from '@/core/services/playerService';
+import { ClientService } from '@/core/services/client/webRTC/clientService';
+import { GameService } from '@/core/services/game/gameState/gameService';
+import { HostService } from '@/core/services/host/webRTC/hostService';
+import { PlayerService } from '@/core/services/game/player/playerService';
 import type { App } from 'vue';
 
 const webRTC = {

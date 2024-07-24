@@ -1,5 +1,5 @@
 import type { Reactive, Ref } from 'vue';
-import type { IMessage } from './messageInterface';
+import type { IMessage } from '../../common/messageInterface';
 
 export interface IHostService {
 	roomId: Ref<string>;

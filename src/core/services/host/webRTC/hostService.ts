@@ -1,5 +1,5 @@
 import { type Ref, type Reactive, ref, reactive } from 'vue';
-import type { IHostService } from '../interfaces/hostServiceInterface';
+import type { IHostService } from '../../../interfaces/host/webRTC/hostServiceInterface';
 import {
 	addDoc,
 	collection,
@@ -9,9 +9,9 @@ import {
 	type DocumentData
 } from 'firebase/firestore';
 import { cardeyBFireStore } from '@/core/services/firebaseService';
-import { FirestoreConstants } from '../constants/firestoreConstants';
-import { ChannelsEnum } from '../enums/channelsEnum';
-import type { IMessage } from '../interfaces/messageInterface';
+import { FirestoreConstants } from '../../../constants/firestoreConstants';
+import { ChannelsEnum } from '../../../enums/channelsEnum';
+import type { IMessage } from '../../../interfaces/common/messageInterface';
 
 //maybe create a wrapper for peer connection? extension methods and so on ... I am not sure
 

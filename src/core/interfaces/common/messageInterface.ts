@@ -1,4 +1,4 @@
-import type { MethodsEnum } from '../enums/methodsEnum';
+import type { MethodsEnum } from '../../enums/methodsEnum';
 
 export interface IMessage<T> {
 	senderId: string;

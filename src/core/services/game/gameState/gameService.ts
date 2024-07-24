@@ -1,16 +1,16 @@
 import { ref, type Ref } from 'vue';
-import type { IClientService } from '../interfaces/clientServiceInterface';
-import type { IGameService } from '../interfaces/gameServiceInterface';
-import type { IGameSettings } from '../interfaces/gameSettingsInterface';
-import type { IGameState } from '../interfaces/gameStateInterface';
-import type { IHostService } from '../interfaces/hostServiceInterface';
-import { GameState } from '../models/gameState';
-import type { IPlayerService } from '../interfaces/playerServiceInterface';
-import type { IPlayer } from '../interfaces/playerInterface';
-import { ColorsEnum } from '../enums/colorsEnum';
-import type { IMessage } from '../interfaces/messageInterface';
-import { MethodsEnum } from '../enums/methodsEnum';
-import type { IJoinTeam } from '../interfaces/dataMessagesInterfaces/joinTeamInterface';
+import type { IClientService } from '../../../interfaces/client/webRTC/clientServiceInterface';
+import type { IGameService } from '../../../interfaces/game/gameState/gameServiceInterface';
+import type { IGameSettings } from '../../../interfaces/game/entities/gameSettingsInterface';
+import type { IGameState } from '../../../interfaces/game/entities/gameStateInterface';
+import type { IHostService } from '../../../interfaces/host/webRTC/hostServiceInterface';
+import { GameState } from '../../../models/gameState';
+import type { IPlayerService } from '../../../interfaces/game/player/playerServiceInterface';
+import type { IPlayer } from '../../../interfaces/game/entities/playerInterface';
+import { ColorsEnum } from '../../../enums/colorsEnum';
+import type { IMessage } from '../../../interfaces/common/messageInterface';
+import { MethodsEnum } from '../../../enums/methodsEnum';
+import type { IJoinTeam } from '../../../interfaces/dataMessagesInterfaces/joinTeamInterface';
 
 export class GameService implements IGameService {
 	hostService: IHostService;

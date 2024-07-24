@@ -1,4 +1,4 @@
-import type { AvatarsEnum } from '../enums/avatarsEnum';
+import type { AvatarsEnum } from '../../../enums/avatarsEnum';
 
 export interface IPlayer {
 	id: string;
