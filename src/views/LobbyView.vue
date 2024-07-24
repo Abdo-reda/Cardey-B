@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import AvatarComponent from '@/components/AvatarComponent.vue';
 import { GameServiceKey, HostServiceKey, PlayerServiceKey } from '@/core/constants/injectionKeys';
-import { AvatarsEnum } from '@/core/enums/avatarsEnum';
 import { ColorsEnum } from '@/core/enums/colorsEnum';
 import { RoutesEnum } from '@/core/enums/routesEnum';
 import router from '@/plugins/router';
-import { AvatarGroup, Button, Card, message } from 'ant-design-vue';
+import { AvatarGroup, Button, Card, message, TypographyTitle } from 'ant-design-vue';
 import { inject } from 'vue';
 
 
@@ -38,8 +37,8 @@ function joinTeam(teamId: string) {
 
 <template>
     <div class="flex flex-col justify-center items-center p-4">
-        <p class="font-semibold text-center text-2xl"> Lobby - <span class="hover:cursor-pointer underline italic"
-                @click="copyCode"> {{ hostService.roomId }} </span> </p>
+        <TypographyTitle :level=2> Lobby - <span class="hover:cursor-pointer underline italic" @click="copyCode"> {{
+            hostService.roomId }} </span> </TypographyTitle>
         <div class="my-6 w-full flex gap-x-4 justify-center">
             <div class="h-full">
                 <Card size="small" title="Players">
@@ -60,7 +59,7 @@ function joinTeam(teamId: string) {
             </div>
             <div class="w-4/6 flex flex-col gap-y-2">
                 <div class="w-full" v-for="team in gameService.gameState.value.teams" :key="team.id">
-                    <Card>
+                    <Card class="h-36">
                         <template #title>
                             <div> {{ `Team ${team.id}` }} </div>
                         </template>
