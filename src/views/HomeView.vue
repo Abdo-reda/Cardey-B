@@ -6,11 +6,10 @@ import { RoutesEnum } from '@/core/enums/routesEnum'
 import AvatarComponent from '@/components/AvatarComponent.vue'
 import { ColorsEnum } from '@/core/enums/colorsEnum';
 import { AvatarsEnum } from '@/core/enums/avatarsEnum';
-import { ClientServiceKey, PlayerServiceKey } from '@/core/constants/injectionKeys';
+import { PlayerServiceKey } from '@/core/constants/injectionKeys';
 
-const props = defineProps<{ roomId?: string; }>();
+const roomId = ref(router.currentRoute.value.query.roomId as string);
 const playerService = inject(PlayerServiceKey)!;
-const clientService = inject(ClientServiceKey)!;
 const avatarsList = Object.values(AvatarsEnum);
 const showRoomId = ref(false);
 const isJoining = ref(false);
@@ -79,12 +78,12 @@ function changeAvatarIcon(): void {
 }
 
 watch(
-  () => props.roomId,
+  () => roomId,
   () => {
-    if (props.roomId) {
+    if (roomId.value) {
       showRoomId.value = true;
       isJoining.value = true;
-      playerService.player.roomId = props.roomId!;
+      playerService.player.roomId = roomId.value!;
     }
   },
   { immediate: true }
