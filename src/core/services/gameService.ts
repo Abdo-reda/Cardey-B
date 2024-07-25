@@ -66,6 +66,7 @@ export class GameService implements IGameService {
 		this.gameState.value.gameSettings = gameSettings;
 		const roomId = await this.hostService.createNewRoomAsync();
 		this.playerService.player.id = roomId;
+		this.playerService.player.roomId = roomId;
 		this.playerService.player.isHost = true;
 		this.gameState.value.players.push(this.playerService.player);
 		this.initTeams(gameSettings.numberOfTeams);

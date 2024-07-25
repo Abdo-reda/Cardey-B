@@ -10,7 +10,6 @@ import { inject } from 'vue';
 
 const playerService = inject(PlayerServiceKey)!;
 const gameService = inject(GameServiceKey)!;
-const hostService = inject(HostServiceKey)!;
 
 function startGame() {
     console.log("--- start game ---");
@@ -18,13 +17,18 @@ function startGame() {
 }
 
 function copyLink() {
-    navigator.clipboard.writeText("Link copied");
+    const url = router.resolve({
+        name: RoutesEnum.HOME,
+        query: { roomId: playerService.player.roomId },
+    });
+    console.log(`${window.location.origin}${url.href}`);
+    navigator.clipboard.writeText(`${window.location.origin}${url.href}`);
     console.log("--- copy link ---");
-    message.info('Linked Copied Successfully');
+    message.info('Link Copied Successfully');
 }
 
 function copyCode() {
-    navigator.clipboard.writeText(hostService.roomId.value);
+    navigator.clipboard.writeText(playerService.player.roomId);
     console.log("--- copy code ---");
     message.info('Code Copied Successfully');
 }
@@ -37,8 +41,9 @@ function joinTeam(teamId: string) {
 
 <template>
     <div class="flex flex-col justify-center items-center p-4">
-        <TypographyTitle :level=2> Lobby - <span class="hover:cursor-pointer underline italic" @click="copyCode"> {{
-            hostService.roomId }} </span> </TypographyTitle>
+        <TypographyTitle class="text-center" :level=2> Lobby </TypographyTitle>
+        <TypographyTitle @click="copyCode" class="text-center hover:cursor-pointer underline italic !m-0" :level=3>
+            {{ playerService.player.roomId }} </TypographyTitle>
         <div class="my-6 w-full flex gap-x-4 justify-center">
             <div class="h-full">
                 <Card size="small" title="Players">
@@ -82,7 +87,7 @@ function joinTeam(teamId: string) {
             </div>
         </div>
         <div class="flex gap-x-8">
-            <Button size="large" type="link" @click="copyLink"> Copy Link </Button>
+            <Button size="large" class="font-semibold" type="link" @click="copyLink"> Copy Link </Button>
             <Button v-if="playerService.player.isHost" size="large" type="primary" @click="startGame"> Start Game
             </Button>
         </div>
