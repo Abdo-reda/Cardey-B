@@ -1,6 +1,6 @@
 <script setup lang="ts">
-
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons-vue';
+import { Button } from 'ant-design-vue';
 interface IIncrementerProps {
   title: string
   min?: number,
@@ -34,17 +34,17 @@ const decrement = () => {
   <div class="flex flex-col justify-center items-center">
     <p class="font-semibold text-md"> {{ title }} </p>
     <div class="flex flex-row justify-center items-center">
-      <AButton @click="decrement" class="flex flex-col justify-center items-center" type="dashed" shape="circle">
+      <Button @click="decrement" class="flex flex-col justify-center items-center" type="dashed" shape="circle">
         <template #icon>
           <MinusCircleOutlined />
         </template>
-      </AButton>
+      </Button>
       <p class="m-4 p-2"> {{ count }} </p>
-      <AButton @click="increment" class="flex flex-col justify-center items-center" type="dashed" shape="circle">
+      <Button @click="increment" class="flex flex-col justify-center items-center" type="dashed" shape="circle">
         <template #icon>
           <PlusCircleOutlined />
         </template>
-      </AButton>
+      </Button>
     </div>
   </div>
 </template>

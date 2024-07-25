@@ -35,7 +35,7 @@ const timer = ref(3);
 const belongsToTeam = ref(true);
 const showTimer = ref(false);
 
-let timerInterval: number;
+let timerInterval: NodeJS.Timeout | null = null;
 
 
 

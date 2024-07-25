@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form, FormItem, Button, type FormInstance, Input, Divider, AvatarGroup, Avatar } from 'ant-design-vue';
+import { Form, FormItem, Button, type FormInstance, Input, Divider, AvatarGroup, Avatar, TypographyText, TypographyTitle } from 'ant-design-vue';
 import { reactive, ref, watchEffect } from 'vue';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import router from '@/plugins/router';
@@ -69,7 +69,7 @@ function nextTemp() {
 <template>
 
     <div class="flex flex-col justify-center items-center p-6">
-        <p class="text-2xl font-semibold"> Input your words </p>
+        <TypographyTitle :level="2"> Input your words </TypographyTitle>
         <p class="text-lg font-medium my-2"> {{ readyState ? 'Ready!' : 'Not Ready' }} </p>
         <Divider />
         <Form ref="formRef" :model="wordsFieldList">
