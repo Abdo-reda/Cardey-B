@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import AvatarComponent from '@/components/AvatarComponent.vue';
-import { GameServiceKey, HostServiceKey} from '@/core/constants/injectionKeys';
+import { GameServiceKey, HostServiceKey } from '@/core/constants/injectionKeys';
 import { ColorsEnum } from '@/core/enums/colorsEnum';
 import { RoutesEnum } from '@/core/enums/routesEnum';
 import router from '@/plugins/router';
 import { AvatarGroup, Button, Card, message, TypographyTitle } from 'ant-design-vue';
 import { inject } from 'vue';
-
 
 const gameService = inject(GameServiceKey)!;
 const player = gameService.getCurrentPlayer();
@@ -34,7 +33,7 @@ function copyCode() {
 }
 
 function joinTeam(teamId: string) {
-    // gameService.joinTeam(teamId);
+    gameService.joinTeam(teamId);
     console.log("joinTeam - LobbyView");
 }
 
@@ -78,8 +77,7 @@ function joinTeam(teamId: string) {
                                     </AvatarComponent>
                                 </template>
                             </AvatarGroup>
-                            <Button v-if="player.teamId !== team.id" :danger="false"
-                                @click="joinTeam(team.id)">
+                            <Button v-if="player.teamId !== team.id" :danger="false" @click="joinTeam(team.id)">
                                 Join </Button>
                             <Button v-else :danger="true"> Leave </Button>
                         </div>

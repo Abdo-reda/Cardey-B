@@ -31,7 +31,7 @@ const rulesRef = reactive({
       message: 'Please input name',
     },
   ],
-  roomId: [ 
+  roomId: [
     {
       required: isJoining,
       message: 'Please input room id',

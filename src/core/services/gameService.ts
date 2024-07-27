@@ -15,35 +15,33 @@ import { HostPlayerService } from './hostPlayerService';
 import { HostService } from './hostService';
 import { ClientPlayerService } from './clientPlayerService';
 import { ClientService } from './clientService';
+import { SyncMessage } from '../models/messages/syncMessage';
 
 export class GameService implements IGameService {
 	playerService!: IPlayerService;
 	gameState: Ref<IGameState>;
 
-	constructor(
-	) {
+	constructor() {
 		this.gameState = ref(new GameState());
-		// this.setupListenerHost();
-		// this.setupListnerClient();
 		// this.initTeams(5); //todo: remove this
 	}
 
-	// joinTeam(teamId: string): void {
-	// 	const player = this.playerService.player;
-	// 	this.pushPlayerToTeam(player, teamId);
-	// 	if (player.isHost) {
-	// 		this.sendSyncGameState();
-	// 	} else {
-	// 		this.playerService.sendMessage<IJoinTeam>({
-	// 			method: MethodsEnum.JOIN_TEAM,
-	// 			senderId: player.id,
-	// 			data: {
-	// 				playerId: player.id,
-	// 				teamId: teamId
-	// 			}
-	// 		});
-	// 	}
-	// }
+	async joinGameAsync(): Promise<void> {
+		console.log('------join game method - gameState: ', this.gameState.value);
+		await this.playerService.joinGameAsync();
+		// this.gameState.value.gameSettings = gameSettings;
+		this.gameState.value.players.push(this.playerService.player);
+		this.initTeams(this.gameState.value.gameSettings.numberOfTeams);
+	}
+
+	joinTeam(teamId: string): void {
+		const player = this.playerService.player;
+		this.pushPlayerToTeam(player, teamId);
+		this.playerService.joinTeam(this.gameState.value, {
+			teamId: teamId,
+			playerId: player.id
+		});
+	}
 
 	private pushPlayerToTeam(player: IPlayer, teamId: string): void {
 		const currentTeam = player.teamId;
@@ -58,60 +56,26 @@ export class GameService implements IGameService {
 		player.teamId = teamId;
 	}
 
-	async joinGameAsync(): Promise<void> {
-		console.log('------join game method - gameState: ', this.gameState.value)
-		await this.playerService.joinGameAsync()
-		// this.gameState.value.gameSettings = gameSettings;
-		this.gameState.value.players.push(this.playerService.player);
-		this.initTeams(this.gameState.value.gameSettings.numberOfTeams);
-	}
-
-	setPlayerService(player: IPlayer){
-		if(player.isHost){
+	setPlayerService(player: IPlayer) {
+		if (player.isHost) {
 			this.playerService = new HostPlayerService(new HostService(), player);
-		}else{
+		} else {
 			this.playerService = new ClientPlayerService(new ClientService(), player);
 		}
-		this.playerService.setupListeners();
+		this.playerService.setupListeners(this.handleMessage);
 	}
 
-	// private setupListenerHost(): void {
-	// 	this.hostService.onRecievedMessage = (playerId: string, message: IMessage<any>) => {
-	// 		console.log('--- Message recieved from player (client): ', playerId, message);
-	// 		console.log('==== host', message.method);
-	// 		if (message.method === MethodsEnum.JOIN_GAME) {
-	// 			this.playerJoinedGame(message.data);
-	// 		}
-
-	// 		if (message.method === MethodsEnum.JOIN_TEAM) {
-	// 			this.pushPlayerToTeam(
-	// 				this.gameState.value.players.find(
-	// 					(player) => player.id === message.data.playerId
-	// 				)!,
-	// 				message.data.teamId
-	// 			);
-	// 		}
-	// 		this.sendSyncGameState();
-	// 	};
-	// }
-
-	// private setupListnerClient(): void {
-	// 	this.clientService.onRecievedMessage = (message: IMessage<any>) => {
-	// 		console.log('--- Message recieved from host: ', message);
-	// 		console.log('==== client', message.method);
-	// 		if (message.method === MethodsEnum.SYNC) {
-	// 			this.syncLocalGameState(message.data);
-	// 		}
-	// 	};
-
-	// 	this.clientService.onDataChannelOpen = () => {
-	// 		this.playerService.sendMessage<IPlayer>({
-	// 			method: MethodsEnum.JOIN_GAME,
-	// 			senderId: this.playerService.player.id,
-	// 			data: this.playerService.player
-	// 		});
-	// 	};
-	// }
+	private handleMessage = (message: IMessage<any>): void => {
+		console.log('---- handling message', this.gameState, message);
+		message.handle(this.gameState);
+		//TODO: fix this
+		if (this.playerService.player.isHost) {
+			console.log('--- syncing');
+			this.playerService.sendMessage(
+				new SyncMessage(this.playerService.player.id, this.gameState.value)
+			);
+		}
+	};
 
 	private playerJoinedGame(data: IPlayer): void {
 		console.log('==== beforeeeee player joining game', data, this.gameState.value);
@@ -145,7 +109,7 @@ export class GameService implements IGameService {
 		//sync game state
 	}
 
-	getCurrentPlayer(): Reactive<IPlayer>{
+	getCurrentPlayer(): Reactive<IPlayer> {
 		return this.playerService.player;
 	}
 
