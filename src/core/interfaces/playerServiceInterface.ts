@@ -6,4 +6,5 @@ export interface IPlayerService {
 	player: Reactive<IPlayer>;
 	sendMessage: <T>(message: IMessage<T>) => void;
 	joinGameAsync: () => void;
+	setupListeners: () => void;
 }

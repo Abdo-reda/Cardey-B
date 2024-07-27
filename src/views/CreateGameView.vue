@@ -18,7 +18,7 @@ async function goToLobby(): Promise<void> {
     return;
   }
 
-  await gameService.createGameAsync(gameSettings);
+  await gameService.joinGameAsync();
   router.push({ name: RoutesEnum.LOBBY });
 }
 
