@@ -33,8 +33,8 @@ function getError(msg: string): ValidateInfo {
 </script>
 
 <template>
-  <div class="flex flex-col justify-center items-center p-6 text-center">
-    <Card title="Configure Game Settings">
+  <div class="flex flex-col items-center p-6 text-center">
+    <Card class="w-full max-w-sm" title="Configure Game Settings">
       <IncrementorComponent title="Number of players" v-model="gameSettings.numberOfPlayers" />
       <IncrementorComponent title="Number of teams" v-model="gameSettings.numberOfTeams" />
       <IncrementorComponent title="Time per round (seconds)" :max="300" :factor="10"

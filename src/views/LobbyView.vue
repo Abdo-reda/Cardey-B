@@ -40,12 +40,14 @@ function joinTeam(teamId: string) {
 </script>
 
 <template>
-    <div class="h-full flex flex-col items-center p-4">
-        <TypographyTitle class="text-center" :level=2> Lobby </TypographyTitle>
-        <TypographyTitle @click="copyCode" class="text-center hover:cursor-pointer underline italic !m-0" :level=3>
-            {{ player.roomId }} </TypographyTitle>
-        <div class="my-6 w-full flex gap-x-4 justify-center">
-            <div class="h-full max-h-96 overflow-auto">
+    <div class="grid row-span-12 p-4">
+        <div class="row-span-2">
+            <TypographyTitle class="text-center" :level=2> Lobby </TypographyTitle>
+            <TypographyTitle @click="copyCode" class="text-center hover:cursor-pointer underline italic !m-0" :level=3>
+                {{ player.roomId }} </TypographyTitle>
+        </div>
+        <div class="row-span-8 overflow-auto my-6 w-full flex gap-x-4 justify-center">
+            <div class="overflow-auto">
                 <Card size="small" title="Players">
                     <div v-auto-animate>
                         <div v-auto-animate v-if="gameService.gameState.value.players.filter(p => !p.teamId).length"
@@ -62,7 +64,7 @@ function joinTeam(teamId: string) {
                     </div>
                 </Card>
             </div>
-            <div class="w-4/6 max-w-md max-h-[50svh] overflow-auto flex flex-col gap-y-2">
+            <div class="w-4/6 max-w-md overflow-auto flex flex-col gap-y-2">
                 <div class="w-full" v-for="team in gameService.gameState.value.teams" :key="team.id">
                     <Card class="h-36">
                         <template #title>
@@ -85,7 +87,7 @@ function joinTeam(teamId: string) {
                 </div>
             </div>
         </div>
-        <div class="flex gap-x-8">
+        <div class="row-span-2 flex justify-center gap-x-8">
             <Button size="large" class="font-semibold" type="link" @click="copyLink"> Copy Link </Button>
             <Button v-if="player.isHost" size="large" type="primary" @click="startGame"> Start Game
             </Button>

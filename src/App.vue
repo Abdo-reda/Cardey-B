@@ -38,8 +38,8 @@ setTheme();
   <ConfigProvider :theme="{
     algorithm: currentThemeAlgorithm,
   }">
-    <main class="h-screen grid grid-rows-12 p-4">
-      <div class="row-span-1 self-center">
+    <main class="h-screen max-h-screen flex flex-col p-4">
+      <div>
         <div class="flex gap-x-2">
           <Button @click="settingsOpen = true" size="large"
             class="flex flex-col justify-center items-center text-gray-400 dark:text-gray-300" type="default"
@@ -59,14 +59,13 @@ setTheme();
       </div>
       <RouterView v-slot="{ Component }">
         <Transition name="fade" mode="out-in">
-          <component class="row-span-11" :is="Component" />
+          <component class="flex-1 max-h-full overflow-hidden" :is="Component" />
         </Transition>
       </RouterView>
     </main>
     <Modal v-model:open="settingsOpen" title="Settings" :closable="false">
       <p>Random settings like audio</p>
       <template #footer>
-        <Button key="submit" type="primary">Ok</Button>
       </template>
     </Modal>
   </ConfigProvider>
