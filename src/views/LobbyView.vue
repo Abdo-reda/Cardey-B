@@ -40,7 +40,7 @@ function joinTeam(teamId: string) {
 </script>
 
 <template>
-    <div class="grid row-span-12 p-4">
+    <div class="grid p-4">
         <div class="row-span-2">
             <TypographyTitle class="text-center" :level=2> Lobby </TypographyTitle>
             <TypographyTitle @click="copyCode" class="text-center hover:cursor-pointer underline italic !m-0" :level=3>
