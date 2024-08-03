@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { Avatar, Divider } from 'ant-design-vue';
+import AvatarComponent from '@/components/AvatarComponent.vue';
+import { GameServiceKey } from '@/core/constants/injectionKeys';
+import { RoutesEnum } from '@/core/enums/routesEnum';
+import router from '@/plugins/router';
+import { Button, Card, TypographyText, TypographyTitle } from 'ant-design-vue';
+import { inject } from 'vue';
+
+const gameService = inject(GameServiceKey)!;
 
 interface IGamePhaseProps {
     currentPhase: number;
@@ -8,32 +15,45 @@ interface IGamePhaseProps {
 
 defineProps<IGamePhaseProps>();
 
+//TODO: highlight selected member / team
+//TODO: maybe redesign this page
+
+function nextTemp() {
+    console.log('next temp');
+    router.push({ name: RoutesEnum.PLAYING_WORD });
+}
+
 </script>
 
 <template>
-    <div>
-        <div class="flex flex-col justify-center items-center p-6">
-            <p class="text-2xl font-bold">Game Phase {{ currentPhase }}</p>
-            <p class="text-gray-600">{{ description }}</p>
+    <div class="grid p-4">
+        <div class="row-span-2 flex flex-col text-center justify-center items-center">
+            <TypographyTitle :level="2"> Game Phase {{ currentPhase }} </TypographyTitle>
+            <TypographyText> {{ description }} </TypographyText>
         </div>
-        <Divider />
-        <div class="flex flex-col justify-center items-center text-center">
-            <p class="text-xl font-semibold"> Game Order </p>
-            <div class="flex flex-col">
-                <div v-for="team in 3" :key=team class="my-4">
-                    <p> Team {{ team }} </p>
-                    <div class="flex flex-col">
-                        <div class="flex flex-row justify-center items-center gap-x-2 my-1" v-for="member in 3"
-                            :key=member>
-                            <Avatar size="small"> </Avatar>
-                            <p> Member {{ member }} </p>
+        <div class="row-span-10 overflow-hidden w-full flex gap-x-4 justify-center">
+            <Card title="Game Order" class="w-full grid max-w-sm" :body-style="{ 'overflow': 'auto' }">
+                <div class="flex flex-col justify-center items-center text-center">
+                    <div class="flex flex-col gap-y-4">
+                        <div v-for="team in gameService.gameState.value.teams" :key="team.id">
+                            <p class="font-semibold"> Team {{ team.id }}
+                            </p>
+                            <div class="flex flex-col">
+                                <div class="flex flex-row justify-center items-center gap-x-2 my-1"
+                                    v-for="playerId in team.players" :key=playerId>
+                                    <AvatarComponent :avatar-icon="gameService.getPlayer(playerId).avatar"
+                                        :color="team.color" :tooltip="gameService.getPlayer(playerId).name">
+                                    </AvatarComponent>
+                                    <p> {{ gameService.getPlayer(playerId).name }} </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <!-- Loop over teams -->
-                <!-- Loop over members of teams -->
-                <!-- Highlight selected/current turn of member -->
-            </div>
+            </Card>
+        </div>
+        <div class="row-span-2 flex justify-center gap-x-8">
+            <Button type="primary" @click="nextTemp"> Next Temp </Button>
         </div>
     </div>
 </template>

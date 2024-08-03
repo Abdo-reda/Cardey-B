@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { Form, FormItem, Button, type FormInstance, Input, Divider, AvatarGroup, Avatar, TypographyTitle, Tag, Card, CardGrid } from 'ant-design-vue';
+import { Form, FormItem, Button, type FormInstance, Input, TypographyTitle, Tag, Card } from 'ant-design-vue';
 import { computed, inject, reactive, ref } from 'vue';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import router from '@/plugins/router';
 import { RoutesEnum } from '@/core/enums/routesEnum';
 import { CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons-vue';
-import AvatarComponent from '@/components/AvatarComponent.vue';
-import { ColorsEnum } from '@/core/enums/colorsEnum';
 import { GameServiceKey } from '@/core/constants/injectionKeys';
 import type { IPlayer } from '@/core/interfaces/playerInterface';
 
