@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AvatarComponent from '@/components/AvatarComponent.vue';
-import { GameServiceKey, HostServiceKey } from '@/core/constants/injectionKeys';
+import { GameServiceKey } from '@/core/constants/injectionKeys';
 import { ColorsEnum } from '@/core/enums/colorsEnum';
 import { RoutesEnum } from '@/core/enums/routesEnum';
 import router from '@/plugins/router';
@@ -40,12 +40,12 @@ function joinTeam(teamId: string) {
 </script>
 
 <template>
-    <div class="flex flex-col justify-center items-center p-4">
+    <div class="h-full flex flex-col items-center p-4">
         <TypographyTitle class="text-center" :level=2> Lobby </TypographyTitle>
         <TypographyTitle @click="copyCode" class="text-center hover:cursor-pointer underline italic !m-0" :level=3>
             {{ player.roomId }} </TypographyTitle>
         <div class="my-6 w-full flex gap-x-4 justify-center">
-            <div class="h-full">
+            <div class="h-full max-h-96 overflow-auto">
                 <Card size="small" title="Players">
                     <div v-auto-animate>
                         <div v-auto-animate v-if="gameService.gameState.value.players.filter(p => !p.teamId).length"
@@ -62,7 +62,7 @@ function joinTeam(teamId: string) {
                     </div>
                 </Card>
             </div>
-            <div class="w-4/6 flex flex-col gap-y-2">
+            <div class="w-4/6 max-w-md max-h-[50svh] overflow-auto flex flex-col gap-y-2">
                 <div class="w-full" v-for="team in gameService.gameState.value.teams" :key="team.id">
                     <Card class="h-36">
                         <template #title>

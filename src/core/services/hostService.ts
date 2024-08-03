@@ -11,7 +11,7 @@ import {
 import { cardeyBFireStore } from '@/core/services/firebaseService';
 import { FirestoreConstants } from '../constants/firestoreConstants';
 import { ChannelsEnum } from '../enums/channelsEnum';
-import type { IMessage } from '../interfaces/messageInterface';
+import type { IMessage } from '../interfaces/messageInterfaces/messageInterface';
 
 //maybe create a wrapper for peer connection? extension methods and so on ... I am not sure
 

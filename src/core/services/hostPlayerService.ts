@@ -1,11 +1,11 @@
 import { reactive, type Reactive } from 'vue';
-import type { IMessage } from '../interfaces/messageInterface';
+import type { IMessage } from '../interfaces/messageInterfaces/messageInterface';
 import type { IPlayerService } from '../interfaces/playerServiceInterface';
 import type { IPlayer } from '../interfaces/playerInterface';
 import type { IHostService } from '../interfaces/hostServiceInterface';
-import { SyncMessage } from '../models/messages/syncMessage';
 import type { IGameState } from '../interfaces/gameStateInterface';
-import type { IJoinTeam } from '../interfaces/dataMessagesInterfaces/joinTeamInterface';
+import type { IJoinTeam } from '../interfaces/messageInterfaces/joinTeamInterface';
+import { SyncMessage } from '../models/messages/syncMessage';
 
 export class HostPlayerService implements IPlayerService {
 	player: Reactive<IPlayer>;
@@ -20,24 +20,6 @@ export class HostPlayerService implements IPlayerService {
 		this.hostService.onRecievedMessage = (playerId: string, message: IMessage<any>) => {
 			console.log('--- Message recieved from player (client): ', playerId, message);
 			callback(message);
-
-			// console.log('==== host', message.method);
-			// if (message.method === MethodsEnum.JOIN_GAME) {
-			// 	// this.playerJoinedGame(message.data);
-			// 	console.log('--- host handling join game');
-			// }
-
-			// if (message.method === MethodsEnum.JOIN_TEAM) {
-			// 	console.log('--- host handling join team');
-			// 	// this.pushPlayerToTeam(
-			// 	// 	this.gameState.value.players.find(
-			// 	// 		(player) => player.id === message.data.playerId
-			// 	// 	)!,
-			// 	// 	message.data.teamId
-			// 	// );
-			// }
-			console.log('--- syncing game');
-			// this.sendSyncGameState();
 		};
 	}
 
@@ -52,10 +34,10 @@ export class HostPlayerService implements IPlayerService {
 	}
 
 	joinTeam(gameState: IGameState, data: IJoinTeam): void {
-		this.sendSyncGameState(gameState);
+		this.syncGameState(gameState);
 	}
 
-	private sendSyncGameState(gameState: IGameState): void {
+	syncGameState(gameState: IGameState): void {
 		this.sendMessage(new SyncMessage(this.player.id, gameState));
 	}
 }

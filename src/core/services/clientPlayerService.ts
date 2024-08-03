@@ -1,9 +1,9 @@
 import { reactive, type Reactive } from 'vue';
 import type { IPlayer } from '../interfaces/playerInterface';
-import type { IMessage } from '../interfaces/messageInterface';
+import type { IMessage } from '../interfaces/messageInterfaces/messageInterface';
 import type { IClientService } from '../interfaces/clientServiceInterface';
 import type { IPlayerService } from '../interfaces/playerServiceInterface';
-import type { IJoinTeam } from '../interfaces/dataMessagesInterfaces/joinTeamInterface';
+import type { IJoinTeam } from '../interfaces/messageInterfaces/joinTeamInterface';
 import type { IGameState } from '../interfaces/gameStateInterface';
 import { JoinTeamMessage } from '../models/messages/joinTeamMessage';
 import { JoinGameMessage } from '../models/messages/joinGameMessage';
@@ -23,12 +23,8 @@ export class ClientPlayerService implements IPlayerService {
 
 	setupListeners(callback: (message: IMessage<any>) => void): void {
 		this.clientService.onRecievedMessage = (message: IMessage<any>) => {
-			console.log('--- Message recieved from host: ', message);
+			console.log('----- Client recieved message from host: ', message);
 			callback(message);
-			// console.log('==== client', message.method);
-			// if (message.method === MethodsEnum.SYNC) {
-			// 	this.syncLocalGameState(message.data);
-			// }
 		};
 
 		this.clientService.onDataChannelOpen = () => {
@@ -38,17 +34,18 @@ export class ClientPlayerService implements IPlayerService {
 	}
 
 	sendMessage<T>(message: IMessage<T>): void {
+		console.log('---- Client sending message: ', message);
 		this.clientService.sendMessageToHost(message);
-	}
-
-	private sendJoinGame(): void {
-		const joinGame = new JoinGameMessage(this.player.id, this.player);
-		console.log('--- sending join game', joinGame);
-		this.sendMessage(joinGame);
 	}
 
 	async joinGameAsync(): Promise<void> {
 		const id = await this.clientService.createJoinRequestAsync(this.player.roomId);
 		this.player.id = id;
+	}
+
+	syncGameState(gameState: IGameState): void {}
+
+	private sendJoinGame(): void {
+		this.sendMessage(new JoinGameMessage(this.player.id, this.player));
 	}
 }

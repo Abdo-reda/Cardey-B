@@ -1,21 +1,17 @@
 import { ref, type Reactive, type Ref } from 'vue';
-import type { IClientService } from '../interfaces/clientServiceInterface';
 import type { IGameService } from '../interfaces/gameServiceInterface';
 import type { IGameSettings } from '../interfaces/gameSettingsInterface';
 import type { IGameState } from '../interfaces/gameStateInterface';
-import type { IHostService } from '../interfaces/hostServiceInterface';
 import { GameState } from '../models/gameState';
 import type { IPlayerService } from '../interfaces/playerServiceInterface';
 import type { IPlayer } from '../interfaces/playerInterface';
 import { ColorsEnum } from '../enums/colorsEnum';
-import type { IMessage } from '../interfaces/messageInterface';
-import { MethodsEnum } from '../enums/methodsEnum';
-import type { IJoinTeam } from '../interfaces/dataMessagesInterfaces/joinTeamInterface';
+import type { IMessage } from '../interfaces/messageInterfaces/messageInterface';
 import { HostPlayerService } from './hostPlayerService';
 import { HostService } from './hostService';
 import { ClientPlayerService } from './clientPlayerService';
 import { ClientService } from './clientService';
-import { SyncMessage } from '../models/messages/syncMessage';
+import { RECIEVERS_MAP } from '../constants/recieversMap';
 
 export class GameService implements IGameService {
 	playerService!: IPlayerService;
@@ -23,7 +19,6 @@ export class GameService implements IGameService {
 
 	constructor() {
 		this.gameState = ref(new GameState());
-		// this.initTeams(5); //todo: remove this
 	}
 
 	async joinGameAsync(): Promise<void> {
@@ -43,19 +38,6 @@ export class GameService implements IGameService {
 		});
 	}
 
-	private pushPlayerToTeam(player: IPlayer, teamId: string): void {
-		const currentTeam = player.teamId;
-
-		if (currentTeam) {
-			const oldTeam = this.gameState.value.teams.find((t) => t.id === currentTeam)!;
-			oldTeam.players = oldTeam.players.filter((playerId) => playerId !== player.id);
-		}
-
-		const team = this.gameState.value.teams.find((t) => t.id === teamId);
-		team?.players.push(player.id);
-		player.teamId = teamId;
-	}
-
 	setPlayerService(player: IPlayer) {
 		if (player.isHost) {
 			this.playerService = new HostPlayerService(new HostService(), player);
@@ -65,48 +47,8 @@ export class GameService implements IGameService {
 		this.playerService.setupListeners(this.handleMessage);
 	}
 
-	private handleMessage = (message: IMessage<any>): void => {
-		console.log('---- handling message', this.gameState, message);
-		message.handle(this.gameState);
-		//TODO: fix this
-		if (this.playerService.player.isHost) {
-			console.log('--- syncing');
-			this.playerService.sendMessage(
-				new SyncMessage(this.playerService.player.id, this.gameState.value)
-			);
-		}
-	};
-
-	private playerJoinedGame(data: IPlayer): void {
-		console.log('==== beforeeeee player joining game', data, this.gameState.value);
-		//we need to update game state ... player service? w need game service? circular dependency?
-		this.gameState.value.players.push(data);
-		console.log('==== afterplayer joining game', data, this.gameState.value);
-	}
-
-	//TODO: move it to host service
-	// private sendSyncGameState(): void {
-	// 	const message: IMessage<IGameState> = {
-	// 		senderId: this.playerService.player.id,
-	// 		method: MethodsEnum.SYNC,
-	// 		data: this.gameState.value
-	// 	};
-	// 	this.hostService.sendMessageToAllExcept(message, []);
-	// }
-
-	private syncLocalGameState(data: IGameState): void {
-		console.log('--- client before', this.gameState, data);
-		this.gameState.value = data;
-		console.log('--- client after', this.gameState);
-	}
-
 	getSettings(): IGameSettings {
 		return this.gameState.value.gameSettings;
-	}
-
-	addPlayer(player: IPlayer) {
-		this.gameState.value.players.push(player);
-		//sync game state
 	}
 
 	getCurrentPlayer(): Reactive<IPlayer> {
@@ -130,7 +72,22 @@ export class GameService implements IGameService {
 		}
 	}
 
-	// getPlayer(): IPlayer {
-	// 	return this.gameState.teams.flatMap((team) => team.players).find((player) => player.isHost);
-	// }
+	private pushPlayerToTeam(player: IPlayer, teamId: string): void {
+		const currentTeam = player.teamId;
+
+		if (currentTeam) {
+			const oldTeam = this.gameState.value.teams.find((t) => t.id === currentTeam)!;
+			oldTeam.players = oldTeam.players.filter((playerId) => playerId !== player.id);
+		}
+
+		const team = this.gameState.value.teams.find((t) => t.id === teamId);
+		team?.players.push(player.id);
+		player.teamId = teamId;
+	}
+
+	private handleMessage = (message: IMessage<any>): void => {
+		console.log('--- handling message', message);
+		RECIEVERS_MAP.get(message.method)!.handle(this.gameState, message);
+		this.playerService.syncGameState(this.gameState.value);
+	};
 }

@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { Form, FormItem, Button, type FormInstance, Input, Divider, AvatarGroup, Avatar, TypographyText, TypographyTitle } from 'ant-design-vue';
-import { reactive, ref, watchEffect } from 'vue';
+import { Form, FormItem, Button, type FormInstance, Input, Divider, AvatarGroup, Avatar, TypographyTitle } from 'ant-design-vue';
+import { reactive, ref } from 'vue';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import router from '@/plugins/router';
 import { RoutesEnum } from '@/core/enums/routesEnum';
 
-//will the game be a single view? and we memorize states? each state shows a different components/view, or different routes? routes are the states.
 
 interface IWordField {
     value: string;

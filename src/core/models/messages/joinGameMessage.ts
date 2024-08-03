@@ -1,10 +1,9 @@
-import type { IGameState } from '@/core/interfaces/gameStateInterface';
-import type { IPlayer } from '@/core/interfaces/playerInterface';
-import type { Ref } from 'vue';
+import { MethodsEnum } from '@/core/enums/methodsEnum';
 import { BaseMessage } from './baseMessage';
+import type { IPlayer } from '@/core/interfaces/playerInterface';
 
 export class JoinGameMessage extends BaseMessage<IPlayer> {
-	handle = (gameState: Ref<IGameState>): void => {
-		gameState.value.players.push(this.data);
-	};
+	constructor(senderId: string, data: IPlayer) {
+		super(MethodsEnum.JOIN_GAME, senderId, data);
+	}
 }

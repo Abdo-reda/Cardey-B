@@ -13,7 +13,7 @@ import {
 import { cardeyBFireStore } from './firebaseService';
 import { FirestoreConstants } from '../constants/firestoreConstants';
 import { ChannelsEnum } from '../enums/channelsEnum';
-import type { IMessage } from '../interfaces/messageInterface';
+import type { IMessage } from '../interfaces/messageInterfaces/messageInterface';
 
 export class ClientService implements IClientService {
 	roomId: Ref<string>;
