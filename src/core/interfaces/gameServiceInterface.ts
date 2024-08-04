@@ -7,9 +7,10 @@ export interface IGameService {
 	gameState: Ref<IGameState>;
 
 	joinGameAsync: () => void;
+	joinTeam: (teamId: string) => void;
+	startGame: () => void;
 	getSettings: () => IGameSettings;
 	setPlayerService: (player: IPlayer) => void;
-	joinTeam: (teamId: string) => void;
 	getCurrentPlayer: () => Reactive<IPlayer>;
 	getPlayer: (playerId: string) => IPlayer;
 }

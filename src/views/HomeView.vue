@@ -67,7 +67,8 @@ async function handleJoinGameClick() {
       loadingJoin.value = true;
       await gameService.joinGameAsync();
       loadingJoin.value = false;
-      router.push({ name: RoutesEnum.LOBBY });
+      // TODO: the host will route the player if he joined .... 
+      // router.push({ name: RoutesEnum.LOBBY }); 
     }
   } catch (error) {
     loadingJoin.value = false;

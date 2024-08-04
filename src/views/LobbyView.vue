@@ -5,14 +5,14 @@ import { ColorsEnum } from '@/core/enums/colorsEnum';
 import { RoutesEnum } from '@/core/enums/routesEnum';
 import router from '@/plugins/router';
 import { AvatarGroup, Button, Card, message, TypographyTitle } from 'ant-design-vue';
-import { inject } from 'vue';
+import { computed, inject } from 'vue';
 
 const gameService = inject(GameServiceKey)!;
 const player = gameService.getCurrentPlayer();
 
 function startGame() {
     console.log("--- start game ---");
-    router.push({ name: RoutesEnum.BEGIN_GAME });
+    gameService.startGame();
 }
 
 function copyLink() {
@@ -36,6 +36,10 @@ function joinTeam(teamId: string) {
     gameService.joinTeam(teamId);
     console.log("joinTeam - LobbyView");
 }
+
+const areAllPlayersJoined = computed(() => {
+    return gameService.gameState.value.players.filter(p => !p.teamId).length === 0;
+});
 
 </script>
 
@@ -89,7 +93,10 @@ function joinTeam(teamId: string) {
         </div>
         <div class="row-span-2 flex justify-center gap-x-8">
             <Button size="large" class="font-semibold" type="link" @click="copyLink"> Copy Link </Button>
-            <Button v-if="player.isHost" size="large" type="primary" @click="startGame"> Start Game
+            <Button :disabled="!areAllPlayersJoined" v-if="player.isHost" size="large" type="primary"
+                @click="startGame">
+                Start
+                Game
             </Button>
         </div>
     </div>

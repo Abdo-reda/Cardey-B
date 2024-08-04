@@ -40,8 +40,8 @@ npm run lint
 
 ### Notes
 
--   player can only join, if the current screen/phase is Lobby [currentPhase/currentScreen/currentWhatever...]
 -   disable the start until all players have joined team.
+-   player can only join, if the current screen/phase is Lobby [currentRoute]
 -   I am host, I want to send message, to tell players go to next screen "X screen" (go to hell), I want to tell players go to (phase/screen/) "begin-game"
     -   New message RouteTo(RouteName)
     -   New reciever
@@ -57,10 +57,11 @@ npm run lint
     -   passed words.
     -   remaining words.
     -   current team, and current player.
--   Once there are no more remaining words, we go the next game phase
+-   Once there are no more remaining words, we go the next game phase.
 
 ### Enhancements
 
+-   [ ] Make the webRTC more stable
 -   [ ] Make the room code more friendly.
 -   [ ] Add sounds / music / audio
 -   [ ] Spectators? players not in a team.

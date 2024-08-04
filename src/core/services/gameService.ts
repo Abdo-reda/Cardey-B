@@ -12,6 +12,9 @@ import { HostService } from './hostService';
 import { ClientPlayerService } from './clientPlayerService';
 import { ClientService } from './clientService';
 import { RECIEVERS_MAP } from '../constants/recieversMap';
+import router from '@/plugins/router';
+import { RoutesEnum } from '../enums/routesEnum';
+import { GAME_PHASES_DESCRIPTIONS, type GamePhasesEnum } from '../enums/gamePhasesEnum';
 
 export class GameService implements IGameService {
 	playerService!: IPlayerService;
@@ -24,7 +27,6 @@ export class GameService implements IGameService {
 	async joinGameAsync(): Promise<void> {
 		console.log('------join game method - gameState: ', this.gameState.value);
 		await this.playerService.joinGameAsync();
-		// this.gameState.value.gameSettings = gameSettings;
 		this.gameState.value.players.push(this.playerService.player);
 		this.initTeams(this.gameState.value.gameSettings.numberOfTeams);
 	}
@@ -36,6 +38,12 @@ export class GameService implements IGameService {
 			teamId: teamId,
 			playerId: player.id
 		});
+	}
+
+	startGame(): void {
+		this.gameState.value.currentRoute = RoutesEnum.GAME_PHASE;
+		router.push({ name: RoutesEnum.GAME_PHASE });
+		this.playerService.syncGameState(this.gameState.value);
 	}
 
 	setPlayerService(player: IPlayer) {
@@ -57,6 +65,11 @@ export class GameService implements IGameService {
 
 	getPlayer(playerId: string): IPlayer {
 		return this.gameState.value.players.find((player) => player.id === playerId)!;
+	}
+
+	private switchPhase(phase: GamePhasesEnum): void {
+		this.gameState.value.gamePhase.phase = phase;
+		this.gameState.value.gamePhase.description = GAME_PHASES_DESCRIPTIONS.get(phase)!;
 	}
 
 	private initTeams(numberOfTeams: number): void {

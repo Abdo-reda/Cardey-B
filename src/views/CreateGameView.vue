@@ -33,15 +33,20 @@ function getError(msg: string): ValidateInfo {
 </script>
 
 <template>
-  <div class="flex flex-col items-center p-6 text-center">
-    <Card class="w-full max-w-sm" title="Configure Game Settings">
-      <IncrementorComponent title="Number of players" v-model="gameSettings.numberOfPlayers" />
-      <IncrementorComponent title="Number of teams" v-model="gameSettings.numberOfTeams" />
-      <IncrementorComponent title="Time per round (seconds)" :max="300" :factor="10"
-        v-model="gameSettings.timePerRound" />
-      <IncrementorComponent title="Words per player" v-model="gameSettings.wordsPerPlayer" />
-      <FormItem class="w-full text-center m-0 p-0" v-bind="errorInfo"> </FormItem>
-    </Card>
-    <Button @click="goToLobby" class="mt-4" type="primary">Start Game</Button>
+  <div class="flex flex-col p-4 text-center">
+    <div class="overflow-hidden flex justify-center">
+      <Card class="w-full max-w-sm" title="Configure Game Settings">
+        <IncrementorComponent title="Number of players" v-model="gameSettings.numberOfPlayers" />
+        <IncrementorComponent title="Number of teams" v-model="gameSettings.numberOfTeams" />
+        <IncrementorComponent title="Time per round (seconds)" :max="300" :factor="10"
+          v-model="gameSettings.timePerRound" />
+        <IncrementorComponent title="Words per player" v-model="gameSettings.wordsPerPlayer" />
+        <FormItem class="w-full text-center m-0 p-0" v-bind="errorInfo"> </FormItem>
+      </Card>
+    </div>
+    <div class="flex justify-center">
+      <Button @click="goToLobby" :block="true" size="large" class="mt-4 w-full max-w-sm" type="primary">Start
+        Game</Button>
+    </div>
   </div>
 </template>

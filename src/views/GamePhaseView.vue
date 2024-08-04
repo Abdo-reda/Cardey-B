@@ -8,13 +8,6 @@ import { inject } from 'vue';
 
 const gameService = inject(GameServiceKey)!;
 
-interface IGamePhaseProps {
-    currentPhase: number;
-    description: string;
-}
-
-defineProps<IGamePhaseProps>();
-
 //TODO: highlight selected member / team
 //TODO: maybe redesign this page
 
@@ -28,8 +21,9 @@ function nextTemp() {
 <template>
     <div class="grid p-4">
         <div class="row-span-2 flex flex-col text-center justify-center items-center">
-            <TypographyTitle :level="2"> Game Phase {{ currentPhase }} </TypographyTitle>
-            <TypographyText> {{ description }} </TypographyText>
+            <TypographyTitle :level="2"> Game Phase {{ gameService.gameState.value.gamePhase.phase }} </TypographyTitle>
+            <TypographyText v-html="gameService.gameState.value.gamePhase.description">
+            </TypographyText>
         </div>
         <div class="row-span-10 overflow-hidden w-full flex gap-x-4 justify-center">
             <Card title="Game Order" class="w-full flex flex-col max-w-sm"
