@@ -32,7 +32,8 @@ function nextTemp() {
             <TypographyText> {{ description }} </TypographyText>
         </div>
         <div class="row-span-10 overflow-hidden w-full flex gap-x-4 justify-center">
-            <Card title="Game Order" class="w-full grid max-w-sm" :body-style="{ 'overflow': 'auto' }">
+            <Card title="Game Order" class="w-full flex flex-col max-w-sm"
+                :body-style="{ 'overflow': 'auto', 'flex': '1 1 0%' }">
                 <div class="flex flex-col justify-center items-center text-center">
                     <div class="flex flex-col gap-y-4">
                         <div v-for="team in gameService.gameState.value.teams" :key="team.id">

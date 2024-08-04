@@ -9,3 +9,10 @@ export const RECIEVERS_MAP = new Map<MethodsEnum, IReciever<any>>([
 	[MethodsEnum.JOIN_TEAM, new JoinTeamReciever()],
 	[MethodsEnum.SYNC, new SyncReciever()]
 ]);
+
+//We can make the recievers register themselves
+//contructor() {
+// this.map.push(methoEnum, this)
+//}
+
+//there will be an issue if the recievers will do something else, 5er enaha te5ayer fe el state

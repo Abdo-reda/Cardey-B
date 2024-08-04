@@ -19,7 +19,6 @@ export class GameService implements IGameService {
 
 	constructor() {
 		this.gameState = ref(new GameState());
-		this.initTeams(20);
 	}
 
 	async joinGameAsync(): Promise<void> {

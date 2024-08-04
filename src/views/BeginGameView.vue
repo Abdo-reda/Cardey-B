@@ -6,6 +6,7 @@ import { RoutesEnum } from '@/core/enums/routesEnum';
 import { CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons-vue';
 import { GameServiceKey } from '@/core/constants/injectionKeys';
 import type { IPlayer } from '@/core/interfaces/playerInterface';
+import { ColorsEnum } from '@/core/enums/colorsEnum';
 
 const gameService = inject(GameServiceKey)!;
 
@@ -74,7 +75,7 @@ initWords(gameService.gameState.value.gameSettings.wordsPerPlayer);
 </script>
 
 <template>
-    <div class="grid row-span-12 p-4 gap-y-8">
+    <div class="grid row-span-12 p-4 gap-y-4">
         <div class="row-span-2 text-center">
             <TypographyTitle :level="2"> Input your words </TypographyTitle>
         </div>
@@ -89,7 +90,8 @@ initWords(gameService.gameState.value.gameSettings.wordsPerPlayer);
                     </div>
                 </AvatarGroup>
             </Card> -->
-            <Card title="Words" class="w-full grid max-w-sm" :body-style="{ 'overflow': 'auto' }">
+            <Card title="Words" class="w-full flex flex-col max-w-sm"
+                :body-style="{ 'overflow': 'auto', 'flex': '1 1 0%' }">
                 <template #extra>
                     <Tag v-if="readyState" color="success">
                         <template #icon>

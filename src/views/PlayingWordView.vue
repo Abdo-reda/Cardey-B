@@ -19,6 +19,9 @@ function passWord() {
 </script>
 
 <template>
+    <!-- TODO: update the views -->
+    <!-- If you are not the current player, then you only see the timer.  -->
+    <!-- If you are in the opposite team, you can see the word? maybe? -->
     <div class="h-full">
         <div class="flex flex-col gap-y-4 justify-center items-center p-4 h-full">
             <p class="text-3xl font-medium text-gray-400"> {{ timer }} </p>
