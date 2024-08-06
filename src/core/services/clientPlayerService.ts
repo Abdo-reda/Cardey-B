@@ -7,6 +7,8 @@ import type { IJoinTeam } from '../interfaces/messageInterfaces/joinTeamInterfac
 import type { IGameState } from '../interfaces/gameStateInterface';
 import { JoinTeamMessage } from '../models/messages/joinTeamMessage';
 import { JoinGameMessage } from '../models/messages/joinGameMessage';
+import type { IPlayerWords } from '../interfaces/messageInterfaces/playerWordsInterface';
+import { PlayerWordsMessage } from '../models/messages/playerWordsMessage';
 
 export class ClientPlayerService implements IPlayerService {
 	player: Reactive<IPlayer>;
@@ -42,6 +44,11 @@ export class ClientPlayerService implements IPlayerService {
 		const id = await this.clientService.createJoinRequestAsync(this.player.roomId);
 		this.player.id = id;
 	}
+
+	updateWords(gameState: IGameState, data: IPlayerWords): void {
+		this.sendMessage(new PlayerWordsMessage(this.player.id, data));
+	}
+
 
 	syncGameState(gameState: IGameState): void {}
 

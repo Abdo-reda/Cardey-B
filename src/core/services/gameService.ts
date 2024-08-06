@@ -15,6 +15,7 @@ import { RECIEVERS_MAP } from '../constants/recieversMap';
 import router from '@/plugins/router';
 import { RoutesEnum } from '../enums/routesEnum';
 import { GAME_PHASES_DESCRIPTIONS, type GamePhasesEnum } from '../enums/gamePhasesEnum';
+import type { IPlayerWords } from '../interfaces/messageInterfaces/playerWordsInterface';
 
 export class GameService implements IGameService {
 	playerService!: IPlayerService;
@@ -44,6 +45,16 @@ export class GameService implements IGameService {
 		this.gameState.value.currentRoute = RoutesEnum.GAME_PHASE;
 		router.push({ name: RoutesEnum.GAME_PHASE });
 		this.playerService.syncGameState(this.gameState.value);
+	}
+
+	updateWords(data: IPlayerWords): void {
+		const curPlayer = this.getCurrentPlayer();
+		if (data.reset) {
+			curPlayer.words = [];
+		} else {
+			curPlayer.words = data.words;
+		}
+		this.playerService.updateWords(this.gameState.value, data);
 	}
 
 	setPlayerService(player: IPlayer) {

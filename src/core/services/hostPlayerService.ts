@@ -6,6 +6,7 @@ import type { IHostService } from '../interfaces/hostServiceInterface';
 import type { IGameState } from '../interfaces/gameStateInterface';
 import type { IJoinTeam } from '../interfaces/messageInterfaces/joinTeamInterface';
 import { SyncMessage } from '../models/messages/syncMessage';
+import type { IPlayerWords } from '../interfaces/messageInterfaces/playerWordsInterface';
 
 export class HostPlayerService implements IPlayerService {
 	player: Reactive<IPlayer>;
@@ -37,7 +38,12 @@ export class HostPlayerService implements IPlayerService {
 		this.syncGameState(gameState);
 	}
 
+	updateWords(gameState: IGameState, payload: IPlayerWords): void {
+		this.syncGameState(gameState);
+	}
+
 	syncGameState(gameState: IGameState): void {
 		this.sendMessage(new SyncMessage(this.player.id, gameState));
 	}
+
 }
