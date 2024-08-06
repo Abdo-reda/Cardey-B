@@ -3,12 +3,9 @@ import type { IPlayer } from '../interfaces/playerInterface';
 import type { IMessage } from '../interfaces/messageInterfaces/messageInterface';
 import type { IClientService } from '../interfaces/clientServiceInterface';
 import type { IPlayerService } from '../interfaces/playerServiceInterface';
-import type { IJoinTeam } from '../interfaces/messageInterfaces/joinTeamInterface';
 import type { IGameState } from '../interfaces/gameStateInterface';
-import { JoinTeamMessage } from '../models/messages/joinTeamMessage';
-import { JoinGameMessage } from '../models/messages/joinGameMessage';
-import type { IPlayerWords } from '../interfaces/messageInterfaces/playerWordsInterface';
-import { PlayerWordsMessage } from '../models/messages/playerWordsMessage';
+import { MethodsEnum } from '../enums/methodsEnum';
+import { MESSAGES_MAP } from '../constants/recieversMap';
 
 export class ClientPlayerService implements IPlayerService {
 	player: Reactive<IPlayer>;
@@ -17,10 +14,6 @@ export class ClientPlayerService implements IPlayerService {
 	constructor(clientService: IClientService, player: IPlayer) {
 		this.player = reactive(player);
 		this.clientService = clientService;
-	}
-
-	joinTeam(gameState: IGameState, data: IJoinTeam) {
-		this.sendMessage(new JoinTeamMessage(this.player.id, data));
 	}
 
 	setupListeners(callback: (message: IMessage<any>) => void): void {
@@ -35,7 +28,7 @@ export class ClientPlayerService implements IPlayerService {
 		};
 	}
 
-	sendMessage<T>(message: IMessage<T>): void {
+	sendMessage<E extends MethodsEnum>(message: IMessage<E>): void {
 		console.log('---- Client sending message: ', message);
 		this.clientService.sendMessageToHost(message);
 	}
@@ -45,14 +38,11 @@ export class ClientPlayerService implements IPlayerService {
 		this.player.id = id;
 	}
 
-	updateWords(gameState: IGameState, data: IPlayerWords): void {
-		this.sendMessage(new PlayerWordsMessage(this.player.id, data));
-	}
-
-
 	syncGameState(gameState: IGameState): void {}
 
 	private sendJoinGame(): void {
-		this.sendMessage(new JoinGameMessage(this.player.id, this.player));
+		const msg = MESSAGES_MAP.get(MethodsEnum.JOIN_GAME)!;
+		msg.init(this.player.id, this.player);
+		this.sendMessage(msg);
 	}
 }

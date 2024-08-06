@@ -2,7 +2,6 @@ import type { Reactive, Ref } from 'vue';
 import type { IGameSettings } from './gameSettingsInterface';
 import type { IGameState } from './gameStateInterface';
 import type { IPlayer } from './playerInterface';
-import type { IPlayerWords } from './messageInterfaces/playerWordsInterface';
 
 export interface IGameService {
 	gameState: Ref<IGameState>;
@@ -10,7 +9,7 @@ export interface IGameService {
 	joinGameAsync: () => void;
 	joinTeam: (teamId: string) => void;
 	startGame: () => void;
-	updateWords: (payload: IPlayerWords) => void;
+	updateWords: (reset: boolean, words: string[]) => void;
 	getSettings: () => IGameSettings;
 	setPlayerService: (player: IPlayer) => void;
 	getCurrentPlayer: () => Reactive<IPlayer>;

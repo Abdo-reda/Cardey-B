@@ -1,16 +1,13 @@
 import type { Reactive } from 'vue';
 import type { IPlayer } from './playerInterface';
 import type { IMessage } from './messageInterfaces/messageInterface';
-import type { IJoinTeam } from './messageInterfaces/joinTeamInterface';
 import type { IGameState } from './gameStateInterface';
-import type { IPlayerWords } from './messageInterfaces/playerWordsInterface';
+import type { MethodsEnum } from '../enums/methodsEnum';
 
 export interface IPlayerService {
 	player: Reactive<IPlayer>;
-	sendMessage: <T>(message: IMessage<T>) => void;
+	sendMessage: <E extends MethodsEnum>(message: IMessage<E>) => void;
 	joinGameAsync: () => Promise<void>;
-	joinTeam: (gameState: IGameState, data: IJoinTeam) => void;
-	updateWords: (gameState: IGameState, data: IPlayerWords) => void;
 	syncGameState: (gameState: IGameState) => void;
 	setupListeners: (callback: (message: IMessage<any>) => void) => void;
 }

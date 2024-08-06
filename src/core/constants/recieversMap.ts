@@ -1,22 +1,18 @@
 import { MethodsEnum } from '../enums/methodsEnum';
-import type { IReciever } from '../interfaces/recieverInterface';
-import { JoinGameReciever } from '../models/recievers/joinGameReciever';
-import { JoinTeamReciever } from '../models/recievers/JoinTeamReciever';
-import { PlayerWordsReciever } from '../models/recievers/playerWordsReciever';
-import { SyncReciever } from '../models/recievers/syncReciever';
+import type { IGameState } from '../interfaces/gameStateInterface';
+import type { IJoinTeam } from '../interfaces/messageInterfaces/joinTeamInterface';
+import type { IMessage } from '../interfaces/messageInterfaces/messageInterface';
+import type { IPlayerWords } from '../interfaces/messageInterfaces/playerWordsInterface';
+import type { IPlayer } from '../interfaces/playerInterface';
 
-export const RECIEVERS_MAP = new Map<MethodsEnum, IReciever<any>>([
-	[MethodsEnum.JOIN_GAME, new JoinGameReciever()],
-	[MethodsEnum.JOIN_TEAM, new JoinTeamReciever()],
-	[MethodsEnum.SYNC, new SyncReciever()],
-	[MethodsEnum.UPDATE_WORDS, new PlayerWordsReciever()],
+export const MESSAGES_MAP = new Map<MethodsEnum, IMessage<any>>([
 ]);
 
-//Would love a way to bind the messages with the recievers, so that the data is inferred, the map is created, and so on ..
-
-//We can make the recievers register themselves
-//contructor() {
-// this.map.push(methoEnum, this)
-//}
+export type MethodsEnumTypeMap = {
+	[MethodsEnum.JOIN_GAME]: IPlayer;
+	[MethodsEnum.JOIN_TEAM]: IJoinTeam;
+	[MethodsEnum.SYNC]: IGameState;
+	[MethodsEnum.UPDATE_WORDS]: IPlayerWords;
+};
 
 //there will be an issue if the recievers will do something else, 5er enaha te5ayer fe el state

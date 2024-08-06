@@ -4,9 +4,8 @@ import type { IPlayerService } from '../interfaces/playerServiceInterface';
 import type { IPlayer } from '../interfaces/playerInterface';
 import type { IHostService } from '../interfaces/hostServiceInterface';
 import type { IGameState } from '../interfaces/gameStateInterface';
-import type { IJoinTeam } from '../interfaces/messageInterfaces/joinTeamInterface';
-import { SyncMessage } from '../models/messages/syncMessage';
-import type { IPlayerWords } from '../interfaces/messageInterfaces/playerWordsInterface';
+import { MethodsEnum } from '../enums/methodsEnum';
+import { MESSAGES_MAP } from '../constants/recieversMap';
 
 export class HostPlayerService implements IPlayerService {
 	player: Reactive<IPlayer>;
@@ -24,7 +23,8 @@ export class HostPlayerService implements IPlayerService {
 		};
 	}
 
-	sendMessage<T>(message: IMessage<T>): void {
+	sendMessage<E extends MethodsEnum>(message: IMessage<E>): void {
+		console.log('---- Client sending message: ', message);
 		this.hostService.sendMessageToAllExcept(message, []);
 	}
 
@@ -34,16 +34,9 @@ export class HostPlayerService implements IPlayerService {
 		this.player.roomId = roomId;
 	}
 
-	joinTeam(gameState: IGameState, data: IJoinTeam): void {
-		this.syncGameState(gameState);
-	}
-
-	updateWords(gameState: IGameState, payload: IPlayerWords): void {
-		this.syncGameState(gameState);
-	}
-
 	syncGameState(gameState: IGameState): void {
-		this.sendMessage(new SyncMessage(this.player.id, gameState));
+		const msg = MESSAGES_MAP.get(MethodsEnum.SYNC)!;
+		msg.init(this.player.id, gameState);
+		this.sendMessage(msg);
 	}
-
 }
