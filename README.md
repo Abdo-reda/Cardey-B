@@ -65,3 +65,4 @@ npm run lint
 -   [ ] Make the room code more friendly.
 -   [ ] Add sounds / music / audio
 -   [ ] Spectators? players not in a team.
+-   [ ] Add CaptCha to secure connection to firebase

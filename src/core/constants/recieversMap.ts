@@ -5,8 +5,7 @@ import type { IMessage } from '../interfaces/messageInterfaces/messageInterface'
 import type { IPlayerWords } from '../interfaces/messageInterfaces/playerWordsInterface';
 import type { IPlayer } from '../interfaces/playerInterface';
 
-export const MESSAGES_MAP = new Map<MethodsEnum, IMessage<any>>([
-]);
+export const MESSAGES_MAP = new Map<MethodsEnum, IMessage<any>>([]);
 
 export type MethodsEnumTypeMap = {
 	[MethodsEnum.JOIN_GAME]: IPlayer;
