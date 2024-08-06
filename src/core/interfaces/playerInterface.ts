@@ -7,5 +7,5 @@ export interface IPlayer {
 	isHost: boolean;
 	roomId: string;
 	teamId: string;
-	words: string [];
+	words: string[];
 }

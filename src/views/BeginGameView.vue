@@ -37,6 +37,7 @@ function readyUp() {
         .then(() => {
             console.log('values', wordsFieldList.words);
             readyState.value = true;
+            gameService.updateWords(false, wordsFieldList.words.map(w => w.value));
         })
         .catch(error => {
             console.log('error', error);
@@ -45,11 +46,13 @@ function readyUp() {
 
 function unready() {
     readyState.value = false;
+    gameService.updateWords(true, []);
 }
 
 function resetForm() {
     formRef.value!.resetFields();
     readyState.value = false;
+    gameService.updateWords(true, []);
 };
 
 // watchEffect(() => {
@@ -66,8 +69,9 @@ function initWords(numberOfWords: number): void {
 };
 
 function nextTemp() {
-    console.log('next temp');
-    router.push({ name: RoutesEnum.GAME_PHASE });
+    console.log('gameState?');
+    console.log(gameService.gameState.value);
+    // router.push({ name: RoutesEnum.GAME_PHASE });
 }
 
 initWords(gameService.gameState.value.gameSettings.wordsPerPlayer);

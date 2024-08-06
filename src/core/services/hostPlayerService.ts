@@ -24,7 +24,7 @@ export class HostPlayerService implements IPlayerService {
 	}
 
 	sendMessage<E extends MethodsEnum>(message: IMessage<E>): void {
-		console.log('---- Client sending message: ', message);
+		console.log('---- Host sending message: ', message);
 		this.hostService.sendMessageToAllExcept(message, []);
 	}
 

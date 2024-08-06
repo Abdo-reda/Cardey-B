@@ -17,7 +17,8 @@ const player = reactive<IPlayer>({
   avatar: avatarsList[Math.floor(Math.random() * avatarsList.length)],
   isHost: true,
   roomId: '',
-  teamId: ''
+  teamId: '',
+  words: [],
 });
 const gameService = inject(GameServiceKey)!;
 const showRoomId = ref(false);
@@ -67,7 +68,7 @@ async function handleJoinGameClick() {
       loadingJoin.value = true;
       await gameService.joinGameAsync();
       loadingJoin.value = false;
-      // TODO: the host will route the player if he joined .... 
+      // The host will route the player if he joined .... 
       // router.push({ name: RoutesEnum.LOBBY }); 
     }
   } catch (error) {

@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import AvatarComponent from '@/components/AvatarComponent.vue';
 import { GameServiceKey } from '@/core/constants/injectionKeys';
-import { RoutesEnum } from '@/core/enums/routesEnum';
-import router from '@/plugins/router';
 import { Button, Card, TypographyText, TypographyTitle } from 'ant-design-vue';
 import { inject } from 'vue';
 
@@ -11,9 +9,8 @@ const gameService = inject(GameServiceKey)!;
 //TODO: highlight selected member / team
 //TODO: maybe redesign this page
 
-function nextTemp() {
-    console.log('next temp');
-    router.push({ name: RoutesEnum.PLAYING_WORD });
+function next() {
+    // gameService.goToStartGame();
 }
 
 </script>
@@ -48,7 +45,8 @@ function nextTemp() {
             </Card>
         </div>
         <div class="row-span-2 flex justify-center gap-x-8">
-            <Button type="primary" @click="nextTemp"> Next Temp </Button>
+            <!-- Do we need this button? -->
+            <Button type="primary" @click="next"> Start Phase </Button>
         </div>
     </div>
 </template>

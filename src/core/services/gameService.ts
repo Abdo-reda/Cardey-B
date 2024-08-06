@@ -25,11 +25,22 @@ export class GameService implements IGameService {
 		this.gameState = ref(new GameState());
 	}
 
-	private executeMessage<E extends MethodsEnum>(method: E, data: MethodsEnumTypeMap[E], shouldSend: boolean = true) {
-		const msg = MESSAGES_MAP.get(method)!
+	private executeAndSendMessage<E extends MethodsEnum>(method: E, data: MethodsEnumTypeMap[E]) {
+		const msg = MESSAGES_MAP.get(method)!;
 		msg.init(this.playerService.player.id, data);
 		msg.handle(this.gameState);
-		if (shouldSend) this.playerService.sendMessage(msg);
+		this.playerService.sendMessage(msg);
+		this.playerService.syncGameState(this.gameState.value);
+	}
+
+	private executeAndHandleMessage<E extends MethodsEnum>(
+		method: E,
+		senderId: string,
+		data: MethodsEnumTypeMap[E]
+	) {
+		const msg = MESSAGES_MAP.get(method)!;
+		msg.init(senderId, data);
+		msg.handle(this.gameState);
 		this.playerService.syncGameState(this.gameState.value);
 	}
 
@@ -40,27 +51,26 @@ export class GameService implements IGameService {
 	}
 
 	joinTeam(teamId: string): void {
-		this.executeMessage(MethodsEnum.JOIN_TEAM, {
+		this.executeAndSendMessage(MethodsEnum.JOIN_TEAM, {
 			teamId: teamId,
-			playerId: this.playerService.player.id,
-		})
-		// const player = this.playerService.player;
-		// this.pushPlayerToTeam(player, teamId);
-		// this.playerService.joinTeam(this.gameState.value, {
-		// 	teamId: teamId,
-		// 	playerId: player.id
-		// });
+			playerId: this.playerService.player.id
+		});
 	}
 
-	startGame(): void {
+	goToGamePhase(): void {
 		this.switchAndUpdateRoute(RoutesEnum.GAME_PHASE);
 		this.syncGameState();
 	}
 
+	goToStartGame(): void {
+		this.switchAndUpdateRoute(RoutesEnum.BEGIN_GAME);
+		this.syncGameState();
+	}
+
 	updateWords(reset: boolean = false, words: string[] = []): void {
-		this.executeMessage(MethodsEnum.UPDATE_WORDS, {
+		this.executeAndSendMessage(MethodsEnum.UPDATE_WORDS, {
 			reset: reset,
-			words: words,
+			words: words
 		});
 	}
 
@@ -114,6 +124,6 @@ export class GameService implements IGameService {
 
 	private handleMessage = (message: IMessage<any>): void => {
 		console.log('--- handling message', message);
-		this.executeMessage(message.method, message.data, false);
+		this.executeAndHandleMessage(message.method, message.senderId, message.data);
 	};
 }

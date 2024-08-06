@@ -11,8 +11,7 @@ const gameService = inject(GameServiceKey)!;
 const player = gameService.getCurrentPlayer();
 
 function startGame() {
-    console.log("--- start game ---");
-    gameService.startGame();
+    gameService.goToStartGame();
 }
 
 function copyLink() {

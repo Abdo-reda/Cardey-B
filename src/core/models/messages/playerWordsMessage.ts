@@ -9,7 +9,8 @@ export class PlayerWordsMessage extends BaseMessage<MethodsEnum.UPDATE_WORDS> {
 	}
 
 	handle(gameState: Ref<IGameState>): void {
-		const curPlayer = gameState.value.players.find(p => p.id === this.senderId)!;
+		const curPlayer = gameState.value.players.find((p) => p.id === this.senderId)!;
+		console.log('--- handling player words', this.senderId, this.data);
 		if (this.data.reset) {
 			curPlayer.words = [];
 		} else {
