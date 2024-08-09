@@ -41,7 +41,7 @@ export class GameService implements IGameService {
 		const msg = MESSAGES_MAP.get(method)!;
 		msg.init(senderId, data);
 		msg.handle(this.gameState);
-		this.playerService.syncGameState(this.gameState.value);
+		this.syncGameState();
 	}
 
 	async joinGameAsync(): Promise<void> {
@@ -62,8 +62,14 @@ export class GameService implements IGameService {
 		this.syncGameState();
 	}
 
-	goToStartGame(): void {
+	goToBeginGame(): void {
 		this.switchAndUpdateRoute(RoutesEnum.BEGIN_GAME);
+		this.syncGameState();
+	}
+
+	goToPlayingWord(): void {
+		this.initWords();
+		this.switchAndUpdateRoute(RoutesEnum.PLAYING_WORD);
 		this.syncGameState();
 	}
 
@@ -95,7 +101,14 @@ export class GameService implements IGameService {
 		return this.gameState.value.players.find((player) => player.id === playerId)!;
 	}
 
+	private initWords() {
+		const allWords = this.gameState.value.players.flatMap(p => p.words);
+		//shuffle ...
+		this.gameState.value.words.remaining = allWords;
+	}
+
 	private syncGameState() {
+		//TODO: should we have an affect instead on the gamestate?
 		this.playerService.syncGameState(this.gameState.value);
 	}
 

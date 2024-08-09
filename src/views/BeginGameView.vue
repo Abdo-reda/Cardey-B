@@ -8,6 +8,8 @@ import { GameServiceKey } from '@/core/constants/injectionKeys';
 import type { IPlayer } from '@/core/interfaces/playerInterface';
 import { ColorsEnum } from '@/core/enums/colorsEnum';
 
+//TODO: now that we sync the words, maybe a slider or something or like a card with a tab.
+
 const gameService = inject(GameServiceKey)!;
 
 interface IWordField {
@@ -71,6 +73,7 @@ function initWords(numberOfWords: number): void {
 function nextTemp() {
     console.log('gameState?');
     console.log(gameService.gameState.value);
+    gameService.goToGamePhase();
     // router.push({ name: RoutesEnum.GAME_PHASE });
 }
 

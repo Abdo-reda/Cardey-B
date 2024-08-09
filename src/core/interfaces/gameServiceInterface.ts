@@ -9,7 +9,8 @@ export interface IGameService {
 	joinGameAsync: () => void;
 	joinTeam: (teamId: string) => void;
 	goToGamePhase: () => void;
-	goToStartGame: () => void;
+	goToBeginGame: () => void;
+	goToPlayingWord: () => void;
 	updateWords: (reset: boolean, words: string[]) => void;
 	getSettings: () => IGameSettings;
 	setPlayerService: (player: IPlayer) => void;

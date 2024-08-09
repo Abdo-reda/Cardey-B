@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-text-v-html-on-component -->
 <script setup lang="ts">
 import AvatarComponent from '@/components/AvatarComponent.vue';
 import { GameServiceKey } from '@/core/constants/injectionKeys';
@@ -10,8 +11,10 @@ const gameService = inject(GameServiceKey)!;
 //TODO: maybe redesign this page
 
 function next() {
-    // gameService.goToStartGame();
+    gameService.goToPlayingWord();
 }
+
+//TODO: maybe a horizontal timeline of some sort to show the teams order instead of being vertical
 
 </script>
 
@@ -45,7 +48,6 @@ function next() {
             </Card>
         </div>
         <div class="row-span-2 flex justify-center gap-x-8">
-            <!-- Do we need this button? -->
             <Button type="primary" @click="next"> Start Phase </Button>
         </div>
     </div>
