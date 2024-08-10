@@ -1,4 +1,4 @@
-export enum MethodsEnum {
+export enum MessageMethodsEnum {
 	SYNC = 'sync',
 	JOIN_TEAM = 'joinTeam',
 	JOIN_GAME = 'joinGame',

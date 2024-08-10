@@ -33,6 +33,7 @@ watchEffect(() => {
         if (timerInterval) {
             clearInterval(timerInterval);
         }
+        //TODO: gameService.nextPlayer();
     }
 });
 
@@ -63,8 +64,9 @@ onMounted(() => {
                 </div>
             </template>
             <template v-else>
-                <div class="flex flex-row">
-                    <AvatarComponent :avatar-icon="currentPlayerTurn.avatar" :color="currentTeamTurn.color">
+                <div class="flex flex-row gap-x-2">
+                    <AvatarComponent class="size-20" :avatar-icon="currentPlayerTurn.avatar"
+                        :color="currentTeamTurn.color">
                     </AvatarComponent>
                     <TypographyTitle :level="5"> {{ currentPlayerTurn.name }} </TypographyTitle>
                 </div>

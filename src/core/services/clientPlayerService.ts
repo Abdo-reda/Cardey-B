@@ -4,8 +4,8 @@ import type { IMessage } from '../interfaces/messageInterfaces/messageInterface'
 import type { IClientService } from '../interfaces/clientServiceInterface';
 import type { IPlayerService } from '../interfaces/playerServiceInterface';
 import type { IGameState } from '../interfaces/gameStateInterface';
-import { MethodsEnum } from '../enums/methodsEnum';
-import { MESSAGES_MAP } from '../constants/recieversMap';
+import { MessageMethodsEnum } from '../enums/methodsEnum';
+import { MESSAGES_MAP } from '../constants/messagesMap';
 
 export class ClientPlayerService implements IPlayerService {
 	player: Reactive<IPlayer>;
@@ -28,7 +28,7 @@ export class ClientPlayerService implements IPlayerService {
 		};
 	}
 
-	sendMessage<E extends MethodsEnum>(message: IMessage<E>): void {
+	sendMessage<E extends MessageMethodsEnum>(message: IMessage<E>): void {
 		console.log('---- Client sending message: ', message);
 		this.clientService.sendMessageToHost(message);
 	}
@@ -41,7 +41,7 @@ export class ClientPlayerService implements IPlayerService {
 	syncGameState(gameState: IGameState): void {}
 
 	private sendJoinGame(): void {
-		const msg = MESSAGES_MAP.get(MethodsEnum.JOIN_GAME)!;
+		const msg = MESSAGES_MAP.get(MessageMethodsEnum.JOIN_GAME)!;
 		msg.init(this.player.id, this.player);
 		this.sendMessage(msg);
 	}

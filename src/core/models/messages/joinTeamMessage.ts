@@ -1,12 +1,12 @@
-import { MethodsEnum } from '@/core/enums/methodsEnum';
+import { MessageMethodsEnum } from '@/core/enums/methodsEnum';
 import { BaseMessage } from './baseMessage';
 import type { IGameState } from '@/core/interfaces/gameStateInterface';
 import type { Ref } from 'vue';
 import type { IPlayer } from '@/core/interfaces/playerInterface';
 
-export class JoinTeamMessage extends BaseMessage<MethodsEnum.JOIN_TEAM> {
+export class JoinTeamMessage extends BaseMessage<MessageMethodsEnum.JOIN_TEAM> {
 	constructor() {
-		super(MethodsEnum.JOIN_TEAM);
+		super(MessageMethodsEnum.JOIN_TEAM);
 	}
 
 	handle(gameState: Ref<IGameState>): void {

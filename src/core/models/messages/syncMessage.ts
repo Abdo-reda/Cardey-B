@@ -1,12 +1,12 @@
-import { MethodsEnum } from '@/core/enums/methodsEnum';
+import { MessageMethodsEnum } from '@/core/enums/methodsEnum';
 import { BaseMessage } from './baseMessage';
 import type { Ref } from 'vue';
 import type { IGameState } from '@/core/interfaces/gameStateInterface';
 import router from '@/plugins/router';
 
-export class SyncMessage extends BaseMessage<MethodsEnum.SYNC> {
+export class SyncMessage extends BaseMessage<MessageMethodsEnum.SYNC> {
 	constructor() {
-		super(MethodsEnum.SYNC);
+		super(MessageMethodsEnum.SYNC);
 	}
 
 	handle(gameState: Ref<IGameState>): void {

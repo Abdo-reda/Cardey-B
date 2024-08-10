@@ -11,11 +11,11 @@ import { HostPlayerService } from './hostPlayerService';
 import { HostService } from './hostService';
 import { ClientPlayerService } from './clientPlayerService';
 import { ClientService } from './clientService';
-import { MESSAGES_MAP, type MethodsEnumTypeMap } from '../constants/recieversMap';
+import { MESSAGES_MAP, type MessageMethodPayloadMap } from '../constants/messagesMap';
 import router from '@/plugins/router';
 import { RoutesEnum } from '../enums/routesEnum';
 import { GAME_PHASES_DESCRIPTIONS, type GamePhasesEnum } from '../enums/gamePhasesEnum';
-import { MethodsEnum } from '../enums/methodsEnum';
+import { MessageMethodsEnum } from '../enums/methodsEnum';
 import type { PlayWordType } from '../interfaces/messageInterfaces/playWordInterface';
 
 export class GameService implements IGameService {
@@ -26,7 +26,10 @@ export class GameService implements IGameService {
 		this.gameState = ref(new GameState());
 	}
 
-	private executeAndSendMessage<E extends MethodsEnum>(method: E, data: MethodsEnumTypeMap[E]) {
+	private executeAndSendMessage<E extends MessageMethodsEnum>(
+		method: E,
+		data: MessageMethodPayloadMap[E]
+	) {
 		const msg = MESSAGES_MAP.get(method)!;
 		msg.init(this.playerService.player.id, data);
 		msg.handle(this.gameState);
@@ -34,10 +37,10 @@ export class GameService implements IGameService {
 		this.playerService.syncGameState(this.gameState.value);
 	}
 
-	private executeAndHandleMessage<E extends MethodsEnum>(
+	private executeAndHandleMessage<E extends MessageMethodsEnum>(
 		method: E,
 		senderId: string,
-		data: MethodsEnumTypeMap[E]
+		data: MessageMethodPayloadMap[E]
 	) {
 		const msg = MESSAGES_MAP.get(method)!;
 		msg.init(senderId, data);
@@ -52,14 +55,14 @@ export class GameService implements IGameService {
 	}
 
 	joinTeam(teamId: string): void {
-		this.executeAndSendMessage(MethodsEnum.JOIN_TEAM, {
+		this.executeAndSendMessage(MessageMethodsEnum.JOIN_TEAM, {
 			teamId: teamId,
 			playerId: this.playerService.player.id
 		});
 	}
 
 	playWord(type: PlayWordType): void {
-		this.executeAndSendMessage(MethodsEnum.PLAY_WORD, {
+		this.executeAndSendMessage(MessageMethodsEnum.PLAY_WORD, {
 			type: type,
 			teamId: this.playerService.player.teamId,
 			playerId: this.playerService.player.id
@@ -84,7 +87,7 @@ export class GameService implements IGameService {
 	}
 
 	updateWords(reset: boolean = false, words: string[] = []): void {
-		this.executeAndSendMessage(MethodsEnum.UPDATE_WORDS, {
+		this.executeAndSendMessage(MessageMethodsEnum.UPDATE_WORDS, {
 			reset: reset,
 			words: words
 		});

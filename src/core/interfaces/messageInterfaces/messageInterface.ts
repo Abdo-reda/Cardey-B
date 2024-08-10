@@ -1,12 +1,12 @@
 import type { Ref } from 'vue';
-import type { MethodsEnum } from '../../enums/methodsEnum';
+import type { MessageMethodsEnum } from '../../enums/methodsEnum';
 import type { IGameState } from '../gameStateInterface';
-import type { MethodsEnumTypeMap } from '@/core/constants/recieversMap';
+import type { MessageMethodPayloadMap } from '@/core/constants/messagesMap';
 
-export interface IMessage<E extends MethodsEnum> {
+export interface IMessage<E extends MessageMethodsEnum> {
 	senderId: string;
 	method: E;
-	data: MethodsEnumTypeMap[E];
-	init: (senderId: string, data: MethodsEnumTypeMap[E]) => void;
+	data: MessageMethodPayloadMap[E];
+	init: (senderId: string, data: MessageMethodPayloadMap[E]) => void;
 	handle: (gameState: Ref<IGameState>) => void;
 }

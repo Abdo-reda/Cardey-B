@@ -1,11 +1,11 @@
-import { MethodsEnum } from '@/core/enums/methodsEnum';
+import { MessageMethodsEnum } from '@/core/enums/methodsEnum';
 import { BaseMessage } from './baseMessage';
 import type { IGameState } from '@/core/interfaces/gameStateInterface';
 import type { Ref } from 'vue';
 
-export class PlayerWordsMessage extends BaseMessage<MethodsEnum.UPDATE_WORDS> {
+export class PlayerWordsMessage extends BaseMessage<MessageMethodsEnum.UPDATE_WORDS> {
 	constructor() {
-		super(MethodsEnum.UPDATE_WORDS);
+		super(MessageMethodsEnum.UPDATE_WORDS);
 	}
 
 	handle(gameState: Ref<IGameState>): void {
