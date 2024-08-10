@@ -14,6 +14,7 @@ import { cardeyBFireStore } from './firebaseService';
 import { FirestoreConstants } from '../constants/firestoreConstants';
 import { ChannelsEnum } from '../enums/channelsEnum';
 import type { IMessage } from '../interfaces/messageInterfaces/messageInterface';
+import type { MessageMethodsEnum } from '../enums/methodsEnum';
 
 export class ClientService implements IClientService {
 	roomId: Ref<string>;
@@ -145,7 +146,7 @@ export class ClientService implements IClientService {
 		});
 	}
 
-	sendMessageToHost<T>(message: IMessage<T>): void {
+	sendMessageToHost<E extends MessageMethodsEnum>(message: IMessage<E>): void {
 		this.dataChannel?.send(JSON.stringify(message));
 	}
 }

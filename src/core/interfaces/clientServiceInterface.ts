@@ -1,5 +1,6 @@
 import type { Ref } from 'vue';
 import type { IMessage } from './messageInterfaces/messageInterface';
+import type { MessageMethodsEnum } from '../enums/methodsEnum';
 
 export interface IClientService {
 	peerConnection: RTCPeerConnection | undefined;
@@ -8,5 +9,5 @@ export interface IClientService {
 	onRecievedMessage?: (message: IMessage<any>) => void;
 	onDataChannelOpen?: () => void;
 	createJoinRequestAsync: (roomId: string) => Promise<string>;
-	sendMessageToHost: <T>(message: IMessage<T>) => void;
+	sendMessageToHost: <E extends MessageMethodsEnum>(message: IMessage<E>) => void;
 }

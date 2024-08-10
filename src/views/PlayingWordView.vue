@@ -2,7 +2,7 @@
 import AvatarComponent from '@/components/AvatarComponent.vue';
 import { GameServiceKey } from '@/core/constants/injectionKeys';
 import { Button, StatisticCountdown, TypographyParagraph, TypographyTitle } from 'ant-design-vue';
-import { computed, inject, ref, watchEffect } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 
 const gameService = inject(GameServiceKey)!;
 const player = gameService.getCurrentPlayer();
@@ -33,9 +33,9 @@ function onTimerFinish() {
     }
 }
 
-watchEffect(() => {
-    if (currentPlayerTurn.value.id === player.id) {
-        console.log('-- reset timer')
+watch(currentPlayerTurn, (newValue, oldValue) => {
+    if (newValue.id === oldValue.id) return;
+    if (newValue.id === player.id) {
         timer.value = Date.now() + 1000 * gameService.gameState.value.gameSettings.timePerRound;
     }
 });
