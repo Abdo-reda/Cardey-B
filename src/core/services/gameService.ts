@@ -55,11 +55,11 @@ export class GameService implements IGameService {
 	}
 
 	joinTeam(teamId: string): void {
-		this.playerService.player.teamId = teamId;
 		this.executeAndSendMessage(MessageMethodsEnum.JOIN_TEAM, {
 			teamId: teamId,
 			playerId: this.playerService.player.id
 		});
+		this.playerService.player.teamId = teamId;
 	}
 
 	playWord(type: PlayWordType): void {
@@ -129,19 +129,6 @@ export class GameService implements IGameService {
 		}
 		this.gameState.value.words.remaining = shuffledWords;
 	}
-
-	//team1:
-	//p1
-	//team2:
-	//p2
-	//p3
-	//p4
-	//team3
-	//p5
-	// loop max will equal the sum of all elements in all stacks, in this case it will be 8
-
-	//p1->p4->p6->p2->p5->p7->p3->p8 ===== this is the playerOrdersArray
-	//p1->p2->p3->p4->p5->p6->p7->p8 ===== this is the playersOrderArray --- currentimplementation
 
 	private initTurns() {
 		const teamPlayersStack = this.gameState.value.teams.map((t) => t.players);
