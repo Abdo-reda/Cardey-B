@@ -16,6 +16,7 @@ import router from '@/plugins/router';
 import { RoutesEnum } from '../enums/routesEnum';
 import { GAME_PHASES_DESCRIPTIONS, type GamePhasesEnum } from '../enums/gamePhasesEnum';
 import { MethodsEnum } from '../enums/methodsEnum';
+import type { PlayWordType } from '../interfaces/messageInterfaces/playWordInterface';
 
 export class GameService implements IGameService {
 	playerService!: IPlayerService;
@@ -57,6 +58,14 @@ export class GameService implements IGameService {
 		});
 	}
 
+	playWord(type: PlayWordType): void {
+		this.executeAndSendMessage(MethodsEnum.PLAY_WORD, {
+			type: type,
+			teamId: this.playerService.player.teamId,
+			playerId: this.playerService.player.id
+		});
+	}
+
 	goToGamePhase(): void {
 		this.switchAndUpdateRoute(RoutesEnum.GAME_PHASE);
 		this.syncGameState();
@@ -69,6 +78,7 @@ export class GameService implements IGameService {
 
 	goToPlayingWord(): void {
 		this.initWords();
+		this.initTurns();
 		this.switchAndUpdateRoute(RoutesEnum.PLAYING_WORD);
 		this.syncGameState();
 	}
@@ -102,9 +112,19 @@ export class GameService implements IGameService {
 	}
 
 	private initWords() {
-		const allWords = this.gameState.value.players.flatMap(p => p.words);
-		//shuffle ...
-		this.gameState.value.words.remaining = allWords;
+		const allWords = this.gameState.value.players.flatMap((p) => p.words);
+		const shuffledWords = [];
+		while (allWords.length !== 0) {
+			const randomIndex = Math.floor(Math.random() * allWords.length);
+			const removedWord = allWords.splice(randomIndex, 1)[0];
+			shuffledWords.push(removedWord);
+		}
+		this.gameState.value.words.remaining = shuffledWords;
+	}
+
+	private initTurns() {
+		const allPlayers = this.gameState.value.teams.flatMap((t) => t.players);
+		this.gameState.value.turns.playersOrder = allPlayers;
 	}
 
 	private syncGameState() {

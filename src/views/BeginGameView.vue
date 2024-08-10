@@ -1,36 +1,27 @@
 <script setup lang="ts">
-import { Form, FormItem, Button, type FormInstance, Input, TypographyTitle, Tag, Card } from 'ant-design-vue';
+import { Form, FormItem, Button, type FormInstance, Input, TypographyTitle, Tag, Card, Drawer, TypographyParagraph } from 'ant-design-vue';
 import { computed, inject, reactive, ref } from 'vue';
-import router from '@/plugins/router';
-import { RoutesEnum } from '@/core/enums/routesEnum';
-import { CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons-vue';
+import { CheckCircleOutlined, ClockCircleOutlined, RightOutlined } from '@ant-design/icons-vue';
 import { GameServiceKey } from '@/core/constants/injectionKeys';
 import type { IPlayer } from '@/core/interfaces/playerInterface';
 import { ColorsEnum } from '@/core/enums/colorsEnum';
-
-//TODO: now that we sync the words, maybe a slider or something or like a card with a tab.
-
-const gameService = inject(GameServiceKey)!;
+import AvatarComponent from '@/components/AvatarComponent.vue';
 
 interface IWordField {
     value: string;
     key: number;
 }
 
+const gameService = inject(GameServiceKey)!;
+const player = gameService.getCurrentPlayer();
 const formRef = ref<FormInstance>();
 const wordsFieldList = reactive<{ words: IWordField[] }>({
     words: []
 });
 const readyState = ref(false);
-
-const maxNumOfPlayerInList = 5;
-const unreadyPlayerLists = computed(() => {
-    const playerLists: IPlayer[][] = [];
-    const unReadyPlayers = gameService.gameState.value.players.filter(p => !p.teamId); //TODO: fix this filtering
-    for (let i = 0; i < unReadyPlayers.length; i += maxNumOfPlayerInList) {
-        playerLists.push(unReadyPlayers.slice(i, i + maxNumOfPlayerInList));
-    }
-    return playerLists;
+const isDrawerOpen = ref(false);
+const unreadyPlayerLists = computed<IPlayer[]>(() => {
+    return gameService.gameState.value.players.filter(p => !p.words.length);
 });
 
 function readyUp() {
@@ -57,10 +48,6 @@ function resetForm() {
     gameService.updateWords(true, []);
 };
 
-// watchEffect(() => {
-//     //if all players are ready, then switch to the next view
-// });
-
 function initWords(numberOfWords: number): void {
     for (let i = 0; i < numberOfWords; i++) {
         wordsFieldList.words.push({
@@ -70,9 +57,7 @@ function initWords(numberOfWords: number): void {
     }
 };
 
-function nextTemp() {
-    console.log('gameState?');
-    console.log(gameService.gameState.value);
+function StartFirstPhase() {
     gameService.goToGamePhase();
     // router.push({ name: RoutesEnum.GAME_PHASE });
 }
@@ -82,38 +67,40 @@ initWords(gameService.gameState.value.gameSettings.wordsPerPlayer);
 </script>
 
 <template>
-    <div class="grid row-span-12 p-4 gap-y-4">
-        <div class="row-span-2 text-center">
+    <div class="flex flex-col p-4 gap-y-6">
+        <div class="text-center">
             <TypographyTitle :level="2"> Input your words </TypographyTitle>
         </div>
-        <div class="row-span-8 overflow-hidden w-full flex gap-x-4 justify-center">
-            <!-- <Card class="h-fit" size="small" title="Waiting for players ...">
-                <AvatarGroup v-for="(playerList, index) in unreadyPlayerLists" :key="index"
-                    :max-count="maxNumOfPlayerInList">
-                    <div v-for="player in playerList" :key="player.id">
-                        <AvatarComponent class="size-10" :avatar-icon="player.avatar" :color="ColorsEnum.GRAY"
-                            :tooltip="player.name">
-                        </AvatarComponent>
-                    </div>
-                </AvatarGroup>
-            </Card> -->
-            <Card title="Words" class="w-full flex flex-col max-w-sm"
-                :body-style="{ 'overflow': 'auto', 'flex': '1 1 0%' }">
+        <div class="flex-1 overflow-hidden w-full flex gap-x-4 justify-center">
+            <Card title="Words" class="w-full flex flex-col max-w-sm overflow-x-hidden"
+                :body-style="{ 'overflow-y': 'auto', 'flex': '1 1 0%' }">
                 <template #extra>
-                    <Tag v-if="readyState" color="success">
-                        <template #icon>
-                            <CheckCircleOutlined />
-                        </template>
-                        Ready!
-                    </Tag>
-                    <Tag v-else>
-                        <template #icon>
-                            <ClockCircleOutlined />
-                        </template>
-                        Not Ready
-                    </Tag>
+                    <div @click="isDrawerOpen = true" class="hover:cursor-pointer group">
+                        <Tag :color="readyState ? 'success' : 'default'">
+                            <template #icon>
+                                <CheckCircleOutlined v-if="readyState" />
+                                <ClockCircleOutlined v-else />
+                            </template>
+                            {{ readyState ? 'Ready!' : 'Not Ready' }}
+                            <RightOutlined
+                                :class="{ 'text-gray-400 group-hover:text-gray-600 group-hover:dark:text-gray-200 transition-colors': !readyState, 'text-success-700': readyState }"
+                                class="text-gray-400 group-hover:text-gray-600 group-hover:dark:text-gray-200 transition-colors" />
+                        </Tag>
+                    </div>
                 </template>
                 <template #default>
+                    <Drawer title="Waiting for ..." placement="right" :open="isDrawerOpen" width="60%" :closable="false"
+                        :get-container="false" @close="isDrawerOpen = false">
+                        <template #default>
+                            <div v-auto-animate>
+                                <div class="py-2 flex gap-x-2 items-center" v-for="player in unreadyPlayerLists"
+                                    :key="player.id">
+                                    <AvatarComponent :avatar-icon="player.avatar" :color="ColorsEnum.GRAY" />
+                                    <TypographyParagraph class="!m-0" :level="5">{{ player.name }}</TypographyParagraph>
+                                </div>
+                            </div>
+                        </template>
+                    </Drawer>
                     <Form ref="formRef" :model="wordsFieldList">
                         <FormItem v-for="(word, index) in wordsFieldList.words" class="mb-4" :key="word.key"
                             :name="['words', index, 'value']" :rules="{
@@ -136,8 +123,10 @@ initWords(gameService.gameState.value.gameSettings.wordsPerPlayer);
                 </template>
             </Card>
         </div>
-        <div class="row-span-2 flex justify-center gap-x-8">
-            <Button type="primary" @click="nextTemp"> Next Temp </Button>
+        <div v-if="player.isHost" class="row-span-2 flex justify-center gap-x-8">
+            <Button :disabled="!!unreadyPlayerLists.length" size="large" type="primary" @click="StartFirstPhase"> Start
+                First
+                Phase </Button>
         </div>
     </div>
 </template>

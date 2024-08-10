@@ -53,14 +53,15 @@ const areAllPlayersJoined = computed(() => {
             <div class="overflow-auto">
                 <Card size="small" title="Players">
                     <div v-auto-animate>
-                        <div v-auto-animate v-if="gameService.gameState.value.players.filter(p => !p.teamId).length"
-                            class="flex flex-col gap-y-4 justify-center items-center">
-                            <div v-for="player in gameService.gameState.value.players.filter(p => !p.teamId)"
-                                :key="player.id">
-                                <AvatarComponent class="size-10" :avatar-icon="player.avatar" :color="ColorsEnum.GRAY"
-                                    :tooltip="player.name" />
+                        <template v-if="gameService.gameState.value.players.filter(p => !p.teamId).length">
+                            <div v-auto-animate class="flex flex-col gap-y-4 justify-center items-center">
+                                <div v-for="player in gameService.gameState.value.players.filter(p => !p.teamId)"
+                                    :key="player.id">
+                                    <AvatarComponent class="size-10" :avatar-icon="player.avatar"
+                                        :color="ColorsEnum.GRAY" :tooltip="player.name" />
+                                </div>
                             </div>
-                        </div>
+                        </template>
                         <div v-else>
                             <p class="text-center text-gray-500 text-lg"> ... </p>
                         </div>

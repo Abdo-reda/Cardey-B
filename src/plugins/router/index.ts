@@ -4,7 +4,6 @@ import BeginGameView from '@/views/BeginGameView.vue';
 import CreateGameView from '@/views/CreateGameView.vue';
 import HomeView from '@/views/HomeView.vue';
 import LobbyView from '@/views/LobbyView.vue';
-import TeamReadyView from '@/views/TeamReadyView.vue';
 import PlayingWordView from '@/views/PlayingWordView.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
@@ -35,11 +34,6 @@ const router = createRouter({
 			path: '/game-phase',
 			name: RoutesEnum.GAME_PHASE,
 			component: GamePhaseView
-		},
-		{
-			path: '/team-ready',
-			name: RoutesEnum.TEAM_READY,
-			component: TeamReadyView
 		},
 		{
 			path: '/playing-word',

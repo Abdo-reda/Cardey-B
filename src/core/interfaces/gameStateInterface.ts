@@ -7,10 +7,14 @@ import type { ITeam } from './teamInterface';
 export interface IGameState {
 	teams: ITeam[];
 	players: IPlayer[];
+	turns: {
+		playersOrder: string[];
+		currentPlayerIndex: number;
+	};
 	words: {
 		remaining: string[];
 		skipped: string[];
-		done: string[];
+		scored: string[];
 	};
 	gamePhase: {
 		phase: GamePhasesEnum;

@@ -8,11 +8,15 @@ import type { ITeam } from '../interfaces/teamInterface';
 export class GameState implements IGameState {
 	teams: ITeam[] = [];
 	players: IPlayer[] = [];
-	words = { 
-		remaining: [], 
-		skipped: [], 
-		done: [] 
-	} 
+	turns = {
+		playersOrder: [],
+		currentPlayerIndex: 0
+	};
+	words = {
+		remaining: [],
+		skipped: [],
+		scored: []
+	};
 	currentRoute: RoutesEnum = RoutesEnum.LOBBY;
 	gamePhase = {
 		phase: GamePhasesEnum.PHASE_ONE,

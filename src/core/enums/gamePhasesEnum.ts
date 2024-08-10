@@ -7,7 +7,7 @@ export enum GamePhasesEnum {
 export const GAME_PHASES_DESCRIPTIONS = new Map<GamePhasesEnum, string>([
 	[
 		GamePhasesEnum.PHASE_ONE,
-		"<p class='font-medium'> Don't move! </br> In this phase you can only use your words to describe the word on the card. If you say the word on the card or use any gestures, you lose the point. </p>"
+		"<p class='font-medium'> Don't move! </br> In this phase you can only speak to describe the word on the card. If you say the word on the card or use any gestures, you lose the point. </p>"
 	],
 	[
 		GamePhasesEnum.PHASE_TWO,
