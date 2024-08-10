@@ -2,7 +2,7 @@
 import AvatarComponent from '@/components/AvatarComponent.vue';
 import { GameServiceKey } from '@/core/constants/injectionKeys';
 import { Button, StatisticCountdown, TypographyParagraph, TypographyTitle } from 'ant-design-vue';
-import { computed, inject, ref } from 'vue';
+import { computed, inject, ref, watchEffect } from 'vue';
 
 const gameService = inject(GameServiceKey)!;
 const player = gameService.getCurrentPlayer();
@@ -31,12 +31,19 @@ function onTimerFinish() {
         gameService.playWord('skip');
         gameService.updateTurn();
     }
-    timer.value = Date.now() + 1000 * gameService.gameState.value.gameSettings.timePerRound; //TEMP TODO: timer should be handled by state and service and stuff, start at start of round :)
 }
+
+watchEffect(() => {
+    if (currentPlayerTurn.value.id === player.id) {
+        console.log('-- reset timer')
+        timer.value = Date.now() + 1000 * gameService.gameState.value.gameSettings.timePerRound;
+    }
+});
 
 // TODO: if there no remaining words, then we should go to the next phase
 // TODO: if the timer runs out, then we should skip the word, go to next player
 // TODO: a button to pause the game? maybe only for the host
+// ENHANCEMENT: show timer for all players ...
 
 </script>
 
@@ -46,9 +53,9 @@ function onTimerFinish() {
     <!-- If you are in the opposite team, you can see the word? maybe? -->
     <div class="h-full">
         <div v-auto-animate class="flex flex-col text-3xl gap-y-4 justify-center items-center p-4 h-full">
-            <StatisticCountdown format="mm:ss" title="Timer" @finish="onTimerFinish" :value="timer"
-                :valueStyle="{ 'font-size': '2.25rem' }" />
             <template v-if="currentPlayerTurn.id === player.id">
+                <StatisticCountdown format="mm:ss" title="Timer" @finish="onTimerFinish" :value="timer"
+                    :valueStyle="{ 'font-size': '2.25rem' }" />
                 <TypographyTitle> {{ activeWord }}</TypographyTitle>
                 <div class="flex flex-row jusitfy-center items-center gap-x-14 my-8">
                     <Button size="large" type="dashed" :danger="true" @click="skipWord">Skip</Button>

@@ -55,6 +55,7 @@ export class GameService implements IGameService {
 	}
 
 	joinTeam(teamId: string): void {
+		this.playerService.player.teamId = teamId;
 		this.executeAndSendMessage(MessageMethodsEnum.JOIN_TEAM, {
 			teamId: teamId,
 			playerId: this.playerService.player.id

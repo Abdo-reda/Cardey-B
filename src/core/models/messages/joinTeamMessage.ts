@@ -25,8 +25,8 @@ export class JoinTeamMessage extends BaseMessage<MessageMethodsEnum.JOIN_TEAM> {
 			oldTeam.players = oldTeam.players.filter((playerId) => playerId !== player.id);
 		}
 
-		const team = gameState.value.teams.find((t) => t.id === teamId);
-		team?.players.push(player.id);
+		const team = gameState.value.teams.find((t) => t.id === teamId)!;
+		team.players.push(player.id);
 		player.teamId = teamId;
 	}
 }
