@@ -7,4 +7,5 @@ import type { IPlayerService } from '../interfaces/playerServiceInterface';
 export const HostServiceKey = Symbol() as InjectionKey<IHostService>;
 export const ClientServiceKey = Symbol() as InjectionKey<IClientService>;
 export const GameServiceKey = Symbol() as InjectionKey<IGameService>;
-export const PlayerServiceKey = Symbol() as InjectionKey<IPlayerService>;
+export const HostPlayerServiceKey = Symbol() as InjectionKey<IPlayerService>;
+export const ClientPlayerServiceKey = Symbol() as InjectionKey<IPlayerService>;

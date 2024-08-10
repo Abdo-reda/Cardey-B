@@ -11,7 +11,8 @@ import {
 import { cardeyBFireStore } from '@/core/services/firebaseService';
 import { FirestoreConstants } from '../constants/firestoreConstants';
 import { ChannelsEnum } from '../enums/channelsEnum';
-import type { IMessage } from '../interfaces/messageInterface';
+import type { IMessage } from '../interfaces/messageInterfaces/messageInterface';
+import type { MessageMethodsEnum } from '../enums/methodsEnum';
 
 //maybe create a wrapper for peer connection? extension methods and so on ... I am not sure
 
@@ -29,7 +30,10 @@ export class HostService implements IHostService {
 		this.dataChannels = reactive(new Map());
 	}
 
-	sendMessageToPlayers<T>(message: IMessage<T>, playerIds: string[] = []): void {
+	sendMessageToPlayers<E extends MessageMethodsEnum>(
+		message: IMessage<E>,
+		playerIds: string[] = []
+	): void {
 		playerIds.forEach((playerId) => {
 			const dataChannel = this.dataChannels.get(playerId);
 			if (dataChannel && dataChannel.readyState === 'open')
@@ -37,7 +41,10 @@ export class HostService implements IHostService {
 		});
 	}
 
-	sendMessageToAllExcept<T>(message: IMessage<T>, exlucdedPlayerIds: string[] = []): void {
+	sendMessageToAllExcept<E extends MessageMethodsEnum>(
+		message: IMessage<E>,
+		exlucdedPlayerIds: string[] = []
+	): void {
 		this.dataChannels.forEach((dataChannel, playerId) => {
 			if (!exlucdedPlayerIds.includes(playerId) && dataChannel.readyState === 'open') {
 				dataChannel.send(JSON.stringify(message));
