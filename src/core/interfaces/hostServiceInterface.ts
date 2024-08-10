@@ -1,5 +1,6 @@
 import type { Reactive, Ref } from 'vue';
-import type { IMessage } from './messageInterface';
+import type { IMessage } from './messageInterfaces/messageInterface';
+import type { MessageMethodsEnum } from '../enums/methodsEnum';
 
 export interface IHostService {
 	roomId: Ref<string>;
@@ -8,7 +9,13 @@ export interface IHostService {
 
 	onPlayerJoinedDataChannel?: (playerId: string) => void;
 	onRecievedMessage?: (playerId: string, message: IMessage<any>) => void;
-	sendMessageToPlayers: <T>(message: IMessage<T>, playerIds: string[]) => void;
-	sendMessageToAllExcept: <T>(message: IMessage<T>, exlucdedPlayerIds: string[]) => void;
+	sendMessageToPlayers: <E extends MessageMethodsEnum>(
+		message: IMessage<E>,
+		playerIds: string[]
+	) => void;
+	sendMessageToAllExcept: <E extends MessageMethodsEnum>(
+		message: IMessage<E>,
+		exlucdedPlayerIds: string[]
+	) => void;
 	createNewRoomAsync: () => Promise<string>;
 }

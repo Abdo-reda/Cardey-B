@@ -1,25 +1,13 @@
-import {
-	ClientServiceKey,
-	GameServiceKey,
-	HostServiceKey,
-	PlayerServiceKey
-} from '@/core/constants/injectionKeys';
-import { ClientService } from '@/core/services/clientService';
+import { GameServiceKey } from '@/core/constants/injectionKeys';
 import { GameService } from '@/core/services/gameService';
-import { HostService } from '@/core/services/hostService';
-import { PlayerService } from '@/core/services/playerService';
 import type { App } from 'vue';
+import registerMessages from './registerMessages';
 
 const webRTC = {
 	install(app: App) {
-		const hostService = new HostService();
-		const clientService = new ClientService();
-		const playerService = new PlayerService(hostService, clientService);
-		const gameService = new GameService(hostService, clientService, playerService);
-		app.provide(HostServiceKey, hostService);
-		app.provide(ClientServiceKey, clientService);
+		const gameService = new GameService();
+		registerMessages();
 		app.provide(GameServiceKey, gameService);
-		app.provide(PlayerServiceKey, playerService);
 	}
 };
 

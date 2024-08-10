@@ -1,25 +1,23 @@
 <script setup lang="ts">
 import AvatarComponent from '@/components/AvatarComponent.vue';
-import { GameServiceKey, HostServiceKey, PlayerServiceKey } from '@/core/constants/injectionKeys';
+import { GameServiceKey } from '@/core/constants/injectionKeys';
 import { ColorsEnum } from '@/core/enums/colorsEnum';
 import { RoutesEnum } from '@/core/enums/routesEnum';
 import router from '@/plugins/router';
 import { AvatarGroup, Button, Card, message, TypographyTitle } from 'ant-design-vue';
-import { inject } from 'vue';
+import { computed, inject } from 'vue';
 
-
-const playerService = inject(PlayerServiceKey)!;
 const gameService = inject(GameServiceKey)!;
+const player = gameService.getCurrentPlayer();
 
 function startGame() {
-    console.log("--- start game ---");
-    router.push({ name: RoutesEnum.BEGIN_GAME });
+    gameService.goToBeginGame();
 }
 
 function copyLink() {
     const url = router.resolve({
         name: RoutesEnum.HOME,
-        query: { roomId: playerService.player.roomId },
+        query: { roomId: player.roomId },
     });
     console.log(`${window.location.origin}${url.href}`);
     navigator.clipboard.writeText(`${window.location.origin}${url.href}`);
@@ -28,41 +26,49 @@ function copyLink() {
 }
 
 function copyCode() {
-    navigator.clipboard.writeText(playerService.player.roomId);
+    navigator.clipboard.writeText(player.roomId);
     console.log("--- copy code ---");
     message.info('Code Copied Successfully');
 }
 
 function joinTeam(teamId: string) {
     gameService.joinTeam(teamId);
+    console.log("joinTeam - LobbyView");
 }
+
+const areAllPlayersJoined = computed(() => {
+    return gameService.gameState.value.players.filter(p => !p.teamId).length === 0;
+});
 
 </script>
 
 <template>
-    <div class="flex flex-col justify-center items-center p-4">
-        <TypographyTitle class="text-center" :level=2> Lobby </TypographyTitle>
-        <TypographyTitle @click="copyCode" class="text-center hover:cursor-pointer underline italic !m-0" :level=3>
-            {{ playerService.player.roomId }} </TypographyTitle>
-        <div class="my-6 w-full flex gap-x-4 justify-center">
-            <div class="h-full">
+    <div class="grid p-4">
+        <div class="row-span-2">
+            <TypographyTitle class="text-center" :level=2> Lobby </TypographyTitle>
+            <TypographyTitle @click="copyCode" class="text-center hover:cursor-pointer underline italic !m-0" :level=3>
+                {{ player.roomId }} </TypographyTitle>
+        </div>
+        <div class="row-span-8 overflow-auto my-6 w-full flex gap-x-4 justify-center">
+            <div class="overflow-auto">
                 <Card size="small" title="Players">
                     <div v-auto-animate>
-                        <div v-auto-animate v-if="gameService.gameState.value.players.filter(p => !p.teamId).length"
-                            class="flex flex-col gap-y-4 justify-center items-center">
-                            <div v-for="player in gameService.gameState.value.players.filter(p => !p.teamId)"
-                                :key="player.id">
-                                <AvatarComponent class="size-10" :avatar-icon="player.avatar" :color="ColorsEnum.GRAY"
-                                    :tooltip="player.name" />
+                        <template v-if="gameService.gameState.value.players.filter(p => !p.teamId).length">
+                            <div v-auto-animate class="flex flex-col gap-y-4 justify-center items-center">
+                                <div v-for="player in gameService.gameState.value.players.filter(p => !p.teamId)"
+                                    :key="player.id">
+                                    <AvatarComponent class="size-10" :avatar-icon="player.avatar"
+                                        :color="ColorsEnum.GRAY" :tooltip="player.name" />
+                                </div>
                             </div>
-                        </div>
+                        </template>
                         <div v-else>
                             <p class="text-center text-gray-500 text-lg"> ... </p>
                         </div>
                     </div>
                 </Card>
             </div>
-            <div class="w-4/6 flex flex-col gap-y-2">
+            <div class="w-4/6 max-w-md overflow-auto flex flex-col gap-y-2">
                 <div class="w-full" v-for="team in gameService.gameState.value.teams" :key="team.id">
                     <Card class="h-36">
                         <template #title>
@@ -77,8 +83,7 @@ function joinTeam(teamId: string) {
                                     </AvatarComponent>
                                 </template>
                             </AvatarGroup>
-                            <Button v-if="playerService.player.teamId !== team.id" :danger="false"
-                                @click="joinTeam(team.id)">
+                            <Button v-if="player.teamId !== team.id" :danger="false" @click="joinTeam(team.id)">
                                 Join </Button>
                             <Button v-else :danger="true"> Leave </Button>
                         </div>
@@ -86,9 +91,12 @@ function joinTeam(teamId: string) {
                 </div>
             </div>
         </div>
-        <div class="flex gap-x-8">
+        <div class="row-span-2 flex justify-center gap-x-8">
             <Button size="large" class="font-semibold" type="link" @click="copyLink"> Copy Link </Button>
-            <Button v-if="playerService.player.isHost" size="large" type="primary" @click="startGame"> Start Game
+            <Button :disabled="!areAllPlayersJoined" v-if="player.isHost" size="large" type="primary"
+                @click="startGame">
+                Start
+                Game
             </Button>
         </div>
     </div>

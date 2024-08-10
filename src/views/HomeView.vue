@@ -6,16 +6,24 @@ import { RoutesEnum } from '@/core/enums/routesEnum'
 import AvatarComponent from '@/components/AvatarComponent.vue'
 import { ColorsEnum } from '@/core/enums/colorsEnum';
 import { AvatarsEnum } from '@/core/enums/avatarsEnum';
-import { PlayerServiceKey } from '@/core/constants/injectionKeys';
+import { GameServiceKey } from '@/core/constants/injectionKeys';
+import type { IPlayer } from '@/core/interfaces/playerInterface';
 
 const roomId = ref(router.currentRoute.value.query.roomId as string);
-const playerService = inject(PlayerServiceKey)!;
 const avatarsList = Object.values(AvatarsEnum);
+const player = reactive<IPlayer>({
+  id: '',
+  name: '',
+  avatar: avatarsList[Math.floor(Math.random() * avatarsList.length)],
+  isHost: true,
+  roomId: '',
+  teamId: '',
+  words: [],
+});
+const gameService = inject(GameServiceKey)!;
 const showRoomId = ref(false);
 const isJoining = ref(false);
 const loadingJoin = ref(false);
-
-playerService.player.avatar = avatarsList[Math.floor(Math.random() * avatarsList.length)];
 
 const rulesRef = reactive({
   name: [
@@ -32,9 +40,11 @@ const rulesRef = reactive({
   ],
 });
 
-const { validate } = Form.useForm(playerService.player, rulesRef);
+const { validate } = Form.useForm(player, rulesRef);
 
 function handleHostGameClick() {
+  player.isHost = true;
+  gameService.setPlayerService(player)
   showRoomId.value = false;
   isJoining.value = false;
   validate()
@@ -47,7 +57,8 @@ function handleHostGameClick() {
 }
 
 async function handleJoinGameClick() {
-
+  player.isHost = false;
+  gameService.setPlayerService(player);
   if (showRoomId.value) isJoining.value = true;
 
   try {
@@ -55,15 +66,15 @@ async function handleJoinGameClick() {
     showRoomId.value = true;
     if (isJoining.value) {
       loadingJoin.value = true;
-      await playerService.joinGameAsync();
+      await gameService.joinGameAsync();
       loadingJoin.value = false;
-      router.push({ name: RoutesEnum.LOBBY });
+      // The host will route the player if he joined .... 
+      // router.push({ name: RoutesEnum.LOBBY }); 
     }
   } catch (error) {
     loadingJoin.value = false;
     if (error instanceof Error) {
       message.error(error.message);
-      //TODO: add custom error message for form control
     }
     console.log("Validation failed", error)
   }
@@ -72,9 +83,9 @@ async function handleJoinGameClick() {
 
 function changeAvatarIcon(): void {
   console.log("Avatar Icon Changed")
-  const currentIndex = avatarsList.indexOf(playerService.player.avatar);
+  const currentIndex = avatarsList.indexOf(player.avatar);
   const nextIndex = (currentIndex + 1) % avatarsList.length;
-  playerService.player.avatar = avatarsList[nextIndex];
+  player.avatar = avatarsList[nextIndex];
 }
 
 watch(
@@ -83,7 +94,7 @@ watch(
     if (roomId.value) {
       showRoomId.value = true;
       isJoining.value = true;
-      playerService.player.roomId = roomId.value!;
+      player.roomId = roomId.value!;
     }
   },
   { immediate: true }
@@ -98,17 +109,17 @@ watch(
       <p class="font-origami text-6xl text-white drop-shadow-md title"> Cardy-B Game </p>
     </div>
     <div class="flex flex-col items-center justify-center m-4 p-4">
-      <Form :model="playerService.player">
+      <Form :model="player">
         <div class="flex flex-col justify-center items-center">
           <AvatarComponent @click="changeAvatarIcon" class="size-32 hover:cursor-pointer" :color="ColorsEnum.GRAY"
-            :avatar-icon="playerService.player.avatar" />
+            :avatar-icon="player.avatar" />
           <div v-auto-animate class="flex flex-col items-center justify-center m-4 gap-4">
             <FormItem class="m-0 flex" name="name" :rules="[{ required: true, message: 'Please input your name' }]">
-              <Input placeholder="name" v-model:value="playerService.player.name" />
+              <Input placeholder="name" v-model:value="player.name" />
             </FormItem>
             <FormItem v-if="showRoomId" class="m-0" name="roomId"
               :rules="[{ required: isJoining, message: 'Please input room id' }]">
-              <Input :disabled="!!roomId" placeholder="roomId" v-model:value="playerService.player.roomId" />
+              <Input :disabled="!!roomId" placeholder="roomId" v-model:value="player.roomId" />
             </FormItem>
           </div>
           <div class="flex items-center justify-center gap-4">

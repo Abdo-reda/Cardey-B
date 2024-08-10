@@ -1,149 +1,179 @@
-import { ref, type Ref } from 'vue';
-import type { IClientService } from '../interfaces/clientServiceInterface';
+import { ref, type Reactive, type Ref } from 'vue';
 import type { IGameService } from '../interfaces/gameServiceInterface';
 import type { IGameSettings } from '../interfaces/gameSettingsInterface';
 import type { IGameState } from '../interfaces/gameStateInterface';
-import type { IHostService } from '../interfaces/hostServiceInterface';
 import { GameState } from '../models/gameState';
 import type { IPlayerService } from '../interfaces/playerServiceInterface';
 import type { IPlayer } from '../interfaces/playerInterface';
 import { ColorsEnum } from '../enums/colorsEnum';
-import type { IMessage } from '../interfaces/messageInterface';
-import { MethodsEnum } from '../enums/methodsEnum';
-import type { IJoinTeam } from '../interfaces/dataMessagesInterfaces/joinTeamInterface';
+import type { IMessage } from '../interfaces/messageInterfaces/messageInterface';
+import { HostPlayerService } from './hostPlayerService';
+import { HostService } from './hostService';
+import { ClientPlayerService } from './clientPlayerService';
+import { ClientService } from './clientService';
+import { MESSAGES_MAP, type MessageMethodPayloadMap } from '../constants/messagesMap';
+import router from '@/plugins/router';
+import { RoutesEnum } from '../enums/routesEnum';
+import { GAME_PHASES_DESCRIPTIONS, type GamePhasesEnum } from '../enums/gamePhasesEnum';
+import { MessageMethodsEnum } from '../enums/methodsEnum';
+import type { PlayWordType } from '../interfaces/messageInterfaces/playWordInterface';
 
 export class GameService implements IGameService {
-	hostService: IHostService;
-	clientService: IClientService;
-	playerService: IPlayerService;
+	playerService!: IPlayerService;
 	gameState: Ref<IGameState>;
 
-	constructor(
-		hostService: IHostService,
-		clientService: IClientService,
-		playerService: IPlayerService
-	) {
-		this.hostService = hostService;
-		this.clientService = clientService;
-		this.playerService = playerService;
+	constructor() {
 		this.gameState = ref(new GameState());
-		this.setupListenerHost();
-		this.setupListnerClient();
-		// this.initTeams(5); //todo: remove this
+	}
+
+	private executeAndSendMessage<E extends MessageMethodsEnum>(
+		method: E,
+		data: MessageMethodPayloadMap[E]
+	) {
+		const msg = MESSAGES_MAP.get(method)!;
+		msg.init(this.playerService.player.id, data);
+		msg.handle(this.gameState);
+		this.playerService.sendMessage(msg);
+		this.playerService.syncGameState(this.gameState.value);
+	}
+
+	private executeAndHandleMessage<E extends MessageMethodsEnum>(
+		method: E,
+		senderId: string,
+		data: MessageMethodPayloadMap[E]
+	) {
+		const msg = MESSAGES_MAP.get(method)!;
+		msg.init(senderId, data);
+		msg.handle(this.gameState);
+		this.syncGameState();
+	}
+
+	async joinGameAsync(): Promise<void> {
+		await this.playerService.joinGameAsync();
+		this.gameState.value.players.push(this.playerService.player);
+		this.initTeams(this.gameState.value.gameSettings.numberOfTeams);
 	}
 
 	joinTeam(teamId: string): void {
-		const player = this.playerService.player;
-		this.pushPlayerToTeam(player, teamId);
+		this.playerService.player.teamId = teamId;
+		this.executeAndSendMessage(MessageMethodsEnum.JOIN_TEAM, {
+			teamId: teamId,
+			playerId: this.playerService.player.id
+		});
+	}
+
+	playWord(type: PlayWordType): void {
+		this.executeAndSendMessage(MessageMethodsEnum.PLAY_WORD, {
+			type: type,
+			teamId: this.playerService.player.teamId,
+			playerId: this.playerService.player.id
+		});
+	}
+
+	updateTurn(): void {
+		this.executeAndSendMessage(MessageMethodsEnum.UPDATE_TURN, {});
+	}
+
+	goToGamePhase(): void {
+		this.switchAndUpdateRoute(RoutesEnum.GAME_PHASE);
+		this.syncGameState();
+	}
+
+	goToBeginGame(): void {
+		this.switchAndUpdateRoute(RoutesEnum.BEGIN_GAME);
+		this.syncGameState();
+	}
+
+	goToPlayingWord(): void {
+		this.initWords();
+		this.initTurns();
+		this.switchAndUpdateRoute(RoutesEnum.PLAYING_WORD);
+		this.syncGameState();
+	}
+
+	updateWords(reset: boolean = false, words: string[] = []): void {
+		this.executeAndSendMessage(MessageMethodsEnum.UPDATE_WORDS, {
+			reset: reset,
+			words: words
+		});
+	}
+
+	setPlayerService(player: IPlayer) {
 		if (player.isHost) {
-			this.sendSyncGameState();
+			this.playerService = new HostPlayerService(new HostService(), player);
 		} else {
-			this.playerService.sendMessage<IJoinTeam>({
-				method: MethodsEnum.JOIN_TEAM,
-				senderId: player.id,
-				data: {
-					playerId: player.id,
-					teamId: teamId
-				}
-			});
+			this.playerService = new ClientPlayerService(new ClientService(), player);
 		}
-	}
-
-	private pushPlayerToTeam(player: IPlayer, teamId: string): void {
-		const currentTeam = player.teamId;
-
-		if (currentTeam) {
-			const oldTeam = this.gameState.value.teams.find((t) => t.id === currentTeam)!;
-			oldTeam.players = oldTeam.players.filter((playerId) => playerId !== player.id);
-		}
-
-		const team = this.gameState.value.teams.find((t) => t.id === teamId);
-		team?.players.push(player.id);
-		player.teamId = teamId;
-	}
-
-	async createGameAsync(gameSettings: IGameSettings): Promise<void> {
-		this.gameState.value.gameSettings = gameSettings;
-		const roomId = await this.hostService.createNewRoomAsync();
-		this.playerService.player.id = roomId;
-		this.playerService.player.roomId = roomId;
-		this.playerService.player.isHost = true;
-		this.gameState.value.players.push(this.playerService.player);
-		this.initTeams(gameSettings.numberOfTeams);
-	}
-
-	private setupListenerHost(): void {
-		this.hostService.onRecievedMessage = (playerId: string, message: IMessage<any>) => {
-			console.log('--- Message recieved from player (client): ', playerId, message);
-			console.log('==== host', message.method);
-			if (message.method === MethodsEnum.JOIN_GAME) {
-				this.playerJoinedGame(message.data);
-			}
-
-			if (message.method === MethodsEnum.JOIN_TEAM) {
-				this.pushPlayerToTeam(
-					this.gameState.value.players.find(
-						(player) => player.id === message.data.playerId
-					)!,
-					message.data.teamId
-				);
-			}
-			this.sendSyncGameState();
-		};
-	}
-
-	private setupListnerClient(): void {
-		this.clientService.onRecievedMessage = (message: IMessage<any>) => {
-			console.log('--- Message recieved from host: ', message);
-			console.log('==== client', message.method);
-			if (message.method === MethodsEnum.SYNC) {
-				this.syncLocalGameState(message.data);
-			}
-		};
-
-		this.clientService.onDataChannelOpen = () => {
-			this.playerService.sendMessage<IPlayer>({
-				method: MethodsEnum.JOIN_GAME,
-				senderId: this.playerService.player.id,
-				data: this.playerService.player
-			});
-		};
-	}
-
-	private playerJoinedGame(data: IPlayer): void {
-		console.log('==== beforeeeee player joining game', data, this.gameState.value);
-		//we need to update game state ... player service? w need game service? circular dependency?
-		this.gameState.value.players.push(data);
-		console.log('==== afterplayer joining game', data, this.gameState.value);
-	}
-
-	//TODO: move it to host service
-	private sendSyncGameState(): void {
-		const message: IMessage<IGameState> = {
-			senderId: this.playerService.player.id,
-			method: MethodsEnum.SYNC,
-			data: this.gameState.value
-		};
-		this.hostService.sendMessageToAllExcept(message, []);
-	}
-
-	private syncLocalGameState(data: IGameState): void {
-		console.log('--- client before', this.gameState, data);
-		this.gameState.value = data;
-		console.log('--- client after', this.gameState);
+		this.playerService.setupListeners(this.handleMessage);
 	}
 
 	getSettings(): IGameSettings {
 		return this.gameState.value.gameSettings;
 	}
 
-	addPlayer(player: IPlayer) {
-		this.gameState.value.players.push(player);
-		//sync game state
+	getCurrentPlayer(): Reactive<IPlayer> {
+		return this.playerService.player;
 	}
 
 	getPlayer(playerId: string): IPlayer {
 		return this.gameState.value.players.find((player) => player.id === playerId)!;
+	}
+
+	private initWords() {
+		const allWords = this.gameState.value.players.flatMap((p) => p.words);
+		const shuffledWords = [];
+		while (allWords.length !== 0) {
+			const randomIndex = Math.floor(Math.random() * allWords.length);
+			const removedWord = allWords.splice(randomIndex, 1)[0];
+			shuffledWords.push(removedWord);
+		}
+		this.gameState.value.words.remaining = shuffledWords;
+	}
+
+	//team1:
+	//p1
+	//team2:
+	//p2
+	//p3
+	//p4
+	//team3
+	//p5
+	// loop max will equal the sum of all elements in all stacks, in this case it will be 8
+
+	//p1->p4->p6->p2->p5->p7->p3->p8 ===== this is the playerOrdersArray
+	//p1->p2->p3->p4->p5->p6->p7->p8 ===== this is the playersOrderArray --- currentimplementation
+
+	private initTurns() {
+		const teamPlayersStack = this.gameState.value.teams.map((t) => t.players);
+		const totalPlayers = this.gameState.value.teams.flatMap((t) => t.players).length;
+		const totalTeamsCount = this.gameState.value.teams.length;
+		const playerOrder = [];
+		let currentTeamIndex = 0;
+		let pushedPlayers = 0;
+		while (pushedPlayers < totalPlayers) {
+			const currentPlayer = teamPlayersStack[currentTeamIndex].shift();
+			if (currentPlayer) {
+				playerOrder.push(currentPlayer);
+				pushedPlayers++;
+			}
+			currentTeamIndex = (currentTeamIndex + 1) % totalTeamsCount;
+		}
+		this.gameState.value.turns.playersOrder = playerOrder;
+	}
+
+	private syncGameState() {
+		console.log('--- syncing game state', this.gameState.value);
+		this.playerService.syncGameState(this.gameState.value);
+	}
+
+	private switchAndUpdateRoute(route: RoutesEnum) {
+		this.gameState.value.currentRoute = route;
+		router.push({ name: route });
+	}
+
+	private switchPhase(phase: GamePhasesEnum): void {
+		this.gameState.value.gamePhase.phase = phase;
+		this.gameState.value.gamePhase.description = GAME_PHASES_DESCRIPTIONS.get(phase)!;
 	}
 
 	private initTeams(numberOfTeams: number): void {
@@ -159,7 +189,8 @@ export class GameService implements IGameService {
 		}
 	}
 
-	// getPlayer(): IPlayer {
-	// 	return this.gameState.teams.flatMap((team) => team.players).find((player) => player.isHost);
-	// }
+	private handleMessage = (message: IMessage<any>): void => {
+		console.log('--- handling message', message);
+		this.executeAndHandleMessage(message.method, message.senderId, message.data);
+	};
 }
