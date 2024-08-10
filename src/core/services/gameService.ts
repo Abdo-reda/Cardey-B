@@ -69,6 +69,10 @@ export class GameService implements IGameService {
 		});
 	}
 
+	updateTurn(): void {
+		this.executeAndSendMessage(MessageMethodsEnum.UPDATE_TURN, {});
+	}
+
 	goToGamePhase(): void {
 		this.switchAndUpdateRoute(RoutesEnum.GAME_PHASE);
 		this.syncGameState();
@@ -125,13 +129,39 @@ export class GameService implements IGameService {
 		this.gameState.value.words.remaining = shuffledWords;
 	}
 
+	//team1:
+	//p1
+	//team2:
+	//p2
+	//p3
+	//p4
+	//team3
+	//p5
+	// loop max will equal the sum of all elements in all stacks, in this case it will be 8
+
+	//p1->p4->p6->p2->p5->p7->p3->p8 ===== this is the playerOrdersArray
+	//p1->p2->p3->p4->p5->p6->p7->p8 ===== this is the playersOrderArray --- currentimplementation
+
 	private initTurns() {
-		const allPlayers = this.gameState.value.teams.flatMap((t) => t.players);
-		this.gameState.value.turns.playersOrder = allPlayers;
+		const teamPlayersStack = this.gameState.value.teams.map((t) => t.players);
+		const totalPlayers = this.gameState.value.teams.flatMap((t) => t.players).length;
+		const totalTeamsCount = this.gameState.value.teams.length;
+		const playerOrder = [];
+		let currentTeamIndex = 0;
+		let pushedPlayers = 0;
+		while (pushedPlayers < totalPlayers) {
+			const currentPlayer = teamPlayersStack[currentTeamIndex].shift();
+			if (currentPlayer) {
+				playerOrder.push(currentPlayer);
+				pushedPlayers++;
+			}
+			currentTeamIndex = (currentTeamIndex + 1) % totalTeamsCount;
+		}
+		this.gameState.value.turns.playersOrder = playerOrder;
 	}
 
 	private syncGameState() {
-		//TODO: should we have an affect instead on the gamestate?
+		console.log('--- syncing game state', this.gameState.value);
 		this.playerService.syncGameState(this.gameState.value);
 	}
 

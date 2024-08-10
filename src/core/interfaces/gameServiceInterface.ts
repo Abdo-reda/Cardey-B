@@ -10,6 +10,7 @@ export interface IGameService {
 	joinGameAsync: () => void;
 	joinTeam: (teamId: string) => void;
 	playWord: (type: PlayWordType) => void;
+	updateTurn: () => void;
 	goToGamePhase: () => void;
 	goToBeginGame: () => void;
 	goToPlayingWord: () => void;

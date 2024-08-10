@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import AvatarComponent from '@/components/AvatarComponent.vue';
 import { GameServiceKey } from '@/core/constants/injectionKeys';
-import { Button, TypographyParagraph, TypographyTitle } from 'ant-design-vue';
-import { computed, inject, onMounted, ref, watchEffect } from 'vue';
+import { Button, StatisticCountdown, TypographyParagraph, TypographyTitle } from 'ant-design-vue';
+import { computed, inject, ref } from 'vue';
 
 const gameService = inject(GameServiceKey)!;
 const player = gameService.getCurrentPlayer();
-const timer = ref(60); //TODO: initial value from gameState maybe?
+const timer = ref(Date.now() + 1000 * gameService.gameState.value.gameSettings.timePerRound);
 const activeWord = computed<string>(() => {
     return gameService.gameState.value.words.remaining[0];
 });
@@ -17,7 +17,6 @@ const currentPlayerTurn = computed(() => {
 const currentTeamTurn = computed(() => {
     return gameService.gameState.value.teams.find(team => team.id === currentPlayerTurn.value.teamId)!;
 });
-let timerInterval: NodeJS.Timeout;
 
 function skipWord() {
     gameService.playWord('skip');
@@ -27,21 +26,13 @@ function scoreWord() {
     gameService.playWord('score');
 }
 
-watchEffect(() => {
-    if (timer.value === 0 && currentPlayerTurn.value.id === player.id) {
+function onTimerFinish() {
+    if (currentPlayerTurn.value.id === player.id) {
         gameService.playWord('skip');
-        if (timerInterval) {
-            clearInterval(timerInterval);
-        }
-        //TODO: gameService.nextPlayer();
+        gameService.updateTurn();
     }
-});
-
-onMounted(() => {
-    timerInterval = setInterval(() => {
-        timer.value -= 1;
-    }, 1000);
-})
+    timer.value = Date.now() + 1000 * gameService.gameState.value.gameSettings.timePerRound; //TEMP TODO: timer should be handled by state and service and stuff, start at start of round :)
+}
 
 // TODO: if there no remaining words, then we should go to the next phase
 // TODO: if the timer runs out, then we should skip the word, go to next player
@@ -54,8 +45,9 @@ onMounted(() => {
     <!-- If you are not the current player, then you only see the timer.  -->
     <!-- If you are in the opposite team, you can see the word? maybe? -->
     <div class="h-full">
-        <div v-auto-animate class="flex flex-col gap-y-4 justify-center items-center p-4 h-full">
-            <p class="text-3xl font-medium text-gray-400"> {{ timer }} </p>
+        <div v-auto-animate class="flex flex-col text-3xl gap-y-4 justify-center items-center p-4 h-full">
+            <StatisticCountdown format="mm:ss" title="Timer" @finish="onTimerFinish" :value="timer"
+                :valueStyle="{ 'font-size': '2.25rem' }" />
             <template v-if="currentPlayerTurn.id === player.id">
                 <TypographyTitle> {{ activeWord }}</TypographyTitle>
                 <div class="flex flex-row jusitfy-center items-center gap-x-14 my-8">
@@ -64,11 +56,11 @@ onMounted(() => {
                 </div>
             </template>
             <template v-else>
-                <div class="flex flex-row gap-x-2">
+                <div class="flex flex-row gap-x-2 items-center">
                     <AvatarComponent class="size-20" :avatar-icon="currentPlayerTurn.avatar"
                         :color="currentTeamTurn.color">
                     </AvatarComponent>
-                    <TypographyTitle :level="5"> {{ currentPlayerTurn.name }} </TypographyTitle>
+                    <TypographyTitle class="m-0 p-0" :level="4"> {{ currentPlayerTurn.name }} </TypographyTitle>
                 </div>
                 <TypographyTitle :level="2"> Turn </TypographyTitle>
             </template>
