@@ -67,7 +67,7 @@ async function handleJoinGameClick() {
     if (isJoining.value) {
       loadingJoin.value = true;
       await gameService.joinGameAsync();
-      loadingJoin.value = false;
+      // loadingJoin.value = false;
       // The host will route the player if he joined .... 
       // router.push({ name: RoutesEnum.LOBBY }); 
     }

@@ -2,7 +2,7 @@ import { ref, type Reactive, type Ref } from 'vue';
 import type { IGameService } from '../interfaces/gameServiceInterface';
 import type { IGameSettings } from '../interfaces/gameSettingsInterface';
 import type { IGameState } from '../interfaces/gameStateInterface';
-import { GameState } from '../models/gameState';
+import { GameStateService } from '../services/gameStateService';
 import type { IPlayerService } from '../interfaces/playerServiceInterface';
 import type { IPlayer } from '../interfaces/playerInterface';
 import { ColorsEnum } from '../enums/colorsEnum';
@@ -23,7 +23,7 @@ export class GameService implements IGameService {
 	gameState: Ref<IGameState>;
 
 	constructor() {
-		this.gameState = ref(new GameState());
+		this.gameState = ref(new GameStateService());
 	}
 
 	private executeAndSendMessage<E extends MessageMethodsEnum>(

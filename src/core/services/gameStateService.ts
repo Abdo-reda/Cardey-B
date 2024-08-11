@@ -5,7 +5,7 @@ import type { IGameState } from '../interfaces/gameStateInterface';
 import type { IPlayer } from '../interfaces/playerInterface';
 import type { ITeam } from '../interfaces/teamInterface';
 
-export class GameState implements IGameState {
+export class GameStateService implements IGameState {
 	teams: ITeam[] = [];
 	players: IPlayer[] = [];
 	turns = {

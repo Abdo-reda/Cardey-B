@@ -23,7 +23,7 @@ export default defineConfig({
 			manifest: {
 				name: 'Cardy B',
 				short_name: 'Cardy B',
-				start_url: '/',
+				start_url: '/?mode=standalone',
 				display: 'standalone',
 				background_color: '#FFFFFF',
 				theme_color: '#1677ff',

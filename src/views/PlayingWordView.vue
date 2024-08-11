@@ -6,6 +6,7 @@ import { computed, inject, ref, watch } from 'vue';
 
 const gameService = inject(GameServiceKey)!;
 const player = gameService.getCurrentPlayer();
+const timerFormat = ref('mm:ss');
 const timer = ref(Date.now() + 1000 * gameService.gameState.value.gameSettings.timePerRound);
 const activeWord = computed<string>(() => {
     return gameService.gameState.value.words.remaining[0];
@@ -40,6 +41,12 @@ watch(currentPlayerTurn, (newValue, oldValue) => {
     }
 });
 
+function onTimerChange(timer: number) {
+    if (timer <= 5000 && timerFormat.value !== 'ss:SSS') {
+        timerFormat.value = 'ss:SSS';
+    }
+}
+
 // TODO: if there no remaining words, then we should go to the next phase
 // TODO: if the timer runs out, then we should skip the word, go to next player
 // TODO: a button to pause the game? maybe only for the host
@@ -54,8 +61,8 @@ watch(currentPlayerTurn, (newValue, oldValue) => {
     <div class="h-full">
         <div v-auto-animate class="flex flex-col text-3xl gap-y-4 justify-center items-center p-4 h-full">
             <template v-if="currentPlayerTurn.id === player.id">
-                <StatisticCountdown format="mm:ss" title="Timer" @finish="onTimerFinish" :value="timer"
-                    :valueStyle="{ 'font-size': '2.25rem' }" />
+                <StatisticCountdown :format="timerFormat" title="Timer" @finish="onTimerFinish" @change="onTimerChange"
+                    :value="timer" :valueStyle="{ 'font-size': '2.25rem' }" />
                 <TypographyTitle> {{ activeWord }}</TypographyTitle>
                 <div class="flex flex-row jusitfy-center items-center gap-x-14 my-8">
                     <Button size="large" type="dashed" :danger="true" @click="skipWord">Skip</Button>
