@@ -11,6 +11,7 @@ const { currentThemeAlgorithm, switchTheme, setTheme } = useTheme();
 setTheme();
 
 function goBack() {
+  // TODO: can you go back? this makes sense for the web app version, maybe its disabled mid game, or if mid game, then the game gets reset.
   router.back();
 }
 
@@ -39,6 +40,7 @@ function goBack() {
                   <FormatPainterOutlined />
                 </template>
               </Button>
+              <!-- TODO: maybe add a pause button here -->
             </div>
           </template>
         </PageHeader>
@@ -52,6 +54,8 @@ function goBack() {
     </main>
     <Modal v-model:open="settingsOpen" title="Settings" :closable="false">
       <p>Random settings like audio</p>
+      <template #footer>
+      </template>
     </Modal>
   </ConfigProvider>
 </template>

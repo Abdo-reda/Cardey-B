@@ -2,7 +2,7 @@
 import { Avatar, Tooltip } from 'ant-design-vue';
 import { ColorsEnum } from '@/core/enums/colorsEnum';
 import { AvatarsEnum } from '@/core/enums/avatarsEnum';
-import { defineAsyncComponent, shallowRef, watch } from 'vue';
+import { computed, defineAsyncComponent } from 'vue';
 
 interface IAvatarProps {
     color: ColorsEnum;
@@ -11,17 +11,13 @@ interface IAvatarProps {
 }
 
 const props = defineProps<IAvatarProps>();
-const svgComponent = shallowRef();
 
-watch(
-    () => props.avatarIcon,
-    () => {
-        svgComponent.value = defineAsyncComponent({
-            loader: () => import(`@/assets/svgs/${props.avatarIcon}.svg?component`),
-        });
-    },
-    { immediate: true }
-);
+const svgComponent = computed(() => {
+    if (!props.avatarIcon) return null;
+    return defineAsyncComponent({
+        loader: () => import(`@/assets/svgs/${props.avatarIcon}.svg?component`),
+    });
+});
 
 </script>
 
