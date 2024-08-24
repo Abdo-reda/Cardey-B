@@ -7,6 +7,7 @@ import type { ITeam } from './teamInterface';
 export interface IGameState {
 	teams: ITeam[];
 	players: IPlayer[];
+	isPaused: boolean;
 	turns: {
 		playersOrder: string[];
 		currentPlayerIndex: number;
@@ -17,6 +18,7 @@ export interface IGameState {
 		scored: string[];
 	};
 	gamePhase: {
+		index: number;
 		phase: GamePhasesEnum;
 		description: string;
 	};

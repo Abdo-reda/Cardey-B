@@ -32,7 +32,10 @@ function next() {
                 <div class="flex flex-col justify-center items-center text-center">
                     <div class="flex flex-col">
                         <div v-for="team in gameService.gameState.value.teams" :key="team.id">
-                            <p class="font-semibold pb-2"> Team {{ team.id }}
+                            <p class="font-semibold pb-2" :style="{ color: team.color }"> Team {{ team.id }}
+                                -
+                                Score
+                                [{{ team.score }}]
                             </p>
                             <div class="flex flex-col gap-y-2">
                                 <div class="flex flex-row justify-center items-center gap-x-2"
@@ -40,7 +43,7 @@ function next() {
                                     <AvatarComponent :avatar-icon="gameService.getPlayer(playerId).avatar"
                                         :color="team.color" :tooltip="gameService.getPlayer(playerId).name">
                                     </AvatarComponent>
-                                    <p> {{ gameService.getPlayer(playerId).name }} </p>
+                                    <p :style="{ color: team.color }"> {{ gameService.getPlayer(playerId).name }} </p>
                                 </div>
                             </div>
                             <Divider class="w-32 my-2" />

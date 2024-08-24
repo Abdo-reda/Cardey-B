@@ -2,7 +2,7 @@ import { ref, type Reactive, type Ref } from 'vue';
 import type { IGameService } from '../interfaces/gameServiceInterface';
 import type { IGameSettings } from '../interfaces/gameSettingsInterface';
 import type { IGameState } from '../interfaces/gameStateInterface';
-import { GameStateService } from '../services/gameStateService';
+import { GameState } from '../models/gameState';
 import type { IPlayerService } from '../interfaces/playerServiceInterface';
 import type { IPlayer } from '../interfaces/playerInterface';
 import { ColorsEnum } from '../enums/colorsEnum';
@@ -14,16 +14,16 @@ import { ClientService } from './clientService';
 import { MESSAGES_MAP, type MessageMethodPayloadMap } from '../constants/messagesMap';
 import router from '@/plugins/router';
 import { RoutesEnum } from '../enums/routesEnum';
-import { GAME_PHASES_DESCRIPTIONS, type GamePhasesEnum } from '../enums/gamePhasesEnum';
+import { GAME_PHASES, GAME_PHASES_DESCRIPTIONS, GamePhasesEnum } from '../enums/gamePhasesEnum';
 import { MessageMethodsEnum } from '../enums/methodsEnum';
 import type { PlayWordType } from '../interfaces/messageInterfaces/playWordInterface';
 
 export class GameService implements IGameService {
 	playerService!: IPlayerService;
-	gameState: Ref<IGameState>;
+	gameState: Ref<IGameState>; //move into a global composable?
 
 	constructor() {
-		this.gameState = ref(new GameStateService());
+		this.gameState = ref(new GameState());
 	}
 
 	private executeAndSendMessage<E extends MessageMethodsEnum>(
@@ -74,8 +74,14 @@ export class GameService implements IGameService {
 		this.executeAndSendMessage(MessageMethodsEnum.UPDATE_TURN, {});
 	}
 
-	goToGamePhase(): void {
-		this.switchAndUpdateRoute(RoutesEnum.GAME_PHASE);
+	goToNextGamePhase(): void {
+		this.gameState.value.gamePhase.index++;
+		this.switchPhase(GAME_PHASES[this.gameState.value.gamePhase.index]);
+		if (this.gameState.value.gamePhase.phase === GamePhasesEnum.DONE) {
+			this.switchAndUpdateRoute(RoutesEnum.END_GAME);
+		} else {
+			this.switchAndUpdateRoute(RoutesEnum.GAME_PHASE);
+		}
 		this.syncGameState();
 	}
 
@@ -119,6 +125,11 @@ export class GameService implements IGameService {
 		return this.gameState.value.players.find((player) => player.id === playerId)!;
 	}
 
+	togglePause(): void {
+		this.gameState.value.isPaused = !this.gameState.value.isPaused;
+		this.syncGameState();
+	}
+
 	private initWords() {
 		const allWords = this.gameState.value.players.flatMap((p) => p.words);
 		const shuffledWords = [];
@@ -160,7 +171,7 @@ export class GameService implements IGameService {
 
 	private switchPhase(phase: GamePhasesEnum): void {
 		this.gameState.value.gamePhase.phase = phase;
-		this.gameState.value.gamePhase.description = GAME_PHASES_DESCRIPTIONS.get(phase)!;
+		this.gameState.value.gamePhase.description = GAME_PHASES_DESCRIPTIONS.get(phase) ?? '';
 	}
 
 	private initTeams(numberOfTeams: number): void {

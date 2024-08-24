@@ -75,7 +75,7 @@ const areAllPlayersJoined = computed(() => {
                             <div> {{ `Team ${team.id}` }} </div>
                         </template>
                         <div class="flex justify-between items-center">
-                            <AvatarGroup :max-count="3" size="large">
+                            <AvatarGroup :max-count="2" size="large">
                                 <template v-for="player in team.players" :key="player">
                                     <AvatarComponent :avatar-icon="gameService.getPlayer(player).avatar"
                                         :color="team.color" :tooltip="gameService.getPlayer(player).name">

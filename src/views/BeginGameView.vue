@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { Form, FormItem, Button, type FormInstance, Input, TypographyTitle, Tag, Card, Drawer, TypographyParagraph } from 'ant-design-vue';
 import { computed, inject, reactive, ref } from 'vue';
-import { CheckCircleOutlined, ClockCircleOutlined, RightOutlined } from '@ant-design/icons-vue';
+import { CheckCircleOutlined, ClockCircleOutlined, RightOutlined, TeamOutlined } from '@ant-design/icons-vue';
 import { GameServiceKey } from '@/core/constants/injectionKeys';
 import type { IPlayer } from '@/core/interfaces/playerInterface';
 import { ColorsEnum } from '@/core/enums/colorsEnum';
 import AvatarComponent from '@/components/AvatarComponent.vue';
+import { GamePhasesEnum } from '@/core/enums/gamePhasesEnum';
 
 interface IWordField {
     value: string;
@@ -58,8 +59,7 @@ function initWords(numberOfWords: number): void {
 };
 
 function StartFirstPhase() {
-    gameService.goToGamePhase();
-    // router.push({ name: RoutesEnum.GAME_PHASE });
+    gameService.goToNextGamePhase();
 }
 
 initWords(gameService.gameState.value.gameSettings.wordsPerPlayer);
@@ -81,10 +81,11 @@ initWords(gameService.gameState.value.gameSettings.wordsPerPlayer);
                                 <CheckCircleOutlined v-if="readyState" />
                                 <ClockCircleOutlined v-else />
                             </template>
-                            {{ readyState ? 'Ready!' : 'Not Ready' }}
-                            <RightOutlined
-                                :class="{ 'text-gray-400 group-hover:text-gray-600 group-hover:dark:text-gray-200 transition-colors': !readyState, 'text-success-700': readyState }"
-                                class="text-gray-400 group-hover:text-gray-600 group-hover:dark:text-gray-200 transition-colors" />
+                            <span class="pr-2"> {{ readyState ? 'Ready!' : 'Not Ready' }} </span>
+                            <TeamOutlined :class="{ 'text-gray-400': !readyState, 'text-success-700': readyState }"
+                                class="group-hover:text-gray-600 group-hover:dark:text-gray-200 transition-colors" />
+                            <RightOutlined :class="{ 'text-gray-400': !readyState, 'text-success-700': readyState }"
+                                class="group-hover:text-gray-600 group-hover:dark:text-gray-200 transition-colors" />
                         </Tag>
                     </div>
                 </template>

@@ -106,7 +106,7 @@ watch(
 <template>
   <div class="h-full">
     <div class="text-center p-4">
-      <p class="font-origami text-6xl text-white drop-shadow-md title"> Cardy-B Game </p>
+      <p class="font-origami text-6xl text-white font-stroke-gray-400 font-stroke title"> Cardy-B Game </p>
     </div>
     <div class="flex flex-col items-center justify-center m-4 p-4">
       <Form :model="player">
@@ -136,9 +136,3 @@ watch(
     </div>
   </div>
 </template>
-
-<style>
-.title {
-  -webkit-text-stroke: 0.5px gray;
-}
-</style>
