@@ -1,25 +1,22 @@
 <script setup lang="ts">
 import AvatarComponent from '@/components/AvatarComponent.vue';
+import useGameState from '@/core/composables/useGameState';
+import usePlayer from '@/core/composables/usePlayer';
 import { GameServiceKey } from '@/core/constants/injectionKeys';
 import { Button, StatisticCountdown, TypographyParagraph, TypographyTitle } from 'ant-design-vue';
 import { computed, inject, ref, watch } from 'vue';
 
 const gameService = inject(GameServiceKey)!;
-const player = gameService.getCurrentPlayer();
+const { player } = usePlayer();
+const { timePerRound, remainingWords, activeWord, currentPlayerTurn, skippedWords, getTeam, isNewTurn } = useGameState();
+
 const timerFormat = ref('mm:ss');
 const wordsAreDone = ref(false);
-const timer = ref(Date.now() + 1000 * gameService.gameState.value.gameSettings.timePerRound);
-const activeWord = computed<string>(() => {
-    return gameService.gameState.value.words.remaining[0];
-});
-const currentPlayerTurn = computed(() => {
-    const currentPlayerId = gameService.gameState.value.turns.playersOrder[gameService.gameState.value.turns.currentPlayerIndex];
-    return gameService.getPlayer(currentPlayerId);
-});
-const currentTeamTurn = computed(() => {
-    return gameService.gameState.value.teams.find(team => team.id === currentPlayerTurn.value.teamId)!;
-});
+const timer = ref(Date.now() + 1000 * timePerRound.value);
 
+const currentTeamTurn = computed(() => {
+    return getTeam(currentPlayerTurn.value.teamId);
+});
 
 function skipWord() {
     gameService.playWord('skip');
@@ -36,30 +33,30 @@ function onTimerFinish() {
     }
 }
 
-watch(currentPlayerTurn, (newValue, oldValue) => {
-    console.log('--- current player turn', newValue, oldValue)
-    if (newValue.id === oldValue.id) return;
-    if (newValue.id === player.id) {
-        timer.value = Date.now() + 1000 * gameService.gameState.value.gameSettings.timePerRound;
+watch(isNewTurn, (newValue) => {
+    if (!currentPlayerTurn.value) return;
+    if (player.id !== currentPlayerTurn.value.id) return;
+    if (newValue) {
+        timerFormat.value = 'mm:ss';
+        timer.value = Date.now() + 1000 * timePerRound.value;
+        isNewTurn.value = false;
     }
-});
+}, { immediate: true });
 
-watch(gameService.gameState.value.words.remaining, (newValue, _) => {
-    console.log('===', newValue, _);
+watch(remainingWords, (newValue, _) => {
     if (currentPlayerTurn.value.id !== player.id) return;
-    if (newValue.length === 0) {
-        console.log('=== length = 0?');
-        if (gameService.gameState.value.words.skipped.length === 0) {
-            console.log('---- words are done?');
-            wordsAreDone.value = true;
-            setTimeout(() => {
-                gameService.goToNextGamePhase();
-            }, 2000);
-        } else {
-            gameService.updateTurn();
-        }
+    if (newValue.length !== 0) return;
+
+    if (skippedWords.value.length === 0) {
+        wordsAreDone.value = true;
+        setTimeout(() => {
+            gameService.goToNextGamePhase();
+        }, 2000);
+    } else {
+        gameService.updateTurn();
     }
-});
+
+}, { deep: true });
 
 
 function onTimerChange(timer: number) {
@@ -70,6 +67,8 @@ function onTimerChange(timer: number) {
     }
 }
 
+
+
 // TODO: if there no remaining words, then we should go to the next phase
 // TODO: a button to pause the game? maybe only for the host
 // ENHANCEMENT: show timer for all players ...
@@ -77,24 +76,24 @@ function onTimerChange(timer: number) {
 </script>
 
 <template>
-    <!-- TODO: update the views -->
-    <!-- If you are not the current player, then you only see the timer.  -->
-    <!-- If you are in the opposite team, you can see the word? maybe? -->
     <div class="h-full">
+        <!-- TODO: update the views -->
+        <!-- If you are not the current player, then you only see the timer.  -->
+        <!-- If you are in the opposite team, you can see the word? maybe? -->
         <div v-auto-animate class="flex flex-col text-3xl gap-y-4 justify-center items-center p-4 h-full">
             <template v-if="wordsAreDone">
                 <TypographyTitle :level="3"> Words are done! </TypographyTitle>
             </template>
-            <template v-else>
+            <template v-else-if="currentPlayerTurn">
                 <template v-if="currentPlayerTurn.id === player.id">
                     <StatisticCountdown :loading="false" :format="timerFormat" title="Timer" @finish="onTimerFinish"
                         @change="onTimerChange" :value="timer" :valueStyle="{ 'font-size': '2.25rem' }" />
                     <TypographyTitle> {{ activeWord }}</TypographyTitle>
                     <div class="flex flex-row jusitfy-center items-center gap-x-14 my-8">
-                        <Button :disabled="!gameService.gameState.value.words.remaining.length" size="large"
-                            type="dashed" :danger="true" @click="skipWord">Skip</Button>
-                        <Button :disabled="!gameService.gameState.value.words.remaining.length" size="large"
-                            type="primary" @click="scoreWord">Score</Button>
+                        <Button :disabled="!remainingWords.length" size="large" type="dashed" :danger="true"
+                            @click="skipWord">Skip</Button>
+                        <Button :disabled="!remainingWords.length" size="large" type="primary"
+                            @click="scoreWord">Score</Button>
                     </div>
                 </template>
                 <template v-else>
@@ -106,8 +105,11 @@ function onTimerChange(timer: number) {
                     </div>
                     <TypographyTitle :level="2"> Turn </TypographyTitle>
                 </template>
-                <TypographyParagraph> Words Remaining {{ gameService.gameState.value.words.remaining.length }}
+                <TypographyParagraph> Words Remaining {{ remainingWords.length }}
                 </TypographyParagraph>
+            </template>
+            <template v-else>
+                <TypographyTitle> No Turn is Active </TypographyTitle>
             </template>
         </div>
     </div>

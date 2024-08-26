@@ -1,5 +1,3 @@
-import type { FunctionalComponent } from 'vue';
-
 export enum AvatarsEnum {
 	BIRD = 'bird',
 	BUTTERFLY = 'butterfly',
@@ -22,6 +20,8 @@ export enum AvatarsEnum {
 	//   FOX = 'fox',
 	//   OWL = 'owl'
 }
+
+export const AvatarsList = Object.values(AvatarsEnum);
 
 // I hate this, we need a way to dynamically import svgs using the avatar enum name, there is lazy loading in vite, we need to check it out
 // export const AvatarSVGMapper: Map<AvatarsEnum, FunctionalComponent> = new Map([

@@ -1,28 +1,87 @@
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { GameState } from '@/core/models/gameState';
 import type { IPlayer } from '../interfaces/playerInterface';
 import type { ITeam } from '../interfaces/teamInterface';
 import { ColorsEnum } from '../enums/colorsEnum';
 import type { RoutesEnum } from '../enums/routesEnum';
 import { GAME_PHASES, GAME_PHASES_DESCRIPTIONS } from '../enums/gamePhasesEnum';
+import type { IGameState } from '../interfaces/gameStateInterface';
 
 const gameState = ref(new GameState());
 
+//---- computed values
+const isPaused = computed(() => gameState.value.isPaused);
+const currentRoute = computed<RoutesEnum>({
+	get: () => gameState.value.currentRoute,
+	set: (newRoute) => (gameState.value.currentRoute = newRoute)
+});
+const gamePhaseDetails = computed(() => gameState.value.gamePhase);
+const currentPhase = computed(() => gameState.value.gamePhase.phase);
+const unreadyPlayers = computed<IPlayer[]>(() => {
+	return gameState.value.players.filter((p) => !p.words.length);
+});
+const teams = computed(() => gameState.value.teams);
+const playersNotInATeam = computed(() => {
+	return gameState.value.players.filter((p) => !p.teamId);
+});
+
+const activeWord = computed<string>(() => {
+	return gameState.value.words.remaining[0];
+});
+const remainingWords = computed(() => gameState.value.words.remaining);
+const skippedWords = computed(() => gameState.value.words.skipped);
+const currentPlayerTurn = computed(() => {
+	const currentPlayerId =
+		gameState.value.turns.playersOrder[gameState.value.turns.currentPlayerIndex];
+	return gameState.value.players.find((player) => player.id === currentPlayerId)!;
+});
+const isNewTurn = computed({
+	get: () => gameState.value.turns.newTurn,
+	set: (value) => (gameState.value.turns.newTurn = value)
+});
+
+const teamLeaderboard = computed(() => {
+	return gameState.value.teams.sort((a, b) => b.score - a.score);
+});
+
+//--- settings
+const gameSettings = computed(() => gameState.value.gameSettings);
+const wordsPerPlayer = computed({
+	get: () => gameState.value.gameSettings.wordsPerPlayer,
+	set: (value) => (gameState.value.gameSettings.wordsPerPlayer = value)
+});
+const numberOfPlayers = computed({
+	get: () => gameState.value.gameSettings.numberOfPlayers,
+	set: (value) => (gameState.value.gameSettings.numberOfPlayers = value)
+});
+const numberOfTeams = computed({
+	get: () => gameState.value.gameSettings.numberOfTeams,
+	set: (value) => (gameState.value.gameSettings.numberOfTeams = value)
+});
+const timePerRound = computed({
+	get: () => gameState.value.gameSettings.timePerRound,
+	set: (value) => (gameState.value.gameSettings.timePerRound = value)
+});
+
 export default function useGameState() {
-	//---- computed values
-	const isPaused = computed(() => gameState.value.isPaused);
-	const currentRoute = computed<RoutesEnum>({
-		get: () => gameState.value.currentRoute,
-		set: (newRoute) => (gameState.value.currentRoute = newRoute)
-	});
-	const gameSettings = computed(() => gameState.value.gameSettings);
-	const gamePhase = computed(() => gameState.value.gamePhase);
-	const unreadyPlayers = computed<IPlayer[]>(() => {
-		return gameState.value.players.filter((p) => !p.words.length);
-	});
-	const remainingWords = computed(() => gameState.value.words.remaining);
+	let onGameStateChangeHandler: ((newGameState: GameState) => void) | undefined;
+
+	watch(
+		gameState,
+		(newGameState) => {
+			if (onGameStateChangeHandler) {
+				console.log('--- on game state change');
+				onGameStateChangeHandler(newGameState);
+			}
+		},
+		{ deep: true }
+	);
 
 	//---- getters
+	function getGameState(): IGameState {
+		return gameState.value;
+	}
+
 	function getPlayer(id: string): IPlayer {
 		return gameState.value.players.find((player) => player.id === id)!;
 	}
@@ -31,8 +90,26 @@ export default function useGameState() {
 		return gameState.value.teams.find((team) => team.id === id)!;
 	}
 
+	function addPlayerToTeam(playerId: string, newTeamId: string): void {
+		const player = getPlayer(playerId);
+		const currentTeam = player.teamId;
+
+		if (currentTeam) {
+			const oldTeam = gameState.value.teams.find((t) => t.id === currentTeam)!;
+			oldTeam.players = oldTeam.players.filter((playerId) => playerId !== player.id);
+		}
+
+		const team = gameState.value.teams.find((t) => t.id === newTeamId)!;
+		team.players.push(player.id);
+		player.teamId = newTeamId;
+	}
+
 	//---- setters
-	function updateGameState(newGameState: GameState): void {
+	function onGameStateChange(callback: (newGameState: GameState) => void) {
+		onGameStateChangeHandler = callback;
+	}
+
+	function syncGameState(newGameState: GameState): void {
 		gameState.value = newGameState;
 	}
 
@@ -41,7 +118,13 @@ export default function useGameState() {
 	}
 
 	function addPlayer(player: IPlayer) {
+		if (getPlayer(player.id)) return;
 		gameState.value.players.push(player);
+	}
+
+	function setPlayerWords(playerId: string, words: string[]): void {
+		const player = getPlayer(playerId);
+		player.words = words;
 	}
 
 	function scoreWord(teamId: string): void {
@@ -80,14 +163,17 @@ export default function useGameState() {
 		}
 		gameState.value.words.remaining = shuffledWords;
 		gameState.value.words.skipped = [];
+	}
 
-		// the next line should be in its won function?
+	function updateTurn(): void {
 		gameState.value.turns.currentPlayerIndex =
 			(gameState.value.turns.currentPlayerIndex + 1) %
 			gameState.value.turns.playersOrder.length;
+		gameState.value.turns.newTurn = true;
 	}
 
 	function initTeams(): void {
+		gameState.value.teams = [];
 		const colors = Object.values(ColorsEnum);
 		for (let i = 0; i < gameSettings.value.numberOfTeams; i++) {
 			const teamId = i + 1;
@@ -101,7 +187,8 @@ export default function useGameState() {
 	}
 
 	function initTurns(): void {
-		const teamPlayersStack = gameState.value.teams.map((t) => t.players);
+		if (gameState.value.turns.playersOrder.length) return;
+		const teamPlayersStack = gameState.value.teams.map((t) => [...t.players]);
 		const totalPlayers = gameState.value.teams.flatMap((t) => t.players).length;
 		const totalTeamsCount = gameState.value.teams.length;
 		const playersOrder = [];
@@ -125,20 +212,46 @@ export default function useGameState() {
 		gameState.value.gamePhase.description = GAME_PHASES_DESCRIPTIONS.get(curPhase) ?? '';
 	}
 
+	function reset(): void {
+		const oldSetting = gameState.value.gameSettings;
+		const oldPlayers = gameState.value.players;
+		gameState.value = new GameState();
+		gameState.value.gameSettings = oldSetting;
+		gameState.value.players = oldPlayers;
+	}
+
 	return {
+		activeWord,
+		teams,
+		currentPlayerTurn,
+		isNewTurn,
 		isPaused,
+		playersNotInATeam,
 		currentRoute,
-		gamePhase,
+		wordsPerPlayer,
+		numberOfPlayers,
+		numberOfTeams,
+		timePerRound,
+		gamePhaseDetails,
+		currentPhase,
+		teamLeaderboard,
 		unreadyPlayers,
 		remainingWords,
-		updateGameState,
+		skippedWords,
+		onGameStateChange,
+		getGameState,
+		syncGameState,
 		togglePause,
+		setPlayerWords,
 		addPlayer,
+		updateTurn,
+		addPlayerToTeam,
 		getPlayer,
 		getTeam,
 		scoreWord,
 		skipWord,
 		initTurns,
+		reset,
 		initTeams,
 		initWords,
 		resetWords,

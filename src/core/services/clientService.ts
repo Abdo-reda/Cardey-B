@@ -99,12 +99,12 @@ export class ClientService implements IClientService {
 			}
 
 			dataChannel.onopen = () => {
-				console.log('Data channel open');
+				console.log('Client webRTC Data channel open', this.onDataChannelOpen);
 				if (this.onDataChannelOpen) this.onDataChannelOpen();
 			};
 
 			dataChannel.onmessage = (event: MessageEvent<string>) => {
-				console.log('Client Service - Received data:', event.data);
+				// console.log('Client webRTC Service - Received message/data:', event.data);
 				const message = JSON.parse(event.data) as IMessage<any>;
 				if (this.onRecievedMessage) this.onRecievedMessage(message);
 			};
@@ -147,6 +147,13 @@ export class ClientService implements IClientService {
 	}
 
 	sendMessageToHost<E extends MessageMethodsEnum>(message: IMessage<E>): void {
-		this.dataChannel?.send(JSON.stringify(message));
+		// console.log('-- client webRTC sending message', JSON.stringify(message, this.jsonParser));
+		this.dataChannel?.send(JSON.stringify(message, this.jsonParser));
+	}
+
+	//TODO: I fucking hate this, but testing to see if this is the problem
+	private jsonParser(key: string, value: any) {
+		if (key == 'useGameState') return undefined;
+		return value;
 	}
 }

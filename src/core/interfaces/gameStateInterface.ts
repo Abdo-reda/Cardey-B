@@ -11,6 +11,7 @@ export interface IGameState {
 	turns: {
 		playersOrder: string[];
 		currentPlayerIndex: number;
+		newTurn: boolean;
 	};
 	words: {
 		remaining: string[];

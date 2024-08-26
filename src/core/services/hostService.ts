@@ -37,7 +37,7 @@ export class HostService implements IHostService {
 		playerIds.forEach((playerId) => {
 			const dataChannel = this.dataChannels.get(playerId);
 			if (dataChannel && dataChannel.readyState === 'open')
-				dataChannel.send(JSON.stringify(message));
+				dataChannel.send(JSON.stringify(message, this.jsonParser));
 		});
 	}
 
@@ -47,7 +47,11 @@ export class HostService implements IHostService {
 	): void {
 		this.dataChannels.forEach((dataChannel, playerId) => {
 			if (!exlucdedPlayerIds.includes(playerId) && dataChannel.readyState === 'open') {
-				dataChannel.send(JSON.stringify(message));
+				// console.log(
+				// 	'-- host webRTC sending message',
+				// 	JSON.stringify(message, this.jsonParser)
+				// );
+				dataChannel.send(JSON.stringify(message, this.jsonParser));
 			}
 		});
 	}
@@ -133,7 +137,7 @@ export class HostService implements IHostService {
 		};
 
 		dataChannel.onmessage = (event: MessageEvent<string>) => {
-			console.log(`Received data from player ${playerId}:`, event.data);
+			// console.log(`Received data from player ${playerId}:`, event.data);
 			const message = JSON.parse(event.data) as IMessage<any>;
 			if (this.onRecievedMessage) this.onRecievedMessage(playerId, message);
 		};
@@ -175,5 +179,10 @@ export class HostService implements IHostService {
 				}
 			});
 		});
+	}
+
+	private jsonParser(key: string, value: any) {
+		if (key == 'useGameState') return undefined;
+		return value;
 	}
 }

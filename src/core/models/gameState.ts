@@ -12,9 +12,11 @@ export class GameState implements IGameState {
 	turns: {
 		playersOrder: string[];
 		currentPlayerIndex: number;
+		newTurn: boolean;
 	} = {
 		playersOrder: [],
-		currentPlayerIndex: 0
+		currentPlayerIndex: -1,
+		newTurn: true
 	};
 	words: {
 		remaining: string[];

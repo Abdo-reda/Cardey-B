@@ -1,13 +1,13 @@
+import useGameState from '@/core/composables/useGameState';
 import { MESSAGES_MAP, type MessageMethodPayloadMap } from '@/core/constants/messagesMap';
 import { MessageMethodsEnum } from '@/core/enums/methodsEnum';
-import type { IGameState } from '@/core/interfaces/gameStateInterface';
 import type { IMessage } from '@/core/interfaces/messageInterfaces/messageInterface';
-import type { Ref } from 'vue';
 
 export class BaseMessage<E extends MessageMethodsEnum> implements IMessage<E> {
 	method: E;
 	senderId!: string;
 	data!: MessageMethodPayloadMap[E];
+	protected useGameState = useGameState();
 
 	constructor(method: E) {
 		this.method = method;
@@ -19,5 +19,5 @@ export class BaseMessage<E extends MessageMethodsEnum> implements IMessage<E> {
 		this.data = data;
 	}
 
-	handle(gameState: Ref<IGameState>): void {}
+	handle(): void {}
 }
