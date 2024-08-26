@@ -5,21 +5,12 @@ import router from '@/plugins/router'
 import { RoutesEnum } from '@/core/enums/routesEnum'
 import AvatarComponent from '@/components/AvatarComponent.vue'
 import { ColorsEnum } from '@/core/enums/colorsEnum';
-import { AvatarsEnum } from '@/core/enums/avatarsEnum';
 import { GameServiceKey } from '@/core/constants/injectionKeys';
-import type { IPlayer } from '@/core/interfaces/playerInterface';
+import usePlayer from '@/core/composables/usePlayer';
+import { AvatarsList } from '@/core/enums/avatarsEnum';
 
 const roomId = ref(router.currentRoute.value.query.roomId as string);
-const avatarsList = Object.values(AvatarsEnum);
-const player = reactive<IPlayer>({
-  id: '',
-  name: '',
-  avatar: avatarsList[Math.floor(Math.random() * avatarsList.length)],
-  isHost: true,
-  roomId: '',
-  teamId: '',
-  words: [],
-});
+const { player } = usePlayer();
 const gameService = inject(GameServiceKey)!;
 const showRoomId = ref(false);
 const isJoining = ref(false);
@@ -44,7 +35,6 @@ const { validate } = Form.useForm(player, rulesRef);
 
 function handleHostGameClick() {
   player.isHost = true;
-  gameService.setPlayerService(player)
   showRoomId.value = false;
   isJoining.value = false;
   validate()
@@ -58,7 +48,6 @@ function handleHostGameClick() {
 
 async function handleJoinGameClick() {
   player.isHost = false;
-  gameService.setPlayerService(player);
   if (showRoomId.value) isJoining.value = true;
 
   try {
@@ -67,7 +56,7 @@ async function handleJoinGameClick() {
     if (isJoining.value) {
       loadingJoin.value = true;
       await gameService.joinGameAsync();
-      loadingJoin.value = false;
+      // loadingJoin.value = false;
       // The host will route the player if he joined .... 
       // router.push({ name: RoutesEnum.LOBBY }); 
     }
@@ -83,9 +72,9 @@ async function handleJoinGameClick() {
 
 function changeAvatarIcon(): void {
   console.log("Avatar Icon Changed")
-  const currentIndex = avatarsList.indexOf(player.avatar);
-  const nextIndex = (currentIndex + 1) % avatarsList.length;
-  player.avatar = avatarsList[nextIndex];
+  const currentIndex = AvatarsList.indexOf(player.avatar);
+  const nextIndex = (currentIndex + 1) % AvatarsList.length;
+  player.avatar = AvatarsList[nextIndex];
 }
 
 watch(
@@ -106,7 +95,7 @@ watch(
 <template>
   <div class="h-full">
     <div class="text-center p-4">
-      <p class="font-origami text-6xl text-white drop-shadow-md title"> Cardy-B Game </p>
+      <p class="font-origami text-6xl text-white font-stroke-gray-400 font-stroke title"> Cardy-B Game </p>
     </div>
     <div class="flex flex-col items-center justify-center m-4 p-4">
       <Form :model="player">
@@ -136,9 +125,3 @@ watch(
     </div>
   </div>
 </template>
-
-<style>
-.title {
-  -webkit-text-stroke: 0.5px gray;
-}
-</style>

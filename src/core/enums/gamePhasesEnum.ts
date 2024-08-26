@@ -1,8 +1,12 @@
 export enum GamePhasesEnum {
+	NONE = 'None',
 	PHASE_ONE = 'One',
 	PHASE_TWO = 'Two',
-	PHASE_THREE = 'Three'
+	PHASE_THREE = 'Three',
+	DONE = 'DONE'
 }
+
+export const GAME_PHASES = Object.values(GamePhasesEnum);
 
 export const GAME_PHASES_DESCRIPTIONS = new Map<GamePhasesEnum, string>([
 	[

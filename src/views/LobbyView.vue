@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import AvatarComponent from '@/components/AvatarComponent.vue';
+import useGameState from '@/core/composables/useGameState';
+import usePlayer from '@/core/composables/usePlayer';
 import { GameServiceKey } from '@/core/constants/injectionKeys';
 import { ColorsEnum } from '@/core/enums/colorsEnum';
 import { RoutesEnum } from '@/core/enums/routesEnum';
 import router from '@/plugins/router';
 import { AvatarGroup, Button, Card, message, TypographyTitle } from 'ant-design-vue';
-import { computed, inject } from 'vue';
+import { inject } from 'vue';
 
 const gameService = inject(GameServiceKey)!;
-const player = gameService.getCurrentPlayer();
+const { player } = usePlayer();
+const { playersNotInATeam, teams, getPlayer } = useGameState();
 
 function startGame() {
     gameService.goToBeginGame();
@@ -36,9 +39,7 @@ function joinTeam(teamId: string) {
     console.log("joinTeam - LobbyView");
 }
 
-const areAllPlayersJoined = computed(() => {
-    return gameService.gameState.value.players.filter(p => !p.teamId).length === 0;
-});
+
 
 </script>
 
@@ -53,33 +54,32 @@ const areAllPlayersJoined = computed(() => {
             <div class="overflow-auto">
                 <Card size="small" title="Players">
                     <div v-auto-animate>
-                        <template v-if="gameService.gameState.value.players.filter(p => !p.teamId).length">
+                        <template v-if="!!playersNotInATeam.length">
                             <div v-auto-animate class="flex flex-col gap-y-4 justify-center items-center">
-                                <div v-for="player in gameService.gameState.value.players.filter(p => !p.teamId)"
-                                    :key="player.id">
+                                <div v-for="player in playersNotInATeam" :key="player.id">
                                     <AvatarComponent class="size-10" :avatar-icon="player.avatar"
                                         :color="ColorsEnum.GRAY" :tooltip="player.name" />
                                 </div>
                             </div>
                         </template>
-                        <div v-else>
+                        <template v-else>
                             <p class="text-center text-gray-500 text-lg"> ... </p>
-                        </div>
+                        </template>
                     </div>
                 </Card>
             </div>
             <div class="w-4/6 max-w-md overflow-auto flex flex-col gap-y-2">
-                <div class="w-full" v-for="team in gameService.gameState.value.teams" :key="team.id">
+                <div class="w-full" v-for="team in teams" :key="team.id">
                     <Card class="h-36">
                         <template #title>
                             <div> {{ `Team ${team.id}` }} </div>
                         </template>
                         <div class="flex justify-between items-center">
-                            <AvatarGroup :max-count="3" size="large">
+                            <AvatarGroup :max-count="2" size="large">
                                 <template v-for="player in team.players" :key="player">
-                                    <AvatarComponent :avatar-icon="gameService.getPlayer(player).avatar"
-                                        :color="team.color" :tooltip="gameService.getPlayer(player).name">
-                                        {{ gameService.getPlayer(player).name }}
+                                    <AvatarComponent :avatar-icon="getPlayer(player).avatar" :color="team.color"
+                                        :tooltip="getPlayer(player).name">
+                                        {{ getPlayer(player).name }}
                                     </AvatarComponent>
                                 </template>
                             </AvatarGroup>
@@ -93,7 +93,7 @@ const areAllPlayersJoined = computed(() => {
         </div>
         <div class="row-span-2 flex justify-center gap-x-8">
             <Button size="large" class="font-semibold" type="link" @click="copyLink"> Copy Link </Button>
-            <Button :disabled="!areAllPlayersJoined" v-if="player.isHost" size="large" type="primary"
+            <Button :disabled="!!playersNotInATeam.length" v-if="player.isHost" size="large" type="primary"
                 @click="startGame">
                 Start
                 Game

@@ -1,4 +1,4 @@
-import { GAME_PHASES_DESCRIPTIONS, GamePhasesEnum } from '../enums/gamePhasesEnum';
+import { GamePhasesEnum } from '../enums/gamePhasesEnum';
 import { RoutesEnum } from '../enums/routesEnum';
 import type { IGameSettings } from '../interfaces/gameSettingsInterface';
 import type { IGameState } from '../interfaces/gameStateInterface';
@@ -8,19 +8,30 @@ import type { ITeam } from '../interfaces/teamInterface';
 export class GameState implements IGameState {
 	teams: ITeam[] = [];
 	players: IPlayer[] = [];
-	turns = {
+	isPaused = false;
+	turns: {
+		playersOrder: string[];
+		currentPlayerIndex: number;
+		newTurn: boolean;
+	} = {
 		playersOrder: [],
-		currentPlayerIndex: 0
+		currentPlayerIndex: -1,
+		newTurn: true
 	};
-	words = {
+	words: {
+		remaining: string[];
+		skipped: string[];
+		scored: string[];
+	} = {
 		remaining: [],
 		skipped: [],
 		scored: []
 	};
 	currentRoute: RoutesEnum = RoutesEnum.LOBBY;
 	gamePhase = {
-		phase: GamePhasesEnum.PHASE_ONE,
-		description: GAME_PHASES_DESCRIPTIONS.get(GamePhasesEnum.PHASE_ONE)!
+		index: 0,
+		phase: GamePhasesEnum.NONE,
+		description: ''
 	};
 	gameSettings: IGameSettings = {
 		numberOfPlayers: 5,
