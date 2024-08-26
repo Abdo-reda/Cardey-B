@@ -89,6 +89,7 @@ export class GameService implements IGameService {
 
 	restartGame(): void {
 		this.useGameState.reset();
+		this.switchAndUpdateRoute(RoutesEnum.LOBBY);
 	}
 
 	private syncGameState(gameState: IGameState): void {
