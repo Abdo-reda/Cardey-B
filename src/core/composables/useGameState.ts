@@ -70,7 +70,6 @@ export default function useGameState() {
 		gameState,
 		(newGameState) => {
 			if (onGameStateChangeHandler) {
-				console.log('--- on game state change');
 				onGameStateChangeHandler(newGameState);
 			}
 		},
@@ -165,7 +164,7 @@ export default function useGameState() {
 		gameState.value.words.skipped = [];
 	}
 
-	function updateTurn(): void {
+	function nextTurn(): void {
 		gameState.value.turns.currentPlayerIndex =
 			(gameState.value.turns.currentPlayerIndex + 1) %
 			gameState.value.turns.playersOrder.length;
@@ -215,9 +214,14 @@ export default function useGameState() {
 	function reset(): void {
 		const oldSetting = gameState.value.gameSettings;
 		const oldPlayers = gameState.value.players;
+		const oldTeams = gameState.value.teams;
 		gameState.value = new GameState();
 		gameState.value.gameSettings = oldSetting;
 		gameState.value.players = oldPlayers;
+		gameState.value.teams = oldTeams.map((t) => {
+			t.score = 0;
+			return t;
+		});
 	}
 
 	return {
@@ -244,7 +248,7 @@ export default function useGameState() {
 		togglePause,
 		setPlayerWords,
 		addPlayer,
-		updateTurn,
+		nextTurn,
 		addPlayerToTeam,
 		getPlayer,
 		getTeam,

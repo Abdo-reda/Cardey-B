@@ -7,7 +7,11 @@ export class UpdateTurnMessage extends BaseMessage<MessageMethodsEnum.UPDATE_TUR
 	}
 
 	handle(): void {
-		this.useGameState.resetWords();
-		this.useGameState.updateTurn();
+		if (this.data.newTurn) {
+			this.useGameState.nextTurn();
+			this.useGameState.resetWords();
+		} else {
+			this.useGameState.isNewTurn.value = false;
+		}
 	}
 }

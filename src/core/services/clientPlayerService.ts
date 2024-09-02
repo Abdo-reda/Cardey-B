@@ -37,7 +37,6 @@ export class ClientPlayerService extends BasePlayerService<IClientService> {
 	}
 
 	private sendJoinGame(): void {
-		console.log('==== sending message');
 		const msg = MESSAGES_MAP.get(MessageMethodsEnum.JOIN_GAME)!;
 		msg.init(this.player.id, this.player);
 		this.sendMessage(msg);
