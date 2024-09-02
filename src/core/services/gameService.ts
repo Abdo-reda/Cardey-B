@@ -51,15 +51,14 @@ export class GameService implements IGameService {
 		});
 	}
 
-	updateTurn(): void {
-		this.playerService.executeAndSendMessage(MessageMethodsEnum.UPDATE_TURN, {});
+	updateTurn(isNewTurn: boolean): void {
+		this.playerService.executeAndSendMessage(MessageMethodsEnum.UPDATE_TURN, {
+			newTurn: isNewTurn
+		});
 	}
 
 	goToNextGamePhase(): void {
-		console.log('--- going to next game phase', this.useGameState.currentPhase.value);
-		this.useGameState.nextPhase();
-		this.switchAndUpdateRoute(RoutesEnum.GAME_PHASE);
-		// this.syncGameState();
+		this.playerService.executeAndSendMessage(MessageMethodsEnum.UPDATE_PHASE, undefined);
 	}
 
 	goToBeginGame(): void {
@@ -70,7 +69,7 @@ export class GameService implements IGameService {
 	goToPlayingWord(): void {
 		this.useGameState.initWords();
 		this.useGameState.initTurns();
-		this.useGameState.updateTurn();
+		this.useGameState.nextTurn();
 		this.switchAndUpdateRoute(RoutesEnum.PLAYING_WORD);
 		// this.syncGameState();
 	}

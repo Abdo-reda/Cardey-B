@@ -1,1 +1,3 @@
-export interface IUpdateTurn {}
+export interface IUpdateTurn {
+	newTurn: boolean;
+}

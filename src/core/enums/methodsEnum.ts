@@ -4,5 +4,6 @@ export enum MessageMethodsEnum {
 	JOIN_GAME = 'joinGame',
 	UPDATE_WORDS = 'updateWords',
 	PLAY_WORD = 'playWord',
-	UPDATE_TURN = 'updateTurn'
+	UPDATE_TURN = 'updateTurn',
+	UPDATE_PHASE = 'updatePhase'
 }

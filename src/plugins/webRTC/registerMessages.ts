@@ -3,6 +3,7 @@ import { JoinTeamMessage } from '@/core/models/messages/joinTeamMessage';
 import { PlayerWordsMessage } from '@/core/models/messages/playerWordsMessage';
 import { PlayWordMessage } from '@/core/models/messages/playWordMessage';
 import { SyncMessage } from '@/core/models/messages/syncMessage';
+import { UpdatePhaseMessage } from '@/core/models/messages/updatePhaseMessage';
 import { UpdateTurnMessage } from '@/core/models/messages/updateTurnMessage';
 
 export default function () {
@@ -12,4 +13,5 @@ export default function () {
 	new PlayerWordsMessage();
 	new PlayWordMessage();
 	new UpdateTurnMessage();
+	new UpdatePhaseMessage();
 }

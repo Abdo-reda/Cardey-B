@@ -29,7 +29,7 @@ function scoreWord() {
 function onTimerFinish() {
     if (currentPlayerTurn.value.id === player.id) {
         gameService.playWord('skip');
-        gameService.updateTurn();
+        gameService.updateTurn(true);
     }
 }
 
@@ -39,21 +39,21 @@ watch(isNewTurn, (newValue) => {
     if (newValue) {
         timerFormat.value = 'mm:ss';
         timer.value = Date.now() + 1000 * timePerRound.value;
-        isNewTurn.value = false;
+        gameService.updateTurn(false);
     }
 }, { immediate: true });
 
-watch(remainingWords, (newValue, _) => {
+watch(() => [...remainingWords.value], (newValue, oldValue) => {
     if (currentPlayerTurn.value.id !== player.id) return;
     if (newValue.length !== 0) return;
-
+    if (newValue.length === oldValue.length) return;
     if (skippedWords.value.length === 0) {
         wordsAreDone.value = true;
         setTimeout(() => {
             gameService.goToNextGamePhase();
         }, 2000);
-    } else {
-        gameService.updateTurn();
+    } else if (oldValue.length === 1) {
+        gameService.updateTurn(true);
     }
 
 }, { deep: true });

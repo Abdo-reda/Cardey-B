@@ -16,6 +16,5 @@ export type MessageMethodPayloadMap = {
 	[MessageMethodsEnum.UPDATE_WORDS]: IPlayerWords;
 	[MessageMethodsEnum.PLAY_WORD]: IPlayWord;
 	[MessageMethodsEnum.UPDATE_TURN]: IUpdateTurn;
+	[MessageMethodsEnum.UPDATE_PHASE]: void;
 };
-
-//there will be an issue if the recievers will do something else, 5er enaha te5ayer fe el state
