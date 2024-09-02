@@ -4,15 +4,17 @@ import useGameState from '@/core/composables/useGameState';
 import usePlayer from '@/core/composables/usePlayer';
 import { GameServiceKey } from '@/core/constants/injectionKeys';
 import { Button, StatisticCountdown, TypographyParagraph, TypographyTitle } from 'ant-design-vue';
+import { formatCountdown } from 'ant-design-vue/es/statistic/utils';
 import { computed, inject, ref, watch } from 'vue';
 
 const gameService = inject(GameServiceKey)!;
 const { player } = usePlayer();
-const { timePerRound, remainingWords, activeWord, currentPlayerTurn, skippedWords, getTeam, isNewTurn } = useGameState();
+const { timePerRound, remainingWords, activeWord, currentPlayerTurn, skippedWords, getTeam, isNewTurn, isPaused } = useGameState();
 
 const timerFormat = ref('mm:ss');
 const wordsAreDone = ref(false);
 const timer = ref(Date.now() + 1000 * timePerRound.value);
+const recentTimer = ref(-1);
 
 const currentTeamTurn = computed(() => {
     return getTeam(currentPlayerTurn.value.teamId);
@@ -27,6 +29,7 @@ function scoreWord() {
 }
 
 function onTimerFinish() {
+    if (isPaused.value) return;
     if (currentPlayerTurn.value.id === player.id) {
         gameService.playWord('skip');
         gameService.updateTurn(true);
@@ -34,8 +37,7 @@ function onTimerFinish() {
 }
 
 watch(isNewTurn, (newValue) => {
-    if (!currentPlayerTurn.value) return;
-    if (player.id !== currentPlayerTurn.value.id) return;
+    if (!isCurrentPlayerTurn()) return;
     if (newValue) {
         timerFormat.value = 'mm:ss';
         timer.value = Date.now() + 1000 * timePerRound.value;
@@ -44,7 +46,7 @@ watch(isNewTurn, (newValue) => {
 }, { immediate: true });
 
 watch(() => [...remainingWords.value], (newValue, oldValue) => {
-    if (currentPlayerTurn.value.id !== player.id) return;
+    if (!isCurrentPlayerTurn()) return;
     if (newValue.length !== 0) return;
     if (newValue.length === oldValue.length) return;
     if (skippedWords.value.length === 0) {
@@ -58,8 +60,17 @@ watch(() => [...remainingWords.value], (newValue, oldValue) => {
 
 }, { deep: true });
 
+watch(isPaused, (newValue) => {
+    if (!isCurrentPlayerTurn()) return;
+    if (newValue) {
+        pauseTimer();
+    } else {
+        continueTimer();
+    }
+});
 
 function onTimerChange(timer: number) {
+    recentTimer.value = timer;
     if (timer <= 5000 && timerFormat.value !== 'ss:SSS') {
         timerFormat.value = 'ss:SSS';
     } else if (timer > 5000 && timerFormat.value !== 'mm:ss') {
@@ -67,7 +78,25 @@ function onTimerChange(timer: number) {
     }
 }
 
+function pauseTimer() {
+    console.log('-- pause timer')
+    const staticTimer = formatCountdown(timer.value, {
+        format: timerFormat.value,
+    });
+    timerFormat.value = staticTimer;
+    timer.value = -1;
+}
 
+function continueTimer() {
+    console.log('-- continue timer', recentTimer.value)
+    timer.value = Date.now() + recentTimer.value;
+    onTimerChange(recentTimer.value)
+}
+
+function isCurrentPlayerTurn() {
+    if (!currentPlayerTurn.value) return false;
+    return currentPlayerTurn.value.id === player.id;
+}
 
 // TODO: if there no remaining words, then we should go to the next phase
 // TODO: a button to pause the game? maybe only for the host
