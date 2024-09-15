@@ -3,8 +3,12 @@ import type { IHostService } from '../interfaces/hostServiceInterface';
 import {
 	addDoc,
 	collection,
+	doc,
 	DocumentReference,
+	getDoc,
 	onSnapshot,
+	setDoc,
+	Timestamp,
 	updateDoc,
 	type DocumentData
 } from 'firebase/firestore';
@@ -17,15 +21,16 @@ import type { MessageMethodsEnum } from '../enums/methodsEnum';
 //maybe create a wrapper for peer connection? extension methods and so on ... I am not sure
 
 export class HostService implements IHostService {
-	roomId: Ref<string>;
+	roomId: string;
 	peerConnections: Reactive<Map<string, RTCPeerConnection>>;
 	dataChannels: Reactive<Map<string, RTCDataChannel>>;
 
 	onPlayerJoinedDataChannel?: (playerId: string) => void;
+	onPlayerClosedDataChannel?: (playerId: string) => void;
 	onRecievedMessage?: (playerId: string, message: IMessage<any>) => void;
 
 	constructor() {
-		this.roomId = ref('');
+		this.roomId = '';
 		this.peerConnections = reactive(new Map());
 		this.dataChannels = reactive(new Map());
 	}
@@ -47,10 +52,6 @@ export class HostService implements IHostService {
 	): void {
 		this.dataChannels.forEach((dataChannel, playerId) => {
 			if (!exlucdedPlayerIds.includes(playerId) && dataChannel.readyState === 'open') {
-				// console.log(
-				// 	'-- host webRTC sending message',
-				// 	JSON.stringify(message, this.jsonParser)
-				// );
 				dataChannel.send(JSON.stringify(message, this.jsonParser));
 			}
 		});
@@ -58,12 +59,38 @@ export class HostService implements IHostService {
 
 	async createNewRoomAsync(): Promise<string> {
 		const roomsCollection = collection(cardeyBFireStore, FirestoreConstants.roomsCollection);
-		const newRoomDoc = await addDoc(roomsCollection, {});
+		const newRoomId = await this.getUniqueRoomIdAsync();
+		const roomDocRef = doc(roomsCollection, newRoomId);
+		await setDoc(roomDocRef, {});
 
-		console.log('--- Creating New room id: ', newRoomDoc.id);
-		this.listenToRoomJoinRequests(newRoomDoc);
-		this.roomId.value = newRoomDoc.id;
-		return newRoomDoc.id;
+		console.log('--- Creating New room id: ', roomDocRef.id);
+		this.listenToRoomJoinRequests(roomDocRef);
+		this.roomId = roomDocRef.id;
+		return roomDocRef.id;
+	}
+
+	private async getUniqueRoomIdAsync(): Promise<string> {
+		const roomsCollection = collection(cardeyBFireStore, FirestoreConstants.roomsCollection);
+		let newRoomId;
+		let roomRef;
+		let roomSnapshot;
+		do {
+			newRoomId = this.generateRoomId();
+			roomRef = doc(roomsCollection, newRoomId);
+			roomSnapshot = await getDoc(roomRef);
+		} while (roomSnapshot.exists());
+
+		return newRoomId;
+	}
+
+	private generateRoomId(): string {
+		const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+		let roomId = '';
+		for (let i = 0; i < 4; i++) {
+			const randomIndex = Math.floor(Math.random() * characters.length);
+			roomId += characters[randomIndex];
+		}
+		return roomId;
 	}
 
 	private listenToRoomJoinRequests(roomDoc: DocumentReference<DocumentData, DocumentData>): void {
@@ -140,6 +167,11 @@ export class HostService implements IHostService {
 			// console.log(`Received data from player ${playerId}:`, event.data);
 			const message = JSON.parse(event.data) as IMessage<any>;
 			if (this.onRecievedMessage) this.onRecievedMessage(playerId, message);
+		};
+
+		dataChannel.onclose = () => {
+			console.log(`Data channel closed with player ${playerId}`);
+			if (this.onPlayerClosedDataChannel) this.onPlayerClosedDataChannel(playerId);
 		};
 
 		this.dataChannels.set(playerId, dataChannel);

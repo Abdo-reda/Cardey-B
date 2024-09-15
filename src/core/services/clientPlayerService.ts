@@ -4,6 +4,7 @@ import type { IClientService } from '../interfaces/clientServiceInterface';
 import { MessageMethodsEnum } from '../enums/methodsEnum';
 import { MESSAGES_MAP } from '../constants/messagesMap';
 import { BasePlayerService } from './basePlayerService';
+import { message } from 'ant-design-vue';
 
 export class ClientPlayerService extends BasePlayerService<IClientService> {
 	constructor(clientService: IClientService, player: IPlayer) {
@@ -23,6 +24,10 @@ export class ClientPlayerService extends BasePlayerService<IClientService> {
 		this.service.onDataChannelOpen = () => {
 			console.log('----- Client on Data channel open');
 			this.sendJoinGame();
+		};
+
+		this.service.onDataChannelClosed = () => {
+			message.error('Lost Connection To Host!');
 		};
 	}
 

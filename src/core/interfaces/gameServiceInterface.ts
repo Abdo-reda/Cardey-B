@@ -11,4 +11,5 @@ export interface IGameService {
 	goToPlayingWord: () => void;
 	restartGame: () => void;
 	updateWords: (reset: boolean, words: string[]) => void;
+	testMessage: (message: string) => void;
 }

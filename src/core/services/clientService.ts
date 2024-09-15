@@ -22,6 +22,7 @@ export class ClientService implements IClientService {
 	dataChannel: RTCDataChannel | undefined;
 	onRecievedMessage?: (message: IMessage<any>) => void;
 	onDataChannelOpen?: () => void;
+	onDataChannelClosed?: () => void;
 
 	constructor() {
 		this.roomId = ref('');
@@ -107,6 +108,11 @@ export class ClientService implements IClientService {
 				// console.log('Client webRTC Service - Received message/data:', event.data);
 				const message = JSON.parse(event.data) as IMessage<any>;
 				if (this.onRecievedMessage) this.onRecievedMessage(message);
+			};
+
+			dataChannel.onclose = () => {
+				console.log('Data Channel with Host is closed!');
+				if (this.onDataChannelClosed) this.onDataChannelClosed();
 			};
 		};
 	}

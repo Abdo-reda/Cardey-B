@@ -17,6 +17,9 @@ export class HostPlayerService extends BasePlayerService<IHostService> {
 			console.log('--- Message recieved from player (client): ', playerId, message);
 			this.handleMessage(message);
 		};
+		this.service.onPlayerClosedDataChannel = (playerId: string) => {
+			this.executeAndSendMessage(MessageMethodsEnum.PLAYER_DISCONNECTED, playerId);
+		};
 	}
 
 	sendMessage<E extends MessageMethodsEnum>(message: IMessage<E>): void {

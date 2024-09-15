@@ -1,10 +1,11 @@
 // const response = await fetch(
-// 	'https://nopoint.metered.live/api/v1/turn/credentials?apiKey=e62753d56437cdc95f9a8438b08e31f0824a'
+// 	'https://nopoint.metered.live/api/v1/turn/credentials?apiKey='
 // );
 
 // const iceServers = await response.json();
 
 export class FirestoreConstants {
+	static readonly roomExpirationTime = 60 * 1000; // 1 hour
 	static readonly roomsCollection = 'rooms';
 	static readonly joinRequestsCollection = 'joinRequests';
 	static readonly offerCandidatesCollection = 'offerCandidates';
@@ -28,7 +29,7 @@ export class FirestoreConstants {
 			// 	urls: 'turn:global.relay.metered.ca:443',
 			// 	username: '5ccc1de30a12eff95ed85ab9',
 			// 	credential: 'ri6WxJNyd6kpwDVU'
-			// }
+			// },
 			// {
 			// 	urls: 'turns:global.relay.metered.ca:443?transport=tcp',
 			// 	username: '5ccc1de30a12eff95ed85ab9',

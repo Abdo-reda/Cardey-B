@@ -91,6 +91,10 @@ export class GameService implements IGameService {
 		this.switchAndUpdateRoute(RoutesEnum.LOBBY);
 	}
 
+	testMessage(message: string): void {
+		this.playerService.executeAndSendMessage(MessageMethodsEnum.TEST, message);
+	}
+
 	private syncGameState(gameState: IGameState): void {
 		this.playerService.syncGameState(gameState);
 	}

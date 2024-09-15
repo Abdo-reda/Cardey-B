@@ -1,0 +1,14 @@
+//---- TODAY
+
+
+-   [ ] Host state, reconnect w el klam dah
+- [ ] Quit and reset game
+
+
+
+//
+
+-   [x] Make room ids accessible. (four digits/letters)
+-   [ ] removing unused rooms from firebase //unsolvable, we can however, delete rooms when the host "disconnects" closes the tab or someshit?
+-   [x] Test turn servers and stuff //GAMED
+- [x] disconnected messages :)

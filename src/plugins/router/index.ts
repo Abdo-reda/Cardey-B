@@ -6,6 +6,7 @@ import HomeView from '@/views/HomeView.vue';
 import LobbyView from '@/views/LobbyView.vue';
 import PlayingWordView from '@/views/PlayingWordView.vue';
 import { createRouter, createWebHistory } from 'vue-router';
+import DebugView from '@/views/DebugView.vue';
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,6 +40,11 @@ const router = createRouter({
 			path: '/playing-word',
 			name: RoutesEnum.PLAYING_WORD,
 			component: PlayingWordView
+		},
+		{
+			path: '/debug',
+			name: RoutesEnum.DEBUG,
+			component: DebugView
 		},
 		{
 			path: '/:pathMatch(.*)*',

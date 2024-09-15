@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { Button, ConfigProvider, Modal, PageHeader, Result } from 'ant-design-vue';
 import { RouterView } from 'vue-router'
-import { SettingOutlined, FormatPainterOutlined, PauseCircleFilled, PlayCircleFilled } from '@ant-design/icons-vue';
+import { SettingOutlined, FormatPainterOutlined, PauseCircleFilled, PlayCircleFilled, BugOutlined } from '@ant-design/icons-vue';
 import { inject, ref } from 'vue';
 import router from '@/plugins/router'
 import useTheme from './core/composables/useTheme';
 import { GameServiceKey } from './core/constants/injectionKeys';
 import useGameState from './core/composables/useGameState';
 import usePlayer from './core/composables/usePlayer';
+import { RoutesEnum } from './core/enums/routesEnum';
 
 const gameService = inject(GameServiceKey)!;
 const { player } = usePlayer();
@@ -25,6 +26,11 @@ function goBack() {
 
 function togglePause() {
   gameService.togglePause();
+}
+
+function goToDebug() {
+  settingsOpen.value = false;
+  router.push({ name: RoutesEnum.DEBUG });
 }
 
 
@@ -53,7 +59,6 @@ function togglePause() {
                   <SettingOutlined />
                 </template>
               </Button>
-              <!-- TODO: maybe add a pause button here -->
               <Button v-if="player.isHost" @click="togglePause" size="large"
                 class="flex flex-col justify-center items-center text-gray-400 dark:text-gray-300" type="default"
                 shape="circle">
@@ -72,11 +77,23 @@ function togglePause() {
         </Transition>
       </RouterView>
     </main>
+    <!-- Setting Modal -->
     <Modal v-model:open="settingsOpen" title="Settings" :closable="false">
-      <p>Random settings like audio</p>
+      <div>
+        <div class="m-8">
+          <p>Random settings like audio</p>
+        </div>
+        <Button @click="goToDebug" danger class="flex justify-center items-center">
+          Debug
+          <template #icon>
+            <BugOutlined />
+          </template>
+        </Button>
+      </div>
       <template #footer>
       </template>
     </Modal>
+    <!-- Pause Modal -->
     <Modal :centered="true" :keyboard="false" :maskClosable="false" v-model:open="isPaused" :closable="false">
       <Result sub-title="only the host can unpause">
         <template #title>

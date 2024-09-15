@@ -1,13 +1,14 @@
-import type { Reactive, Ref } from 'vue';
+import type { Reactive } from 'vue';
 import type { IMessage } from './messageInterfaces/messageInterface';
 import type { MessageMethodsEnum } from '../enums/methodsEnum';
 
 export interface IHostService {
-	roomId: Ref<string>;
+	roomId: string;
 	peerConnections: Reactive<Map<string, RTCPeerConnection>>;
 	dataChannels: Reactive<Map<string, RTCDataChannel>>;
 
 	onPlayerJoinedDataChannel?: (playerId: string) => void;
+	onPlayerClosedDataChannel?: (playerId: string) => void;
 	onRecievedMessage?: (playerId: string, message: IMessage<any>) => void;
 	sendMessageToPlayers: <E extends MessageMethodsEnum>(
 		message: IMessage<E>,
