@@ -4,7 +4,9 @@ import type { IClientService } from '../interfaces/clientServiceInterface';
 import { MessageMethodsEnum } from '../enums/methodsEnum';
 import { MESSAGES_MAP } from '../constants/messagesMap';
 import { BasePlayerService } from './basePlayerService';
-import { message } from 'ant-design-vue';
+import { message } from 'ant-design-vue'
+import router from '@/plugins/router'
+import { RoutesEnum } from '@/core/enums/routesEnum'
 
 export class ClientPlayerService extends BasePlayerService<IClientService> {
 	constructor(clientService: IClientService, player: IPlayer) {
@@ -27,6 +29,8 @@ export class ClientPlayerService extends BasePlayerService<IClientService> {
 		};
 
 		this.service.onDataChannelClosed = () => {
+			this.disconnect();
+			router.push({ name: RoutesEnum.HOME });
 			message.error('Lost Connection To Host!');
 		};
 	}

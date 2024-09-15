@@ -38,4 +38,8 @@ export class HostPlayerService extends BasePlayerService<IHostService> {
 		msg.init(this.player.id, gameState);
 		this.sendMessage(msg);
 	}
+	
+	disconnect(): void {
+		this.service.disconnect();
+	}
 }

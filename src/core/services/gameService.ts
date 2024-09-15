@@ -9,7 +9,8 @@ import type { IGameState } from '../interfaces/gameStateInterface';
 import type { IPlayer } from '../interfaces/playerInterface';
 import type { ComputedRef, Reactive } from 'vue';
 import usePlayer from '../composables/usePlayer';
-import { message } from 'ant-design-vue'
+import { Player } from '@/core/models/player'
+import { SessionStorageEnum } from '@/core/enums/sesionStorageEnum'
 
 export class GameService implements IGameService {
 	playerServiceContext!: ComputedRef<IPlayerService>;
@@ -97,7 +98,11 @@ export class GameService implements IGameService {
 	}
 	
 	quitGame(): void{
+		const newPlayer = new Player();
+		newPlayer.name = this.player.name;
 		this.playerService.disconnect();
+		Object.assign(this.player, newPlayer);
+		sessionStorage.removeItem(SessionStorageEnum.PLAYER_STATE);
 	}
 
 	private syncGameState(gameState: IGameState): void {

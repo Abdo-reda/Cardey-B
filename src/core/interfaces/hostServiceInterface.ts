@@ -19,4 +19,5 @@ export interface IHostService {
 		exlucdedPlayerIds: string[]
 	) => void;
 	createNewRoomAsync: () => Promise<string>;
+	disconnect: () => void;
 }
