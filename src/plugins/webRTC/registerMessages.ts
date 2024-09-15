@@ -7,7 +7,6 @@ import { SyncMessage } from '@/core/models/messages/syncMessage';
 import { TestMessage } from '@/core/models/messages/testMessage';
 import { UpdatePhaseMessage } from '@/core/models/messages/updatePhaseMessage';
 import { UpdateTurnMessage } from '@/core/models/messages/updateTurnMessage';
-import { DestroyGameMessage } from '@/core/models/messages/destroyGameMessage'
 
 export default function () {
 	new JoinGameMessage();
@@ -19,5 +18,4 @@ export default function () {
 	new UpdatePhaseMessage();
 	new TestMessage();
 	new PlayerDisconnectedMessage();
-	new DestroyGameMessage();
 }
