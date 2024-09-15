@@ -11,11 +11,15 @@ import { AvatarGroup, Button, Card, message, TypographyTitle } from 'ant-design-
 import { inject } from 'vue';
 
 const gameService = inject(GameServiceKey)!;
-const { player } = usePlayer();
+const { currentPlayer } = usePlayer();
 const { playersNotInATeam, teams, getPlayer } = useGameState();
 
 function startGame() {
     gameService.goToBeginGame();
+}
+
+function randomiseTeams() {
+    gameService.randomiseTeams();
 }
 
 function copyLink() {
@@ -42,7 +46,7 @@ async function shareLink() {
 }
 
 function copyCode() {
-    navigator.clipboard.writeText(player.roomId);
+    navigator.clipboard.writeText(currentPlayer.roomId);
     console.log("--- copy code ---");
     message.info('Code Copied Successfully');
 }
@@ -55,7 +59,7 @@ function joinTeam(teamId: string) {
 function getRoomUrl(): string {
     const url = router.resolve({
         name: RoutesEnum.HOME,
-        query: { roomId: player.roomId },
+        query: { roomId: currentPlayer.roomId },
     });
     const roomUrl = `${window.location.origin}${url.href}`
     console.log('--- room url', roomUrl);
@@ -65,13 +69,18 @@ function getRoomUrl(): string {
 
 
 </script>
-
+<style scoped>
+.current-player /deep/ .ant-avatar {
+  border: 2px solid aqua !important;
+}
+</style>
 <template>
     <div class="grid p-4">
         <div class="row-span-2">
             <TypographyTitle class="text-center" :level=2> Lobby </TypographyTitle>
             <TypographyTitle @click="copyCode" class="text-center hover:cursor-pointer underline italic !m-0" :level=3>
-                {{ player.roomId }} </TypographyTitle>
+              {{ currentPlayer.roomId }}
+            </TypographyTitle>
         </div>
         <div class="row-span-8 overflow-auto my-6 w-full flex gap-x-4 justify-center">
             <div class="overflow-auto">
@@ -97,16 +106,21 @@ function getRoomUrl(): string {
                         <template #title>
                             <div> {{ `Team ${team.id}` }} </div>
                         </template>
-                        <div class="flex justify-between items-center">
+                        <div class="flex justify-between items-center ">
                             <AvatarGroup :max-count="2" size="large">
                                 <template v-for="player in team.players" :key="player">
-                                    <AvatarComponent :avatar-icon="getPlayer(player).avatar" :color="team.color"
-                                        :tooltip="getPlayer(player).name">
-                                        {{ getPlayer(player).name }}
+                                  <div v-bind:class="{'current-player' : player == currentPlayer.id}">
+                                    <AvatarComponent
+                                      :class="''"
+                                      :avatar-icon="getPlayer(player).avatar"
+                                      :color="team.color"
+                                      :tooltip="getPlayer(player).name">
+                                      {{ getPlayer(player).name }}
                                     </AvatarComponent>
+                                  </div>
                                 </template>
                             </AvatarGroup>
-                            <Button v-if="player.teamId !== team.id" :danger="false" @click="joinTeam(team.id)">
+                            <Button v-if="currentPlayer.teamId !== team.id" :danger="false" @click="joinTeam(team.id)">
                                 Join </Button>
                             <Button v-else :danger="true"> Leave </Button>
                         </div>
@@ -123,9 +137,13 @@ function getRoomUrl(): string {
                     <CopyOutlined /> Copy Link
                 </Button>
             </div>
-            <div class="flex justify-center">
-                <Button :disabled="!!playersNotInATeam.length" v-if="player.isHost" size="large" type="primary"
-                    @click="startGame">
+            <div class="flex justify-center gap-4">
+              <Button v-if="currentPlayer.isHost" size="large" type="primary"
+                      @click="randomiseTeams">
+                Randomise teams
+              </Button>
+                <Button :disabled="!!playersNotInATeam.length" v-if="currentPlayer.isHost" size="large" type="primary"
+                        @click="startGame">
                     Start
                     Game
                 </Button>

@@ -23,9 +23,9 @@ export class GameService implements IGameService {
 			this.syncGameState(newGameState); //ENHANCEMENT: The downside: too many syncing. upside: don't need to worry about syncing when game state changes.
 		});
 
-		const { player, playerService } = usePlayer();
+		const { currentPlayer, playerService } = usePlayer();
 		this.playerServiceContext = playerService;
-		this.player = player;
+		this.player = currentPlayer;
 	}
 
 	async joinGameAsync(): Promise<void> {
@@ -120,5 +120,9 @@ export class GameService implements IGameService {
 		console.log('-- switching and updating route', route);
 		this.useGameState.currentRoute.value = route;
 		router.push({ name: route });
+	}
+	
+	randomiseTeams(){
+		this.useGameState.randomiseTeams();
 	}
 }

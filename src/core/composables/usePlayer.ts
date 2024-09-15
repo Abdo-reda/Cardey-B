@@ -41,7 +41,7 @@ function initPlayerState() {
 
 export default function usePlayer() {
 	return {
-		player,
+		currentPlayer: player,
 		playerService,
 		initPlayerState
 	};

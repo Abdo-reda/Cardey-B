@@ -14,7 +14,7 @@ interface IWordField {
 }
 
 const gameService = inject(GameServiceKey)!;
-const { player } = usePlayer();
+const { currentPlayer } = usePlayer();
 const { unreadyPlayers, wordsPerPlayer } = useGameState();
 
 const formRef = ref<FormInstance>();
@@ -123,7 +123,7 @@ initWords(wordsPerPlayer.value);
                 </template>
             </Card>
         </div>
-        <div v-if="player.isHost" class="row-span-2 flex justify-center gap-x-8">
+        <div v-if="currentPlayer.isHost" class="row-span-2 flex justify-center gap-x-8">
             <Button :disabled="!!unreadyPlayers.length" size="large" type="primary" @click="StartFirstPhase"> Start
                 First
                 Phase </Button>
