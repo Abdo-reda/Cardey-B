@@ -45,7 +45,8 @@ function goToDebug() {
 
 function handleGoBack() {
   if (router.currentRoute.value.name === RoutesEnum.CREATE_GAME) {
-    quitGame();
+    quitModalOpen.value = false;
+    router.push({ name: RoutesEnum.HOME });
     return;
   }
   quitModalOpen.value = true;

@@ -5,6 +5,7 @@ import type { IGameState } from '../interfaces/gameStateInterface';
 import { MessageMethodsEnum } from '../enums/methodsEnum';
 import { MESSAGES_MAP } from '../constants/messagesMap';
 import { BasePlayerService } from './basePlayerService';
+import { GameState } from '@/core/models/gameState'
 
 export class HostPlayerService extends BasePlayerService<IHostService> {
 	constructor(hostService: IHostService, player: IPlayer) {
@@ -41,5 +42,6 @@ export class HostPlayerService extends BasePlayerService<IHostService> {
 	
 	disconnect(): void {
 		this.service.disconnect();
+		super.disconnect();
 	}
 }

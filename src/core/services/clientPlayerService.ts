@@ -53,5 +53,6 @@ export class ClientPlayerService extends BasePlayerService<IClientService> {
 	
 	disconnect(): void {
 		this.service.disconnect();
+		super.disconnect();
 	}
 }
