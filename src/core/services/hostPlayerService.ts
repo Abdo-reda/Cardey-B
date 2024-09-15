@@ -5,6 +5,7 @@ import type { IGameState } from '../interfaces/gameStateInterface';
 import { MessageMethodsEnum } from '../enums/methodsEnum';
 import { MESSAGES_MAP } from '../constants/messagesMap';
 import { BasePlayerService } from './basePlayerService';
+import { GameState } from '@/core/models/gameState'
 
 export class HostPlayerService extends BasePlayerService<IHostService> {
 	constructor(hostService: IHostService, player: IPlayer) {
@@ -16,6 +17,9 @@ export class HostPlayerService extends BasePlayerService<IHostService> {
 		this.service.onRecievedMessage = (playerId: string, message: IMessage<any>) => {
 			console.log('--- Message recieved from player (client): ', playerId, message);
 			this.handleMessage(message);
+		};
+		this.service.onPlayerClosedDataChannel = (playerId: string) => {
+			this.executeAndSendMessage(MessageMethodsEnum.PLAYER_DISCONNECTED, playerId);
 		};
 	}
 
@@ -34,5 +38,10 @@ export class HostPlayerService extends BasePlayerService<IHostService> {
 		const msg = MESSAGES_MAP.get(MessageMethodsEnum.SYNC)!;
 		msg.init(this.player.id, gameState);
 		this.sendMessage(msg);
+	}
+	
+	disconnect(): void {
+		this.service.disconnect();
+		super.disconnect();
 	}
 }

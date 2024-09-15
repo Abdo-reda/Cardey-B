@@ -19,9 +19,11 @@ import type { MessageMethodsEnum } from '../enums/methodsEnum';
 export class ClientService implements IClientService {
 	roomId: Ref<string>;
 	peerConnection: RTCPeerConnection | undefined;
+	private isDisconnectedFlag = false;
 	dataChannel: RTCDataChannel | undefined;
 	onRecievedMessage?: (message: IMessage<any>) => void;
 	onDataChannelOpen?: () => void;
+	onDataChannelClosed?: () => void;
 
 	constructor() {
 		this.roomId = ref('');
@@ -87,6 +89,7 @@ export class ClientService implements IClientService {
 				};
 
 				await updateDoc(joinRequestRef, { answer });
+				this.isDisconnectedFlag = false;
 			}
 		});
 	}
@@ -107,6 +110,11 @@ export class ClientService implements IClientService {
 				// console.log('Client webRTC Service - Received message/data:', event.data);
 				const message = JSON.parse(event.data) as IMessage<any>;
 				if (this.onRecievedMessage) this.onRecievedMessage(message);
+			};
+
+			dataChannel.onclose = () => {
+				console.log('Data Channel with Host is closed!');
+				if (this.onDataChannelClosed && !this.isDisconnectedFlag) this.onDataChannelClosed();
 			};
 		};
 	}
@@ -155,5 +163,12 @@ export class ClientService implements IClientService {
 	private jsonParser(key: string, value: any) {
 		if (key == 'useGameState') return undefined;
 		return value;
+	}
+
+	disconnect(): void{
+		this.isDisconnectedFlag = true;
+		this.dataChannel?.close();
+		this.peerConnection?.close(); // close? 🤔
+		this.peerConnection = undefined;
 	}
 }

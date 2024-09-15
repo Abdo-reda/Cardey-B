@@ -223,6 +223,33 @@ export default function useGameState() {
 			return t;
 		});
 	}
+	
+	function removePlayer(playerId : string): void{
+		// Update game state
+		// Remove from players array
+		// If Current player, new turn
+		
+		
+		// Update turn if i am current player
+		if (currentPlayerTurn.value != null && currentPlayerTurn.value.id === playerId){
+			nextTurn();
+		}
+		
+		// Remove from playersOrder
+		gameState.value.turns.playersOrder = gameState.value.turns.playersOrder.filter((player) => player !== playerId);
+		
+		// Remove from teams
+		gameState.value.teams.forEach((team) => {
+			team.players = team.players.filter((player) => player !== playerId);
+		})
+		
+		// Remove from players
+		gameState.value.players = gameState.value.players.filter((player) => player.id !== playerId);
+	}
+	
+	function terminateGame(): void{
+		
+	}
 
 	return {
 		activeWord,
@@ -259,6 +286,8 @@ export default function useGameState() {
 		initTeams,
 		initWords,
 		resetWords,
-		nextPhase
+		nextPhase,
+		removePlayer,
+		terminateGame
 	};
 }

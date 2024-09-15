@@ -6,6 +6,7 @@ import { GameServiceKey } from '@/core/constants/injectionKeys';
 import { ColorsEnum } from '@/core/enums/colorsEnum';
 import { RoutesEnum } from '@/core/enums/routesEnum';
 import router from '@/plugins/router';
+import { CopyOutlined, ShareAltOutlined } from '@ant-design/icons-vue';
 import { AvatarGroup, Button, Card, message, TypographyTitle } from 'ant-design-vue';
 import { inject } from 'vue';
 
@@ -18,14 +19,26 @@ function startGame() {
 }
 
 function copyLink() {
-    const url = router.resolve({
-        name: RoutesEnum.HOME,
-        query: { roomId: player.roomId },
-    });
-    console.log(`${window.location.origin}${url.href}`);
-    navigator.clipboard.writeText(`${window.location.origin}${url.href}`);
+    const roomUrl = getRoomUrl();
+    navigator.clipboard.writeText(roomUrl);
     console.log("--- copy link ---");
     message.info('Link Copied Successfully');
+}
+
+async function shareLink() {
+    const roomUrl = getRoomUrl();
+    try {
+        await navigator.share({
+            title: "Cardy-B",
+            text: "Cardy-B Room Url, join for a game!",
+            url: roomUrl,
+        })
+        message.info("Shared succesffully")
+    } catch (error) {
+        console.log("-- could not share");
+        console.log(error);
+        message.error("Could not share, did you grant permissions?");
+    }
 }
 
 function copyCode() {
@@ -37,6 +50,16 @@ function copyCode() {
 function joinTeam(teamId: string) {
     gameService.joinTeam(teamId);
     console.log("joinTeam - LobbyView");
+}
+
+function getRoomUrl(): string {
+    const url = router.resolve({
+        name: RoutesEnum.HOME,
+        query: { roomId: player.roomId },
+    });
+    const roomUrl = `${window.location.origin}${url.href}`
+    console.log('--- room url', roomUrl);
+    return roomUrl;
 }
 
 
@@ -91,13 +114,22 @@ function joinTeam(teamId: string) {
                 </div>
             </div>
         </div>
-        <div class="row-span-2 flex justify-center gap-x-8">
-            <Button size="large" class="font-semibold" type="link" @click="copyLink"> Copy Link </Button>
-            <Button :disabled="!!playersNotInATeam.length" v-if="player.isHost" size="large" type="primary"
-                @click="startGame">
-                Start
-                Game
-            </Button>
+        <div class="row-span-2 flex flex-col gap-4 ">
+            <div class="flex justify-center gap-x-8">
+                <Button size="large" class="font-semibold" type="link" @click="shareLink">
+                    <ShareAltOutlined /> Share Link
+                </Button>
+                <Button size="large" class="font-semibold" type="link" @click="copyLink">
+                    <CopyOutlined /> Copy Link
+                </Button>
+            </div>
+            <div class="flex justify-center">
+                <Button :disabled="!!playersNotInATeam.length" v-if="player.isHost" size="large" type="primary"
+                    @click="startGame">
+                    Start
+                    Game
+                </Button>
+            </div>
         </div>
     </div>
 </template>

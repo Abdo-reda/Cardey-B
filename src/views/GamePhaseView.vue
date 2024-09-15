@@ -74,7 +74,7 @@ function next() {
                 </div>
             </Card>
         </div>
-        <div v-if="player.isHost" class="row-span-2 flex justify-center gap-x-8">
+        <div v-if="player.isHost" class="flex justify-center gap-x-8">
             <Button size="large" type="primary" @click="next"> {{ isGameDone ? 'Play Again?' : 'Start Phase' }}
             </Button>
         </div>

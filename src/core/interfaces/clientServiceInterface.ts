@@ -8,6 +8,8 @@ export interface IClientService {
 	roomId: Ref<string>;
 	onRecievedMessage?: (message: IMessage<any>) => void;
 	onDataChannelOpen?: () => void;
+	onDataChannelClosed?: () => void;
 	createJoinRequestAsync: (roomId: string) => Promise<string>;
 	sendMessageToHost: <E extends MessageMethodsEnum>(message: IMessage<E>) => void;
+	disconnect: () => void;
 }

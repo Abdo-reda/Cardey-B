@@ -5,5 +5,7 @@ export enum MessageMethodsEnum {
 	UPDATE_WORDS = 'updateWords',
 	PLAY_WORD = 'playWord',
 	UPDATE_TURN = 'updateTurn',
-	UPDATE_PHASE = 'updatePhase'
+	UPDATE_PHASE = 'updatePhase',
+	TEST = 'sendMessage',
+	PLAYER_DISCONNECTED = 'playerDisconnected'
 }

@@ -4,6 +4,9 @@ import type { IClientService } from '../interfaces/clientServiceInterface';
 import { MessageMethodsEnum } from '../enums/methodsEnum';
 import { MESSAGES_MAP } from '../constants/messagesMap';
 import { BasePlayerService } from './basePlayerService';
+import { message } from 'ant-design-vue'
+import router from '@/plugins/router'
+import { RoutesEnum } from '@/core/enums/routesEnum'
 
 export class ClientPlayerService extends BasePlayerService<IClientService> {
 	constructor(clientService: IClientService, player: IPlayer) {
@@ -24,6 +27,12 @@ export class ClientPlayerService extends BasePlayerService<IClientService> {
 			console.log('----- Client on Data channel open');
 			this.sendJoinGame();
 		};
+
+		this.service.onDataChannelClosed = () => {
+			this.disconnect();
+			router.push({ name: RoutesEnum.HOME });
+			message.error('Lost Connection To Host!');
+		};
 	}
 
 	sendMessage<E extends MessageMethodsEnum>(message: IMessage<E>): void {
@@ -40,5 +49,10 @@ export class ClientPlayerService extends BasePlayerService<IClientService> {
 		const msg = MESSAGES_MAP.get(MessageMethodsEnum.JOIN_GAME)!;
 		msg.init(this.player.id, this.player);
 		this.sendMessage(msg);
+	}
+	
+	disconnect(): void {
+		this.service.disconnect();
+		super.disconnect();
 	}
 }
