@@ -10,4 +10,6 @@ export interface IPlayerService {
 		method: E,
 		data: MessageMethodPayloadMap[E]
 	) => void;
+
+	disconnect(): void
 }

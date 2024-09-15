@@ -21,10 +21,17 @@ setTheme();
 
 const { isPaused } = useGameState();
 
-function goBack() {
-  // TODO: can you go back? this makes sense for the web app version, maybe its disabled mid game, or if mid game, then the game gets reset.
+function quitGame() {
+  // TODO: can you go back? 🤔 this makes sense for the web app version, maybe its disabled mid game, or if mid game, then the game gets reset.
   quitModalOpen.value = false;
   router.push({ name: RoutesEnum.HOME });
+  
+  // Am i host or client? 🤔
+  // if host -> send message host left game -> redirect all clients to home page and reset connections🦶
+  // if client -> send message client left game -> update game state that the player has left
+  
+  gameService.quitGame();
+  
 }
 
 function togglePause() {
@@ -36,9 +43,9 @@ function goToDebug() {
   router.push({ name: RoutesEnum.DEBUG });
 }
 
-function quitGame() {
+function handleGoBack() {
   if (router.currentRoute.value.name === RoutesEnum.CREATE_GAME) {
-    router.push({ name: RoutesEnum.HOME });
+    quitGame();
     return;
   }
   quitModalOpen.value = true;
@@ -53,7 +60,7 @@ function quitGame() {
   }">
     <main class="h-screen max-h-screen flex flex-col p-6">
       <div>
-        <PageHeader @back="quitGame()">
+        <PageHeader @back="handleGoBack()">
           <template #backIcon>
             <Button v-if="router.currentRoute.value.name !== RoutesEnum.HOME" 
                     size="large"
@@ -136,7 +143,7 @@ function quitGame() {
     </Modal>
 
     <!-- Quit Game Confirmation Modal -->
-    <Modal @ok="goBack()" :centered="true" :keyboard="true" :maskClosable="true" v-model:open="quitModalOpen" :closable="true">
+    <Modal @ok="quitGame()" :centered="true" :keyboard="true" :maskClosable="true" v-model:open="quitModalOpen" :closable="true">
       <Result status="warning">
         <template #title>
           <p class="font-semibold"> Are you sure you want to quit ?</p>

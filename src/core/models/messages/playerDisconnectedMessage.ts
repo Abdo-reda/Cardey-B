@@ -10,5 +10,12 @@ export class PlayerDisconnectedMessage extends BaseMessage<MessageMethodsEnum.PL
 	handle(): void {
 		const player = this.useGameState.getPlayer(this.data);
 		message.error(`${player.name} has disconnected!`);
+		if (player.isHost) {
+			this.useGameState.terminateGame();
+		}
+		else{
+			console.log('--- removing player', player.id);
+			this.useGameState.removePlayer(player.id);
+		}
 	}
 }

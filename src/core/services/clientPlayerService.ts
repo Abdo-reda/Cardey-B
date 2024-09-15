@@ -46,4 +46,8 @@ export class ClientPlayerService extends BasePlayerService<IClientService> {
 		msg.init(this.player.id, this.player);
 		this.sendMessage(msg);
 	}
+	
+	disconnect(): void {
+		this.service.disconnect();
+	}
 }

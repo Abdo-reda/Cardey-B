@@ -11,4 +11,5 @@ export interface IClientService {
 	onDataChannelClosed?: () => void;
 	createJoinRequestAsync: (roomId: string) => Promise<string>;
 	sendMessageToHost: <E extends MessageMethodsEnum>(message: IMessage<E>) => void;
+	disconnect: () => void;
 }

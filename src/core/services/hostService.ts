@@ -1,4 +1,4 @@
-import { type Ref, type Reactive, ref, reactive } from 'vue';
+import { type Reactive, reactive } from 'vue';
 import type { IHostService } from '../interfaces/hostServiceInterface';
 import {
 	addDoc,
@@ -8,7 +8,6 @@ import {
 	getDoc,
 	onSnapshot,
 	setDoc,
-	Timestamp,
 	updateDoc,
 	type DocumentData
 } from 'firebase/firestore';

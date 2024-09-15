@@ -46,4 +46,6 @@ export class BasePlayerService<T> implements IPlayerService {
 		this.executeMessage(method, this.player.id, data);
 		this.sendMessage(MESSAGES_MAP.get(method)!);
 	}
+	
+	public disconnect(): void{}
 }

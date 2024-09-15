@@ -9,6 +9,7 @@ import type { IGameState } from '../interfaces/gameStateInterface';
 import type { IPlayer } from '../interfaces/playerInterface';
 import type { ComputedRef, Reactive } from 'vue';
 import usePlayer from '../composables/usePlayer';
+import { message } from 'ant-design-vue'
 
 export class GameService implements IGameService {
 	playerServiceContext!: ComputedRef<IPlayerService>;
@@ -93,6 +94,10 @@ export class GameService implements IGameService {
 
 	testMessage(message: string): void {
 		this.playerService.executeAndSendMessage(MessageMethodsEnum.TEST, message);
+	}
+	
+	quitGame(): void{
+		this.playerService.disconnect();
 	}
 
 	private syncGameState(gameState: IGameState): void {
