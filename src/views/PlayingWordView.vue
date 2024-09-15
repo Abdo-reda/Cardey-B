@@ -46,6 +46,9 @@ watch(isNewTurn, (newValue) => {
 }, { immediate: true });
 
 watch(() => [...remainingWords.value], (newValue, oldValue) => {
+  console.log("--------- CURRNET PLAYER TURN", currentPlayerTurn.value.id, player.id)
+  console.log("------------- NEW VALUE--- ", newValue)
+  console.log("------------- OLD VALUE--- ", oldValue)
     if (!isCurrentPlayerTurn()) return;
     if (newValue.length !== 0) return;
     if (newValue.length === oldValue.length) return;
