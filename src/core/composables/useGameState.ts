@@ -251,6 +251,25 @@ export default function useGameState() {
 		
 	}
 
+	function randomiseTeams(): void {
+		const players = gameState.value.players;
+		const teams = gameState.value.teams;
+
+		const shuffledPlayers = players.sort(() => Math.random() - 0.5);
+
+		teams.forEach(team => team.players = []);
+
+		shuffledPlayers.forEach((player, index) => {
+			const teamIndex = index % teams.length; // Assign players to teams in round-robin fashion
+			teams[teamIndex].players.push(player.id);
+
+			player.teamId = teams[teamIndex].id;
+		});
+
+		gameState.value.teams = teams;
+		gameState.value.players = shuffledPlayers;
+	}
+
 	return {
 		activeWord,
 		teams,
@@ -288,6 +307,7 @@ export default function useGameState() {
 		resetWords,
 		nextPhase,
 		removePlayer,
-		terminateGame
+		terminateGame,
+		randomiseTeams
 	};
 }

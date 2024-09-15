@@ -8,6 +8,7 @@ export interface IGameService {
 	updateTurn: (isNewTurn: boolean) => void;
 	goToNextGamePhase: () => void;
 	goToBeginGame: () => void;
+	randomiseTeams: () => void;
 	goToPlayingWord: () => void;
 	restartGame: () => void;
 	updateWords: (reset: boolean, words: string[]) => void;

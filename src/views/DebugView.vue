@@ -8,7 +8,7 @@ import { GameServiceKey } from '@/core/constants/injectionKeys';
 
 const gameService = inject(GameServiceKey)!;
 const { getGameState } = useGameState();
-const { player, playerService } = usePlayer();
+const { currentPlayer, playerService } = usePlayer();
 
 const testMsg = ref('');
 const isConnected = computed(() => {
@@ -70,17 +70,19 @@ function sendTestMsg() {
                         </div>
                     </div>
                     <div>
-                        <TypographyTitle :level="5"> Room [{{ player.roomId ? player.roomId : '-' }}] </TypographyTitle>
+                        <TypographyTitle :level="5"> Room [{{ currentPlayer.roomId ? currentPlayer.roomId : '-' }}]</TypographyTitle>
                     </div>
                     <div>
                         <div class="flex gap-x-2">
-                            <TypographyTitle class="!m-0" :level="5"> Player [{{ player.name ? player.name : '-' }}]
+                            <TypographyTitle class="!m-0" :level="5"> Player
+                              [{{ currentPlayer.name ? currentPlayer.name : '-' }}]
                             </TypographyTitle>
-                            <Tag :color="player.isHost ? 'success' : 'processing'"> {{ player.isHost ? 'HOST' : 'CLIENT'
-                                }}
+                            <Tag :color="currentPlayer.isHost ? 'success' : 'processing'">
+                              {{ currentPlayer.isHost ? 'HOST' : 'CLIENT'
+                              }}
                             </Tag>
                         </div>
-                        <pre> {{ player }}</pre>
+                        <pre> {{ currentPlayer }}</pre>
                     </div>
                     <div>
                         <TypographyTitle :level="5"> Connected Players {{ 0 }} </TypographyTitle>

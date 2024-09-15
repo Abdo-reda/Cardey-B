@@ -10,7 +10,7 @@ import usePlayer from '@/core/composables/usePlayer';
 import { AvatarsList } from '@/core/enums/avatarsEnum';
 
 const roomId = ref(router.currentRoute.value.query.roomId as string);
-const { player } = usePlayer();
+const { currentPlayer } = usePlayer();
 const gameService = inject(GameServiceKey)!;
 const showRoomId = ref(false);
 const isJoining = ref(false);
@@ -31,10 +31,10 @@ const rulesRef = reactive({
   ],
 });
 
-const { validate } = Form.useForm(player, rulesRef);
+const { validate } = Form.useForm(currentPlayer, rulesRef);
 
 function handleHostGameClick() {
-  player.isHost = true;
+  currentPlayer.isHost = true;
   showRoomId.value = false;
   isJoining.value = false;
   validate()
@@ -47,7 +47,7 @@ function handleHostGameClick() {
 }
 
 async function handleJoinGameClick() {
-  player.isHost = false;
+  currentPlayer.isHost = false;
   if (showRoomId.value) isJoining.value = true;
 
   try {
@@ -72,9 +72,9 @@ async function handleJoinGameClick() {
 
 function changeAvatarIcon(): void {
   console.log("Avatar Icon Changed")
-  const currentIndex = AvatarsList.indexOf(player.avatar);
+  const currentIndex = AvatarsList.indexOf(currentPlayer.avatar);
   const nextIndex = (currentIndex + 1) % AvatarsList.length;
-  player.avatar = AvatarsList[nextIndex];
+  currentPlayer.avatar = AvatarsList[nextIndex];
 }
 
 watch(
@@ -83,7 +83,7 @@ watch(
     if (roomId.value) {
       showRoomId.value = true;
       isJoining.value = true;
-      player.roomId = roomId.value!;
+      currentPlayer.roomId = roomId.value!;
     }
   },
   { immediate: true }
@@ -98,17 +98,17 @@ watch(
       <p class="font-origami text-6xl text-white font-stroke-gray-400 font-stroke title"> Cardy-B Game </p>
     </div>
     <div class="flex flex-col items-center justify-center m-4 p-4">
-      <Form :model="player">
+      <Form :model="currentPlayer">
         <div class="flex flex-col justify-center items-center">
           <AvatarComponent @click="changeAvatarIcon" class="size-32 hover:cursor-pointer" :color="ColorsEnum.GRAY"
-            :avatar-icon="player.avatar" />
+            :avatar-icon="currentPlayer.avatar" />
           <div v-auto-animate class="flex flex-col items-center justify-center m-4 gap-4">
             <FormItem class="m-0 flex" name="name" :rules="[{ required: true, message: 'Please input your name' }]">
-              <Input placeholder="name" v-model:value="player.name" />
+              <Input placeholder="name" v-model:value="currentPlayer.name" />
             </FormItem>
             <FormItem v-if="showRoomId" class="m-0" name="roomId"
               :rules="[{ required: isJoining, message: 'Please input room id' }]">
-              <Input :disabled="!!roomId" placeholder="roomId" v-model:value="player.roomId" />
+              <Input :disabled="!!roomId" placeholder="roomId" v-model:value="currentPlayer.roomId" />
             </FormItem>
           </div>
           <div class="flex items-center justify-center gap-4">

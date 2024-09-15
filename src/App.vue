@@ -11,7 +11,7 @@ import usePlayer from './core/composables/usePlayer';
 import { RoutesEnum } from './core/enums/routesEnum';
 
 const gameService = inject(GameServiceKey)!;
-const { player } = usePlayer();
+const { currentPlayer } = usePlayer();
 
 const settingsOpen = ref(false);
 const quitModalOpen = ref(false);
@@ -24,14 +24,13 @@ const { isPaused } = useGameState();
 function quitGame() {
   // TODO: can you go back? 🤔 this makes sense for the web app version, maybe its disabled mid game, or if mid game, then the game gets reset.
   quitModalOpen.value = false;
-  router.push({ name: RoutesEnum.HOME });
   
   // Am i host or client? 🤔
   // if host -> send message host left game -> redirect all clients to home page and reset connections🦶
   // if client -> send message client left game -> update game state that the player has left
   
   gameService.quitGame();
-  
+  router.push({ name: RoutesEnum.HOME });
 }
 
 function togglePause() {
@@ -88,9 +87,9 @@ function handleGoBack() {
                   <SettingOutlined />
                 </template>
               </Button>
-              <Button v-if="player.isHost" @click="togglePause" size="large"
-                class="flex flex-col justify-center items-center text-gray-400 dark:text-gray-300" type="default"
-                shape="circle">
+              <Button v-if="currentPlayer.isHost" @click="togglePause" size="large"
+                      class="flex flex-col justify-center items-center text-gray-400 dark:text-gray-300" type="default"
+                      shape="circle">
                 <template #icon>
                   <PlayCircleFilled v-if="isPaused" />
                   <PauseCircleFilled v-else />
@@ -130,7 +129,7 @@ function handleGoBack() {
         </template>
         <template #extra>
           <div class="flex items-center justify-center">
-            <Button v-if="player.isHost" @click="togglePause" class="flex items-center" key="play" type="primary">
+            <Button v-if="currentPlayer.isHost" @click="togglePause" class="flex items-center" key="play" type="primary">
               <template #icon>
                 <PlayCircleFilled />
               </template>

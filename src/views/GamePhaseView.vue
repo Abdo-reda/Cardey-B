@@ -9,7 +9,7 @@ import { computed, inject } from 'vue';
 
 const gameService = inject(GameServiceKey)!;
 const { gamePhaseDetails, teams, getPlayer, teamLeaderboard } = useGameState();
-const { player } = usePlayer();
+const { currentPlayer } = usePlayer();
 
 //TODO: highlight selected member / team
 //TODO: maybe redesign this page
@@ -74,7 +74,7 @@ function next() {
                 </div>
             </Card>
         </div>
-        <div v-if="player.isHost" class="flex justify-center gap-x-8">
+        <div v-if="currentPlayer.isHost" class="flex justify-center gap-x-8">
             <Button size="large" type="primary" @click="next"> {{ isGameDone ? 'Play Again?' : 'Start Phase' }}
             </Button>
         </div>

@@ -8,7 +8,7 @@ import { formatCountdown } from 'ant-design-vue/es/statistic/utils';
 import { computed, inject, ref, watch } from 'vue';
 
 const gameService = inject(GameServiceKey)!;
-const { player } = usePlayer();
+const { currentPlayer } = usePlayer();
 const { timePerRound, remainingWords, activeWord, currentPlayerTurn, skippedWords, getTeam, isNewTurn, isPaused } = useGameState();
 
 const timerFormat = ref('mm:ss');
@@ -30,7 +30,7 @@ function scoreWord() {
 
 function onTimerFinish() {
     if (isPaused.value) return;
-    if (currentPlayerTurn.value.id === player.id) {
+    if (currentPlayerTurn.value.id === currentPlayer.id) {
         gameService.playWord('skip');
         gameService.updateTurn(true);
     }
@@ -46,7 +46,7 @@ watch(isNewTurn, (newValue) => {
 }, { immediate: true });
 
 watch(() => [...remainingWords.value], (newValue, oldValue) => {
-  console.log("--------- CURRNET PLAYER TURN", currentPlayerTurn.value.id, player.id)
+  console.log("--------- CURRNET PLAYER TURN", currentPlayerTurn.value.id, currentPlayer.id)
   console.log("------------- NEW VALUE--- ", newValue)
   console.log("------------- OLD VALUE--- ", oldValue)
     if (!isCurrentPlayerTurn()) return;
@@ -100,7 +100,7 @@ function continueTimer() {
 
 function isCurrentPlayerTurn() {
     if (!currentPlayerTurn.value) return false;
-    return currentPlayerTurn.value.id === player.id;
+    return currentPlayerTurn.value.id === currentPlayer.id;
 }
 
 // TODO: if there no remaining words, then we should go to the next phase
@@ -119,7 +119,7 @@ function isCurrentPlayerTurn() {
                 <TypographyTitle :level="3"> Words are done! </TypographyTitle>
             </template>
             <template v-else-if="currentPlayerTurn">
-                <template v-if="currentPlayerTurn.id === player.id">
+                <template v-if="currentPlayerTurn.id === currentPlayer.id">
                     <StatisticCountdown :loading="false" :format="timerFormat" title="Timer" @finish="onTimerFinish"
                         @change="onTimerChange" :value="timer" :valueStyle="{ 'font-size': '2.25rem' }" />
                     <TypographyTitle> {{ activeWord }}</TypographyTitle>
