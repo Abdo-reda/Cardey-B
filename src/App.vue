@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button, ConfigProvider, Modal, PageHeader, Result } from 'ant-design-vue';
 import { RouterView } from 'vue-router'
-import { SettingOutlined, FormatPainterOutlined, PauseCircleFilled, PlayCircleFilled, BugOutlined } from '@ant-design/icons-vue';
+import { SettingOutlined, FormatPainterOutlined, PauseCircleFilled, PlayCircleFilled, BugOutlined, ArrowLeftOutlined, CheckOutlined, CloseOutlined} from '@ant-design/icons-vue';
 import { inject, ref } from 'vue';
 import router from '@/plugins/router'
 import useTheme from './core/composables/useTheme';
@@ -14,6 +14,8 @@ const gameService = inject(GameServiceKey)!;
 const { player } = usePlayer();
 
 const settingsOpen = ref(false);
+const quitModalOpen = ref(false);
+
 const { currentThemeAlgorithm, switchTheme, setTheme } = useTheme();
 setTheme();
 
@@ -21,7 +23,8 @@ const { isPaused } = useGameState();
 
 function goBack() {
   // TODO: can you go back? this makes sense for the web app version, maybe its disabled mid game, or if mid game, then the game gets reset.
-  router.back();
+  quitModalOpen.value = false;
+  router.push({ name: RoutesEnum.HOME });
 }
 
 function togglePause() {
@@ -33,6 +36,14 @@ function goToDebug() {
   router.push({ name: RoutesEnum.DEBUG });
 }
 
+function quitGame() {
+  if (router.currentRoute.value.name === RoutesEnum.CREATE_GAME) {
+    router.push({ name: RoutesEnum.HOME });
+    return;
+  }
+  quitModalOpen.value = true;
+}
+
 
 </script>
 
@@ -42,7 +53,17 @@ function goToDebug() {
   }">
     <main class="h-screen max-h-screen flex flex-col p-6">
       <div>
-        <PageHeader>
+        <PageHeader @back="quitGame()">
+          <template #backIcon>
+            <Button v-if="router.currentRoute.value.name !== RoutesEnum.HOME" 
+                    size="large"
+                    class="flex flex-col justify-center items-center text-gray-400 dark:text-gray-300" type="default"
+                    shape="circle">
+              <template #icon>
+                <ArrowLeftOutlined />
+              </template>
+            </Button>
+          </template>
           <template #extra>
             <div v-auto-animate class=" flex gap-x-2">
               <Button @click="switchTheme" size="large"
@@ -112,6 +133,15 @@ function goToDebug() {
       </Result>
       <template #footer>
       </template>
+    </Modal>
+
+    <!-- Quit Game Confirmation Modal -->
+    <Modal @ok="goBack()" :centered="true" :keyboard="true" :maskClosable="true" v-model:open="quitModalOpen" :closable="true">
+      <Result status="warning">
+        <template #title>
+          <p class="font-semibold"> Are you sure you want to quit ?</p>
+        </template>
+      </Result>
     </Modal>
   </ConfigProvider>
 </template>
