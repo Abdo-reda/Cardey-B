@@ -266,12 +266,8 @@ export default function useGameState() {
 		shuffledPlayers.forEach((player, index) => {
 			const teamIndex = index % teams.length; // Assign players to teams in round-robin fashion
 			teams[teamIndex].players.push(player.id);
-
 			player.teamId = teams[teamIndex].id;
 		});
-
-		gameState.value.teams = teams;
-		gameState.value.players = shuffledPlayers;
 	}
 
 	return {

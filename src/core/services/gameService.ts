@@ -9,8 +9,6 @@ import type { IGameState } from '../interfaces/gameStateInterface';
 import type { IPlayer } from '../interfaces/playerInterface';
 import type { ComputedRef, Reactive } from 'vue';
 import usePlayer from '../composables/usePlayer';
-import { Player } from '@/core/models/player';
-import { SessionStorageEnum } from '@/core/enums/sesionStorageEnum';
 import { MESSAGES_MAP } from '@/core/constants/messagesMap';
 
 export class GameService implements IGameService {
