@@ -17,6 +17,7 @@ export type MessageMethodPayloadMap = {
 	[MessageMethodsEnum.PLAY_WORD]: IPlayWord;
 	[MessageMethodsEnum.UPDATE_TURN]: IUpdateTurn;
 	[MessageMethodsEnum.UPDATE_PHASE]: void;
-	[MessageMethodsEnum.TEST]: string;
+	[MessageMethodsEnum.TEST_MESSAGE]: string;
 	[MessageMethodsEnum.PLAYER_DISCONNECTED]: string;
+	[MessageMethodsEnum.QUIT_GAME]: void;
 };

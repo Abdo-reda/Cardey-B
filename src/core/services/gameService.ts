@@ -9,8 +9,6 @@ import type { IGameState } from '../interfaces/gameStateInterface';
 import type { IPlayer } from '../interfaces/playerInterface';
 import type { ComputedRef, Reactive } from 'vue';
 import usePlayer from '../composables/usePlayer';
-import { Player } from '@/core/models/player';
-import { SessionStorageEnum } from '@/core/enums/sesionStorageEnum';
 import { MESSAGES_MAP } from '@/core/constants/messagesMap';
 
 export class GameService implements IGameService {
@@ -32,6 +30,7 @@ export class GameService implements IGameService {
 		await this.playerService.joinGameAsync();
 		this.useGameState.addPlayer(this.player);
 		this.useGameState.initTeams();
+		this.switchAndUpdateRoute(RoutesEnum.LOBBY);
 	}
 
 	private get playerService() {
@@ -103,7 +102,7 @@ export class GameService implements IGameService {
 	}
 
 	testMessage(message: string): void {
-		this.playerService.executeAndSendMessage(MessageMethodsEnum.TEST, message);
+		this.playerService.executeAndSendMessage(MessageMethodsEnum.TEST_MESSAGE, message);
 	}
 
 	quitGame(): void {

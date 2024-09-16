@@ -3,7 +3,7 @@ import { GameState } from '@/core/models/gameState';
 import type { IPlayer } from '../interfaces/playerInterface';
 import type { ITeam } from '../interfaces/teamInterface';
 import { ColorsEnum } from '../enums/colorsEnum';
-import type { RoutesEnum } from '../enums/routesEnum';
+import { RoutesEnum } from '../enums/routesEnum';
 import { GAME_PHASES, GAME_PHASES_DESCRIPTIONS } from '../enums/gamePhasesEnum';
 import type { IGameState } from '../interfaces/gameStateInterface';
 
@@ -123,6 +123,7 @@ export default function useGameState() {
 
 	function setPlayerWords(playerId: string, words: string[]): void {
 		const player = getPlayer(playerId);
+		console.log('--- player', playerId, player, words);
 		player.words = words;
 	}
 
@@ -250,7 +251,9 @@ export default function useGameState() {
 		);
 	}
 
-	function terminateGame(): void {}
+	function terminateGame(): void {
+		gameState.value = new GameState();
+	}
 
 	function randomiseTeams(): void {
 		const players = gameState.value.players;
@@ -263,12 +266,8 @@ export default function useGameState() {
 		shuffledPlayers.forEach((player, index) => {
 			const teamIndex = index % teams.length; // Assign players to teams in round-robin fashion
 			teams[teamIndex].players.push(player.id);
-
 			player.teamId = teams[teamIndex].id;
 		});
-
-		gameState.value.teams = teams;
-		gameState.value.players = shuffledPlayers;
 	}
 
 	return {
