@@ -3,6 +3,7 @@ import { JoinTeamMessage } from '@/core/models/messages/joinTeamMessage';
 import { PlayerDisconnectedMessage } from '@/core/models/messages/playerDisconnectedMessage';
 import { PlayerWordsMessage } from '@/core/models/messages/playerWordsMessage';
 import { PlayWordMessage } from '@/core/models/messages/playWordMessage';
+import { QuitGameMessage } from '@/core/models/messages/quitGameMessage';
 import { SyncMessage } from '@/core/models/messages/syncMessage';
 import { TestMessage } from '@/core/models/messages/testMessage';
 import { UpdatePhaseMessage } from '@/core/models/messages/updatePhaseMessage';
@@ -18,4 +19,5 @@ export default function () {
 	new UpdatePhaseMessage();
 	new TestMessage();
 	new PlayerDisconnectedMessage();
+	new QuitGameMessage();
 }

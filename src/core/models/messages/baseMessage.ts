@@ -17,6 +17,7 @@ export class BaseMessage<E extends MessageMethodsEnum> implements IMessage<E> {
 	init(senderId: string, data: MessageMethodPayloadMap[E]) {
 		this.senderId = senderId;
 		this.data = data;
+		return this;
 	}
 
 	handle(): void {}

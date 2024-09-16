@@ -27,7 +27,7 @@ export class GameState implements IGameState {
 		skipped: [],
 		scored: []
 	};
-	currentRoute: RoutesEnum = RoutesEnum.LOBBY;
+	currentRoute: RoutesEnum = RoutesEnum.HOME;
 	gamePhase = {
 		index: 0,
 		phase: GamePhasesEnum.NONE,

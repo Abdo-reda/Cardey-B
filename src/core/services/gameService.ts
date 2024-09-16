@@ -32,6 +32,7 @@ export class GameService implements IGameService {
 		await this.playerService.joinGameAsync();
 		this.useGameState.addPlayer(this.player);
 		this.useGameState.initTeams();
+		this.switchAndUpdateRoute(RoutesEnum.LOBBY);
 	}
 
 	private get playerService() {
@@ -103,7 +104,7 @@ export class GameService implements IGameService {
 	}
 
 	testMessage(message: string): void {
-		this.playerService.executeAndSendMessage(MessageMethodsEnum.TEST, message);
+		this.playerService.executeAndSendMessage(MessageMethodsEnum.TEST_MESSAGE, message);
 	}
 
 	quitGame(): void {

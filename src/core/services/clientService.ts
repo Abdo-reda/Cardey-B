@@ -17,17 +17,13 @@ import type { IMessage } from '../interfaces/messageInterfaces/messageInterface'
 import type { MessageMethodsEnum } from '../enums/methodsEnum';
 
 export class ClientService implements IClientService {
-	roomId: Ref<string>;
+	roomId: string = '';
 	peerConnection: RTCPeerConnection | undefined;
 	private isDisconnectedFlag = false;
 	dataChannel: RTCDataChannel | undefined;
 	onRecievedMessage?: (message: IMessage<any>) => void;
 	onDataChannelOpen?: () => void;
 	onDataChannelClosed?: () => void;
-
-	constructor() {
-		this.roomId = ref('');
-	}
 
 	async createJoinRequestAsync(roomId: string): Promise<string> {
 		const joinRequestRef = await this.addJoinRequestAsync(roomId);
@@ -114,7 +110,8 @@ export class ClientService implements IClientService {
 
 			dataChannel.onclose = () => {
 				console.log('Data Channel with Host is closed!');
-				if (this.onDataChannelClosed && !this.isDisconnectedFlag) this.onDataChannelClosed();
+				if (this.onDataChannelClosed && !this.isDisconnectedFlag)
+					this.onDataChannelClosed();
 			};
 		};
 	}
@@ -165,7 +162,7 @@ export class ClientService implements IClientService {
 		return value;
 	}
 
-	disconnect(): void{
+	disconnect(): void {
 		this.isDisconnectedFlag = true;
 		this.dataChannel?.close();
 		this.peerConnection?.close(); // close? 🤔

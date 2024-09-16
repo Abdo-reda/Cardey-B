@@ -1,11 +1,10 @@
-import type { Ref } from 'vue';
 import type { IMessage } from './messageInterfaces/messageInterface';
 import type { MessageMethodsEnum } from '../enums/methodsEnum';
 
 export interface IClientService {
+	roomId: string;
 	peerConnection: RTCPeerConnection | undefined;
 	dataChannel: RTCDataChannel | undefined;
-	roomId: Ref<string>;
 	onRecievedMessage?: (message: IMessage<any>) => void;
 	onDataChannelOpen?: () => void;
 	onDataChannelClosed?: () => void;

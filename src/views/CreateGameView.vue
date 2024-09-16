@@ -20,7 +20,6 @@ async function goToLobby(): Promise<void> {
   }
 
   await gameService.joinGameAsync();
-  router.push({ name: RoutesEnum.LOBBY });
 }
 
 function getError(msg: string): ValidateInfo {

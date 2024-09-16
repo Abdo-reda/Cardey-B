@@ -5,6 +5,6 @@ export interface IMessage<E extends MessageMethodsEnum> {
 	senderId: string;
 	method: E;
 	data: MessageMethodPayloadMap[E];
-	init: (senderId: string, data: MessageMethodPayloadMap[E]) => void;
+	init: (senderId: string, data: MessageMethodPayloadMap[E]) => IMessage<E>;
 	handle: () => void;
 }
