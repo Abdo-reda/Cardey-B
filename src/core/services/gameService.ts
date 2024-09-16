@@ -9,9 +9,9 @@ import type { IGameState } from '../interfaces/gameStateInterface';
 import type { IPlayer } from '../interfaces/playerInterface';
 import type { ComputedRef, Reactive } from 'vue';
 import usePlayer from '../composables/usePlayer';
-import { Player } from '@/core/models/player'
-import { SessionStorageEnum } from '@/core/enums/sesionStorageEnum'
-import { MESSAGES_MAP } from '@/core/constants/messagesMap'
+import { Player } from '@/core/models/player';
+import { SessionStorageEnum } from '@/core/enums/sesionStorageEnum';
+import { MESSAGES_MAP } from '@/core/constants/messagesMap';
 
 export class GameService implements IGameService {
 	playerServiceContext!: ComputedRef<IPlayerService>;
@@ -55,15 +55,13 @@ export class GameService implements IGameService {
 	}
 
 	updateTurn(isNewTurn: boolean): void {
-
-		if(!this.player.isHost){
+		if (!this.player.isHost) {
 			const msg = MESSAGES_MAP.get(MessageMethodsEnum.UPDATE_TURN)!;
 			msg.init(this.player.id, {
 				newTurn: isNewTurn
 			});
 			this.playerService.sendMessage(msg);
-		}
-		else{
+		} else {
 			this.playerService.executeAndSendMessage(MessageMethodsEnum.UPDATE_TURN, {
 				newTurn: isNewTurn
 			});
@@ -100,16 +98,17 @@ export class GameService implements IGameService {
 	}
 
 	restartGame(): void {
-		this.useGameState.reset();
+		this.useGameState.restartGame();
 		this.switchAndUpdateRoute(RoutesEnum.LOBBY);
 	}
 
 	testMessage(message: string): void {
 		this.playerService.executeAndSendMessage(MessageMethodsEnum.TEST, message);
 	}
-	
-	quitGame(): void{
+
+	quitGame(): void {
 		this.playerService.disconnect();
+		router.push({ name: RoutesEnum.HOME });
 	}
 
 	private syncGameState(gameState: IGameState): void {
@@ -121,8 +120,9 @@ export class GameService implements IGameService {
 		this.useGameState.currentRoute.value = route;
 		router.push({ name: route });
 	}
-	
-	randomiseTeams(){
+
+	randomiseTeams() {
+		this.testMessage('Shuffeling Teams!');
 		this.useGameState.randomiseTeams();
 	}
 }

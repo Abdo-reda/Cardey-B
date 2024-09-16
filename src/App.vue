@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button, ConfigProvider, Modal, PageHeader, Result } from 'ant-design-vue';
 import { RouterView } from 'vue-router'
-import { SettingOutlined, FormatPainterOutlined, PauseCircleFilled, PlayCircleFilled, BugOutlined, ArrowLeftOutlined, CheckOutlined, CloseOutlined} from '@ant-design/icons-vue';
+import { SettingOutlined, FormatPainterOutlined, PauseCircleFilled, PlayCircleFilled, BugOutlined, ArrowLeftOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons-vue';
 import { inject, ref } from 'vue';
 import router from '@/plugins/router'
 import useTheme from './core/composables/useTheme';
@@ -19,18 +19,16 @@ const quitModalOpen = ref(false);
 const { currentThemeAlgorithm, switchTheme, setTheme } = useTheme();
 setTheme();
 
+
 const { isPaused } = useGameState();
 
 function quitGame() {
-  // TODO: can you go back? 🤔 this makes sense for the web app version, maybe its disabled mid game, or if mid game, then the game gets reset.
   quitModalOpen.value = false;
-  
+  gameService.quitGame();
+  // TODO: can you go back? 🤔 this makes sense for the web app version, maybe its disabled mid game, or if mid game, then the game gets reset.
   // Am i host or client? 🤔
   // if host -> send message host left game -> redirect all clients to home page and reset connections🦶
   // if client -> send message client left game -> update game state that the player has left
-  
-  gameService.quitGame();
-  router.push({ name: RoutesEnum.HOME });
 }
 
 function togglePause() {
@@ -62,10 +60,9 @@ function handleGoBack() {
       <div>
         <PageHeader @back="handleGoBack()">
           <template #backIcon>
-            <Button v-if="router.currentRoute.value.name !== RoutesEnum.HOME" 
-                    size="large"
-                    class="flex flex-col justify-center items-center text-gray-400 dark:text-gray-300" type="default"
-                    shape="circle">
+            <Button v-if="router.currentRoute.value.name !== RoutesEnum.HOME" size="large"
+              class="flex flex-col justify-center items-center text-gray-400 dark:text-gray-300" type="default"
+              shape="circle">
               <template #icon>
                 <ArrowLeftOutlined />
               </template>
@@ -88,8 +85,8 @@ function handleGoBack() {
                 </template>
               </Button>
               <Button v-if="currentPlayer.isHost" @click="togglePause" size="large"
-                      class="flex flex-col justify-center items-center text-gray-400 dark:text-gray-300" type="default"
-                      shape="circle">
+                class="flex flex-col justify-center items-center text-gray-400 dark:text-gray-300" type="default"
+                shape="circle">
                 <template #icon>
                   <PlayCircleFilled v-if="isPaused" />
                   <PauseCircleFilled v-else />
@@ -129,7 +126,8 @@ function handleGoBack() {
         </template>
         <template #extra>
           <div class="flex items-center justify-center">
-            <Button v-if="currentPlayer.isHost" @click="togglePause" class="flex items-center" key="play" type="primary">
+            <Button v-if="currentPlayer.isHost" @click="togglePause" class="flex items-center" key="play"
+              type="primary">
               <template #icon>
                 <PlayCircleFilled />
               </template>
@@ -143,7 +141,8 @@ function handleGoBack() {
     </Modal>
 
     <!-- Quit Game Confirmation Modal -->
-    <Modal @ok="quitGame()" :centered="true" :keyboard="true" :maskClosable="true" v-model:open="quitModalOpen" :closable="true">
+    <Modal @ok="quitGame()" :centered="true" :keyboard="true" :maskClosable="true" v-model:open="quitModalOpen"
+      :closable="true">
       <Result status="warning">
         <template #title>
           <p class="font-semibold"> Are you sure you want to quit ?</p>

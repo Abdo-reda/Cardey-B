@@ -6,7 +6,7 @@ import { GameServiceKey } from '@/core/constants/injectionKeys';
 import { ColorsEnum } from '@/core/enums/colorsEnum';
 import { RoutesEnum } from '@/core/enums/routesEnum';
 import router from '@/plugins/router';
-import { CopyOutlined, ShareAltOutlined } from '@ant-design/icons-vue';
+import { CopyOutlined, ShareAltOutlined, UserSwitchOutlined } from '@ant-design/icons-vue';
 import { AvatarGroup, Button, Card, message, TypographyTitle } from 'ant-design-vue';
 import { inject } from 'vue';
 
@@ -53,7 +53,6 @@ function copyCode() {
 
 function joinTeam(teamId: string) {
     gameService.joinTeam(teamId);
-    console.log("joinTeam - LobbyView");
 }
 
 function getRoomUrl(): string {
@@ -66,21 +65,23 @@ function getRoomUrl(): string {
     return roomUrl;
 }
 
-
-
 </script>
-<style scoped>
-.current-player /deep/ .ant-avatar {
-  border: 2px solid aqua !important;
-}
-</style>
+
 <template>
     <div class="grid p-4">
-        <div class="row-span-2">
-            <TypographyTitle class="text-center" :level=2> Lobby </TypographyTitle>
-            <TypographyTitle @click="copyCode" class="text-center hover:cursor-pointer underline italic !m-0" :level=3>
-              {{ currentPlayer.roomId }}
-            </TypographyTitle>
+        <div class="row-span-1 justify-self-center">
+            <div>
+                <TypographyTitle class="text-center" :level=2> Lobby </TypographyTitle>
+                <TypographyTitle @click="copyCode" class="text-center hover:cursor-pointer underline italic !m-0"
+                    :level=3>
+                    {{ currentPlayer.roomId }}
+                </TypographyTitle>
+            </div>
+            <div class="pt-4">
+                <Button v-if="currentPlayer.isHost" size="large" type="dashed" @click="randomiseTeams">
+                    <UserSwitchOutlined /> Shuffle Teams
+                </Button>
+            </div>
         </div>
         <div class="row-span-8 overflow-auto my-6 w-full flex gap-x-4 justify-center">
             <div class="overflow-auto">
@@ -109,15 +110,10 @@ function getRoomUrl(): string {
                         <div class="flex justify-between items-center ">
                             <AvatarGroup :max-count="2" size="large">
                                 <template v-for="player in team.players" :key="player">
-                                  <div v-bind:class="{'current-player' : player == currentPlayer.id}">
-                                    <AvatarComponent
-                                      :class="''"
-                                      :avatar-icon="getPlayer(player).avatar"
-                                      :color="team.color"
-                                      :tooltip="getPlayer(player).name">
-                                      {{ getPlayer(player).name }}
+                                    <AvatarComponent color-border :avatar-icon="getPlayer(player).avatar"
+                                        :color="team.color" :tooltip="getPlayer(player).name">
+                                        {{ getPlayer(player).name }}
                                     </AvatarComponent>
-                                  </div>
                                 </template>
                             </AvatarGroup>
                             <Button v-if="currentPlayer.teamId !== team.id" :danger="false" @click="joinTeam(team.id)">
@@ -138,12 +134,8 @@ function getRoomUrl(): string {
                 </Button>
             </div>
             <div class="flex justify-center gap-4">
-              <Button v-if="currentPlayer.isHost" size="large" type="primary"
-                      @click="randomiseTeams">
-                Randomise teams
-              </Button>
                 <Button :disabled="!!playersNotInATeam.length" v-if="currentPlayer.isHost" size="large" type="primary"
-                        @click="startGame">
+                    @click="startGame">
                     Start
                     Game
                 </Button>

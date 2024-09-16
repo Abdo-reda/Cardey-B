@@ -211,7 +211,7 @@ export default function useGameState() {
 		gameState.value.gamePhase.description = GAME_PHASES_DESCRIPTIONS.get(curPhase) ?? '';
 	}
 
-	function reset(): void {
+	function restartGame(): void {
 		const oldSetting = gameState.value.gameSettings;
 		const oldPlayers = gameState.value.players;
 		const oldTeams = gameState.value.teams;
@@ -223,33 +223,34 @@ export default function useGameState() {
 			return t;
 		});
 	}
-	
-	function removePlayer(playerId : string): void{
+
+	function removePlayer(playerId: string): void {
 		// Update game state
 		// Remove from players array
 		// If Current player, new turn
-		
-		
+
 		// Update turn if i am current player
-		if (currentPlayerTurn.value != null && currentPlayerTurn.value.id === playerId){
+		if (currentPlayerTurn.value != null && currentPlayerTurn.value.id === playerId) {
 			nextTurn();
 		}
-		
+
 		// Remove from playersOrder
-		gameState.value.turns.playersOrder = gameState.value.turns.playersOrder.filter((player) => player !== playerId);
-		
+		gameState.value.turns.playersOrder = gameState.value.turns.playersOrder.filter(
+			(player) => player !== playerId
+		);
+
 		// Remove from teams
 		gameState.value.teams.forEach((team) => {
 			team.players = team.players.filter((player) => player !== playerId);
-		})
-		
+		});
+
 		// Remove from players
-		gameState.value.players = gameState.value.players.filter((player) => player.id !== playerId);
+		gameState.value.players = gameState.value.players.filter(
+			(player) => player.id !== playerId
+		);
 	}
-	
-	function terminateGame(): void{
-		
-	}
+
+	function terminateGame(): void {}
 
 	function randomiseTeams(): void {
 		const players = gameState.value.players;
@@ -257,7 +258,7 @@ export default function useGameState() {
 
 		const shuffledPlayers = players.sort(() => Math.random() - 0.5);
 
-		teams.forEach(team => team.players = []);
+		teams.forEach((team) => (team.players = []));
 
 		shuffledPlayers.forEach((player, index) => {
 			const teamIndex = index % teams.length; // Assign players to teams in round-robin fashion
@@ -301,7 +302,7 @@ export default function useGameState() {
 		scoreWord,
 		skipWord,
 		initTurns,
-		reset,
+		restartGame,
 		initTeams,
 		initWords,
 		resetWords,
