@@ -1,14 +1,14 @@
-import { reactive, type Reactive } from 'vue'
-import type { IPlayer } from '../interfaces/playerInterface'
-import type { IMessage } from '../interfaces/messageInterfaces/messageInterface'
-import type { IPlayerService } from '../interfaces/playerServiceInterface'
-import type { IGameState } from '../interfaces/gameStateInterface'
-import { MessageMethodsEnum } from '../enums/methodsEnum'
-import { type MessageMethodPayloadMap, MESSAGES_MAP } from '../constants/messagesMap'
-import { GameState } from '@/core/models/gameState'
-import { SessionStorageEnum } from '@/core/enums/sesionStorageEnum'
-import { Player } from '@/core/models/player'
-import { RoutesEnum } from '@/core/enums/routesEnum'
+import { reactive, type Reactive } from 'vue';
+import type { IPlayer } from '../interfaces/playerInterface';
+import type { IMessage } from '../interfaces/messageInterfaces/messageInterface';
+import type { IPlayerService } from '../interfaces/playerServiceInterface';
+import type { IGameState } from '../interfaces/gameStateInterface';
+import { MessageMethodsEnum } from '../enums/methodsEnum';
+import { type MessageMethodPayloadMap, MESSAGES_MAP } from '../constants/messagesMap';
+import { GameState } from '@/core/models/gameState';
+import { SessionStorageEnum } from '@/core/enums/sesionStorageEnum';
+import { Player } from '@/core/models/player';
+import { RoutesEnum } from '@/core/enums/routesEnum';
 
 export class BasePlayerService<T> implements IPlayerService {
 	protected player: Reactive<IPlayer>;
@@ -50,9 +50,10 @@ export class BasePlayerService<T> implements IPlayerService {
 		this.executeMessage(method, this.player.id, data);
 		this.sendMessage(MESSAGES_MAP.get(method)!);
 	}
-	
-	public disconnect(): void{
-		const newGameState = new GameState()
+
+	public disconnect(): void {
+		//TODO: make this look better
+		const newGameState = new GameState();
 		newGameState.currentRoute = RoutesEnum.HOME;
 		this.executeMessage(MessageMethodsEnum.SYNC, this.player.id, new GameState());
 		const newPlayer = new Player();
