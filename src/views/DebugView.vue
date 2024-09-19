@@ -11,10 +11,18 @@ const { getGameState } = useGameState();
 const { currentPlayer, playerService } = usePlayer();
 
 const testMsg = ref('');
-const isConnected = computed(() => {
-    return navigator.onLine;
+const peerConnectionState = computed(() => {
+    return playerService.value.getPlayerRTCConnectionState();
 });
 
+const dataChannelState = computed(() => {
+    return playerService.value.getDataChannelState();
+});
+
+
+const playerConnections = computed(() => {
+    return playerService.value.getPlayersConnections();
+});
 function sendTestMsg() {
     gameService.testMessage(testMsg.value);
 }
@@ -44,8 +52,10 @@ function sendTestMsg() {
         <Collapse class="bg-white dark:bg-gray-800">
             <CollapsePanel>
                 <template #extra>
-                    <Tag :color="isConnected ? 'success' : 'error'"> {{ isConnected ? 'connected' : 'disconnected' }}
+                    <Tag :color="peerConnectionState == 'connected' ? 'success' : 'error'"> Peer Connection: {{ peerConnectionState }}
                     </Tag>
+                  <Tag :color="dataChannelState == 'open' ? 'success' : 'error'"> Data Channel: {{ dataChannelState }}
+                  </Tag>
                 </template>
                 <template #header>
                     <div class="flex gap-x-2">
@@ -58,9 +68,9 @@ function sendTestMsg() {
                         <TypographyTitle :level="5"> Test Message </TypographyTitle>
                         <div class="flex gap-x-4">
                             <FormItem class="m-0 flex" name="msg" label="Send msg to all players">
-                                <Input :disabled="!isConnected" placeholder="msg" v-model:value="testMsg" />
+                                <Input placeholder="msg" v-model:value="testMsg" />
                             </FormItem>
-                            <Button :disabled="!isConnected" @click="sendTestMsg" type="primary"
+                            <Button @click="sendTestMsg" type="primary"
                                 class="flex justify-center items-center">
                                 <template #icon>
                                     <SendOutlined />
@@ -90,5 +100,17 @@ function sendTestMsg() {
                 </div>
             </CollapsePanel>
         </Collapse>
+      
+      <Collapse v-if="currentPlayer.isHost" class="bg-white dark:bg-gray-800">
+        <CollapsePanel>
+          <template #header>
+            <div class="flex gap-x-2">
+              <BuildOutlined />
+              <TypographyTitle class="!m-0" :level="5">Connections </TypographyTitle>
+            </div>
+          </template>
+          <pre>{{ playerConnections }}</pre>
+        </CollapsePanel>
+      </Collapse>
     </div>
 </template>

@@ -1,4 +1,3 @@
-import { ref, type Ref } from 'vue';
 import type { IClientService } from '../interfaces/clientServiceInterface';
 import {
 	addDoc,
@@ -15,6 +14,7 @@ import { FirestoreConstants } from '../constants/firestoreConstants';
 import { ChannelsEnum } from '../enums/channelsEnum';
 import type { IMessage } from '../interfaces/messageInterfaces/messageInterface';
 import type { MessageMethodsEnum } from '../enums/methodsEnum';
+import type { IPlayerConnectionModel } from '@/core/interfaces/modelInterfaces/playerConnectionModelInterface'
 
 export class ClientService implements IClientService {
 	roomId: string = '';
@@ -167,5 +167,23 @@ export class ClientService implements IClientService {
 		this.dataChannel?.close();
 		this.peerConnection?.close(); // close? 🤔
 		this.peerConnection = undefined;
+	}
+
+	getPlayerRTCConnectionState(): RTCPeerConnectionState | undefined {
+		return this.peerConnection?.connectionState;
+	}
+
+
+	getDataChannelConnectionState(): RTCDataChannelState | undefined {
+		return this.dataChannel?.readyState;
+	}
+	
+	getPlayerConnections(): IPlayerConnectionModel[] {
+		const playerConnections: IPlayerConnectionModel[] = [];
+		playerConnections.push({
+			DataChannelState: this.getDataChannelConnectionState(),
+			RTCPeerConnectionState: this.getPlayerRTCConnectionState()
+		})
+		return playerConnections;
 	}
 }

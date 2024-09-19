@@ -5,8 +5,10 @@ import type { IPlayerService } from '../interfaces/playerServiceInterface';
 import type { IGameState } from '../interfaces/gameStateInterface';
 import { MessageMethodsEnum } from '../enums/methodsEnum';
 import { type MessageMethodPayloadMap, MESSAGES_MAP } from '../constants/messagesMap';
+import type { IBaseWebRTCService } from '@/core/interfaces/baseWebRTCServiceInterface'
+import type { IPlayerConnectionModel } from '@/core/interfaces/modelInterfaces/playerConnectionModelInterface'
 
-export class BasePlayerService<T> implements IPlayerService {
+export class BasePlayerService<T extends IBaseWebRTCService> implements IPlayerService {
 	protected player: Reactive<IPlayer>;
 	service: T;
 
@@ -57,5 +59,17 @@ export class BasePlayerService<T> implements IPlayerService {
 		//TODO: make this look better
 		this.executeMessage(MessageMethodsEnum.QUIT_GAME, this.player.id, undefined);
 		this.resetPlayer();
+	}
+	
+	getPlayerRTCConnectionState(): RTCPeerConnectionState | undefined {
+		return this.service.getPlayerRTCConnectionState();
+	}
+	
+	getDataChannelState(): RTCDataChannelState | undefined {
+		return this.service.getDataChannelConnectionState();
+	}
+	
+	getPlayersConnections(): IPlayerConnectionModel[] {
+		return this.service.getPlayerConnections();
 	}
 }
