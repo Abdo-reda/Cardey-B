@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import useGameState from '@/core/composables/useGameState';
-import { Button, Collapse, CollapsePanel, FormItem, Input, Tag, TypographyTitle } from 'ant-design-vue';
-import { ApiOutlined, BugOutlined, BuildOutlined, SendOutlined } from '@ant-design/icons-vue';
+import { Button, Collapse, CollapsePanel, FormItem, Input, Select, Tag, Textarea, TypographyTitle } from 'ant-design-vue';
+import { ApiOutlined, BugOutlined, BuildOutlined, SendOutlined, ExperimentOutlined } from '@ant-design/icons-vue';
 import { computed, inject, ref } from 'vue';
 import usePlayer from '@/core/composables/usePlayer';
 import { GameServiceKey } from '@/core/constants/injectionKeys';
@@ -11,13 +11,20 @@ const { getGameState } = useGameState();
 const { currentPlayer, playerService } = usePlayer();
 
 const testMsg = ref('');
+
 const isConnected = computed(() => {
     return navigator.onLine;
 });
 
+
 function sendTestMsg() {
     gameService.testMessage(testMsg.value);
 }
+
+function executeAndSendMsg() {
+}
+
+
 
 //connected if:
 //- there is internet connection
@@ -27,6 +34,7 @@ function sendTestMsg() {
 
 <template>
     <div class="h-full flex flex-col gap-y-4 overflow-scroll">
+        {{ }}
         <TypographyTitle :level="2">
             <BugOutlined /> Debugging
         </TypographyTitle>
@@ -55,8 +63,8 @@ function sendTestMsg() {
                 </template>
                 <div class="space-y-4">
                     <div>
-                        <TypographyTitle :level="5"> Test Message </TypographyTitle>
-                        <div class="flex gap-x-4">
+                        <TypographyTitle :level="5"> Test Messages </TypographyTitle>
+                        <div class="flex gap-x-4 my-4 items-center">
                             <FormItem class="m-0 flex" name="msg" label="Send msg to all players">
                                 <Input :disabled="!isConnected" placeholder="msg" v-model:value="testMsg" />
                             </FormItem>
@@ -70,16 +78,31 @@ function sendTestMsg() {
                         </div>
                     </div>
                     <div>
-                        <TypographyTitle :level="5"> Room [{{ currentPlayer.roomId ? currentPlayer.roomId : '-' }}]</TypographyTitle>
+                        <TypographyTitle :level="5">
+                            <ExperimentOutlined /> Execute & Send
+                        </TypographyTitle>
+                        <div class="flex gap-x-4 my-4 items-center">
+                            <!-- ADD COMMON MESSAGES HERE -->
+                            <!-- <FormItem class="m-0 flex" name="msg">
+                            </FormItem>
+                            <Button danger :disabled="!isConnected" @click="sendTestMsg" type="primary"
+                                class="flex justify-center items-center">
+                                Execute & Send
+                            </Button> -->
+                        </div>
+                    </div>
+                    <div>
+                        <TypographyTitle :level="5"> Room [{{ currentPlayer.roomId ? currentPlayer.roomId : '-' }}]
+                        </TypographyTitle>
                     </div>
                     <div>
                         <div class="flex gap-x-2">
                             <TypographyTitle class="!m-0" :level="5"> Player
-                              [{{ currentPlayer.name ? currentPlayer.name : '-' }}]
+                                [{{ currentPlayer.name ? currentPlayer.name : '-' }}]
                             </TypographyTitle>
                             <Tag :color="currentPlayer.isHost ? 'success' : 'processing'">
-                              {{ currentPlayer.isHost ? 'HOST' : 'CLIENT'
-                              }}
+                                {{ currentPlayer.isHost ? 'HOST' : 'CLIENT'
+                                }}
                             </Tag>
                         </div>
                         <pre> {{ currentPlayer }}</pre>

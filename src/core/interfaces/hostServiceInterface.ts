@@ -20,4 +20,5 @@ export interface IHostService {
 	) => void;
 	createNewRoomAsync: () => Promise<string>;
 	disconnect: () => void;
+	sendChatMessage: (message: string) => void;
 }

@@ -34,11 +34,11 @@ const rulesRef = reactive({
 const { validate } = Form.useForm(currentPlayer, rulesRef);
 
 function handleHostGameClick() {
-  currentPlayer.isHost = true;
   showRoomId.value = false;
   isJoining.value = false;
   validate()
     .then(() => {
+      currentPlayer.isHost = true;
       router.push({ name: RoutesEnum.CREATE_GAME });
     })
     .catch(() => {
@@ -71,7 +71,6 @@ async function handleJoinGameClick() {
 }
 
 function changeAvatarIcon(): void {
-  console.log("Avatar Icon Changed")
   const currentIndex = AvatarsList.indexOf(currentPlayer.avatar);
   const nextIndex = (currentIndex + 1) % AvatarsList.length;
   currentPlayer.avatar = AvatarsList[nextIndex];

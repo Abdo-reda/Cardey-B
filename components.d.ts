@@ -7,7 +7,9 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ATooltip: typeof import('ant-design-vue/es')['Tooltip']
     AvatarComponent: typeof import('./src/components/AvatarComponent.vue')['default']
+    ChatComponent: typeof import('./src/components/Layout/ChatComponent.vue')['default']
     IncrementorComponent: typeof import('./src/components/IncrementorComponent.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

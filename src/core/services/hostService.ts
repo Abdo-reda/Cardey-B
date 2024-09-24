@@ -212,10 +212,10 @@ export class HostService implements IHostService {
 		});
 	}
 
-	disconnect(): void{
+	disconnect(): void {
 		this.dataChannels?.forEach((dataChannel) => {
 			dataChannel.close();
-		})
+		});
 		this.peerConnections?.forEach((peerConnection) => {
 			peerConnection.close();
 		});
@@ -223,6 +223,8 @@ export class HostService implements IHostService {
 		this.peerConnections = reactive(new Map());
 		this.dataChannels = reactive(new Map());
 	}
+
+	sendChatMessage(message: string) {}
 
 	private jsonParser(key: string, value: any) {
 		if (key == 'useGameState') return undefined;

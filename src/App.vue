@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button, ConfigProvider, Modal, PageHeader, Result } from 'ant-design-vue';
 import { RouterView } from 'vue-router'
-import { SettingOutlined, FormatPainterOutlined, PauseCircleFilled, PlayCircleFilled, BugOutlined, ArrowLeftOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons-vue';
+import { SettingOutlined, FormatPainterOutlined, PauseCircleFilled, PlayCircleFilled, BugOutlined, ArrowLeftOutlined } from '@ant-design/icons-vue';
 import { inject, ref } from 'vue';
 import router from '@/plugins/router'
 import useTheme from './core/composables/useTheme';
@@ -9,6 +9,7 @@ import { GameServiceKey } from './core/constants/injectionKeys';
 import useGameState from './core/composables/useGameState';
 import usePlayer from './core/composables/usePlayer';
 import { RoutesEnum } from './core/enums/routesEnum';
+import ChatComponent from './components/Layout/ChatComponent.vue';
 
 const gameService = inject(GameServiceKey)!;
 const { currentPlayer } = usePlayer();
@@ -18,7 +19,6 @@ const quitModalOpen = ref(false);
 
 const { currentThemeAlgorithm, switchTheme, setTheme } = useTheme();
 setTheme();
-
 
 const { isPaused } = useGameState();
 
@@ -102,6 +102,8 @@ function handleGoBack() {
         </Transition>
       </RouterView>
     </main>
+    <!-- CHAT -->
+    <ChatComponent />
     <!-- Setting Modal -->
     <Modal v-model:open="settingsOpen" title="Settings" :closable="false">
       <div>
@@ -139,7 +141,6 @@ function handleGoBack() {
       <template #footer>
       </template>
     </Modal>
-
     <!-- Quit Game Confirmation Modal -->
     <Modal @ok="quitGame()" :centered="true" :keyboard="true" :maskClosable="true" v-model:open="quitModalOpen"
       :closable="true">

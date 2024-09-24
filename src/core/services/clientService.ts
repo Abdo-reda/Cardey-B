@@ -20,7 +20,8 @@ export class ClientService implements IClientService {
 	roomId: string = '';
 	peerConnection: RTCPeerConnection | undefined;
 	private isDisconnectedFlag = false;
-	dataChannel: RTCDataChannel | undefined;
+	chatDataChannel: RTCDataChannel | undefined;
+	gameDataChannel: RTCDataChannel | undefined;
 	onRecievedMessage?: (message: IMessage<any>) => void;
 	onDataChannelOpen?: () => void;
 	onDataChannelClosed?: () => void;
@@ -94,7 +95,7 @@ export class ClientService implements IClientService {
 		pc.ondatachannel = (event) => {
 			const dataChannel = event.channel;
 			if (dataChannel.label === ChannelsEnum.GAME_DATA) {
-				this.dataChannel = dataChannel;
+				this.gameDataChannel = dataChannel;
 			}
 
 			dataChannel.onopen = () => {
@@ -153,7 +154,11 @@ export class ClientService implements IClientService {
 
 	sendMessageToHost<E extends MessageMethodsEnum>(message: IMessage<E>): void {
 		// console.log('-- client webRTC sending message', JSON.stringify(message, this.jsonParser));
-		this.dataChannel?.send(JSON.stringify(message, this.jsonParser));
+		this.gameDataChannel?.send(JSON.stringify(message, this.jsonParser));
+	}
+
+	sendChatMessage(message: string): void {
+		this.chatDataChannel?.send(message);
 	}
 
 	//TODO: I fucking hate this, but testing to see if this is the problem
@@ -164,7 +169,7 @@ export class ClientService implements IClientService {
 
 	disconnect(): void {
 		this.isDisconnectedFlag = true;
-		this.dataChannel?.close();
+		this.gameDataChannel?.close();
 		this.peerConnection?.close(); // close? 🤔
 		this.peerConnection = undefined;
 	}
