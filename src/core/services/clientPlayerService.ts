@@ -7,6 +7,7 @@ import { BasePlayerService } from './basePlayerService';
 import { message } from 'ant-design-vue'
 import router from '@/plugins/router'
 import { RoutesEnum } from '@/core/enums/routesEnum'
+import type { ChannelsEnum } from '../enums/channelsEnum';
 
 export class ClientPlayerService extends BasePlayerService<IClientService> {
 	constructor(clientService: IClientService, player: IPlayer) {
@@ -17,7 +18,7 @@ export class ClientPlayerService extends BasePlayerService<IClientService> {
 	setupListeners(): void {
 		console.log('--- setting up client listeners');
 
-		this.service.onRecievedMessage = (message: IMessage<any>) => {
+		this.service.onRecievedMessage = (channel: ChannelsEnum, message: IMessage<any>) => {
 			console.log('----- Client recieved message from host: ', message);
 			this.handleMessage(message);
 			// callback(message);
@@ -49,10 +50,5 @@ export class ClientPlayerService extends BasePlayerService<IClientService> {
 		const msg = MESSAGES_MAP.get(MessageMethodsEnum.JOIN_GAME)!;
 		msg.init(this.player.id, this.player);
 		this.sendMessage(msg);
-	}
-	
-	disconnect(): void {
-		this.service.disconnect();
-		super.disconnect();
 	}
 }

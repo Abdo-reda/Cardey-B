@@ -1,3 +1,4 @@
+import { ChatMessage } from '@/core/models/messages/chatMessage';
 import { JoinGameMessage } from '@/core/models/messages/joinGameMessage';
 import { JoinTeamMessage } from '@/core/models/messages/joinTeamMessage';
 import { PlayerDisconnectedMessage } from '@/core/models/messages/playerDisconnectedMessage';
@@ -20,4 +21,5 @@ export default function () {
 	new TestMessage();
 	new PlayerDisconnectedMessage();
 	new QuitGameMessage();
+	new ChatMessage();
 }

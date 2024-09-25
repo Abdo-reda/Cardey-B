@@ -1,9 +1,9 @@
 import type { Reactive } from 'vue';
 import type { IMessage } from './messageInterfaces/messageInterface';
 import type { MessageMethodsEnum } from '../enums/methodsEnum';
+import type { IBaseWebRTCService } from './baseWebRTCServiceInterface';
 
-export interface IHostService {
-	roomId: string;
+export interface IHostService extends IBaseWebRTCService {
 	peerConnections: Reactive<Map<string, RTCPeerConnection>>;
 	dataChannels: Reactive<Map<string, RTCDataChannel>>;
 
@@ -19,6 +19,4 @@ export interface IHostService {
 		exlucdedPlayerIds: string[]
 	) => void;
 	createNewRoomAsync: () => Promise<string>;
-	disconnect: () => void;
-	sendChatMessage: (message: string) => void;
 }

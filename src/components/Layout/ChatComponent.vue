@@ -34,7 +34,7 @@ const mentions = playerNames.value.map((name: string) => {
 });
 
 function sendMessage() {
-    console.log('send message', chatMsg);
+    playerService.value.sendChatMessage(chatMsg.value);
 }
 
 </script>
@@ -46,7 +46,7 @@ function sendMessage() {
                 <CommentOutlined />
             </template>
         </FloatButton>
-        <Drawer :open="isChatOpen" width="70%" @close="isChatOpen = false">
+        <Drawer class="max-w-lg" :open="isChatOpen" @close="isChatOpen = false">
             <template #title>
                 Room Chat
                 <MessageOutlined class="mx-2" />
@@ -79,9 +79,9 @@ function sendMessage() {
                                         <!-- <AvatarComponent avatar-icon="" /> -->
                                     </template>
                                     <template #datetime>
-                                        <!-- <a-tooltip :title="dayjs().format('YYYY-MM-DD HH:mm:ss')">
+                                        <!-- <Tooltip :title="dayjs().format('YYYY-MM-DD HH:mm:ss')">
                                             <span>{{ dayjs().fromNow() }}</span>
-                                        </a-tooltip> -->
+                                        </Tooltip> -->
                                     </template>
                                 </Comment>
                             </div>

@@ -37,10 +37,5 @@ export class HostPlayerService extends BasePlayerService<IHostService> {
 		const msg = MESSAGES_MAP.get(MessageMethodsEnum.SYNC)!;
 		msg.init(this.player.id, gameState);
 		this.sendMessage(msg);
-	}
-
-	disconnect(): void {
-		this.service.disconnect();
-		super.disconnect();
-	}
+	}                                                            
 }

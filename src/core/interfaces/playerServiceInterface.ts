@@ -11,8 +11,7 @@ export interface IPlayerService {
 		method: E,
 		data: MessageMethodPayloadMap[E]
 	) => void;
-
 	sendMessage: <E extends MessageMethodsEnum>(message: IMessage<E>) => void;
-
+	sendChatMessage: (message: string) => void;
 	disconnect(): void
 }

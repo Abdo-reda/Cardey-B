@@ -20,6 +20,7 @@ import type { MessageMethodsEnum } from '../enums/methodsEnum';
 //maybe create a wrapper for peer connection? extension methods and so on ... I am not sure
 
 export class HostService implements IHostService {
+	senderId: string = ''
 	roomId: string;
 	peerConnections: Reactive<Map<string, RTCPeerConnection>>;
 	dataChannels: Reactive<Map<string, RTCDataChannel>>;
@@ -65,6 +66,7 @@ export class HostService implements IHostService {
 		console.log('--- Creating New room id: ', roomDocRef.id);
 		this.listenToRoomJoinRequests(roomDocRef);
 		this.roomId = roomDocRef.id;
+		this.senderId = this.roomId;
 		return roomDocRef.id;
 	}
 
@@ -224,7 +226,9 @@ export class HostService implements IHostService {
 		this.dataChannels = reactive(new Map());
 	}
 
-	sendChatMessage(message: string) {}
+	sendChatMessage(message: IMessage<MessageMethodsEnum.CHAT>) {
+		this.sendMessageToAllExcept(message);
+	}
 
 	private jsonParser(key: string, value: any) {
 		if (key == 'useGameState') return undefined;

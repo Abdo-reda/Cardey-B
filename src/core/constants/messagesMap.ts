@@ -20,4 +20,5 @@ export type MessageMethodPayloadMap = {
 	[MessageMethodsEnum.TEST_MESSAGE]: string;
 	[MessageMethodsEnum.PLAYER_DISCONNECTED]: string;
 	[MessageMethodsEnum.QUIT_GAME]: void;
+	[MessageMethodsEnum.CHAT]: string;
 };
