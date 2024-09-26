@@ -7,6 +7,7 @@ export class ChatMessage extends BaseMessage<MessageMethodsEnum.CHAT> {
 	}
 
 	handle(): void {
+		console.log('--- handling chat message', this.data);
 		this.useRoomChat.addMessage(this.data);
 	}
 }

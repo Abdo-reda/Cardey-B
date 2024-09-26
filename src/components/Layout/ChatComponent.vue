@@ -11,17 +11,14 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { RoutesEnum } from '@/core/enums/routesEnum';
 import { ColorsEnum } from '@/core/enums/colorsEnum';
+import { AvatarsEnum } from '@/core/enums/avatarsEnum';
 
 dayjs.extend(relativeTime);
-
-//sticky.
-//reverse, make your chat messages reverves
-
 
 const { isChatOpen, chatMessages, unReadMessages } = useRoomChat();
 const { currentPlayer, playerService } = usePlayer();
 const { currentRoute, playerNames, getPlayer, getTeam } = useGameState();
-const isConnectedToRoom = computed(() => currentRoute.value === RoutesEnum.LOBBY); //depending on the peer connection state, I will do this for now.
+const isConnectedToRoom = computed(() => currentRoute.value !== RoutesEnum.HOME && currentRoute.value !== RoutesEnum.CREATE_GAME); //depending on the peer connection state, I will do this for now.
 const chatMsg = ref('');
 
 const mentions = playerNames.value.map((name: string) => {
@@ -40,7 +37,6 @@ function sendMessage() {
     playerService.value.sendChatMessage(chatMsg.value);
     chatMsg.value = '';
 }
-const curPlayer = ref<IPlayer>();
 
 </script>
 
@@ -83,15 +79,17 @@ const curPlayer = ref<IPlayer>();
                     <template v-else>
                         <div v-auto-animate class="h-full flex flex-col-reverse overflow-y-scroll">
                             <Comment v-for="chatMsg in sortedMessages" :key="chatMsg.timestamp"
-                                :set="curPlayer = getPlayer(chatMsg.senderId)" :author="curPlayer.name">
+                                :author="getPlayer(chatMsg.senderId)?.name ?? 'DISCONNECTED'">
                                 <template #content>
                                     <TypographyParagraph>
                                         {{ chatMsg.message }} </TypographyParagraph>
                                 </template>
                                 <template #avatar>
-                                    <AvatarComponent :avatar-icon="curPlayer.avatar"
-                                        :color="getTeam(curPlayer.teamId)?.color ?? ColorsEnum.GRAY"
-                                        :color-border="curPlayer.id === chatMsg.senderId" />
+                                    <AvatarComponent
+                                        :avatar-icon="getPlayer(chatMsg.senderId)?.avatar ?? AvatarsEnum.BIRD"
+                                        :color="getTeam(getPlayer(chatMsg.senderId)?.teamId ?? '')?.color ?? ColorsEnum.GRAY"
+                                        :color-border="currentPlayer.id === chatMsg.senderId"
+                                        :show-border="currentPlayer.id === chatMsg.senderId" />
                                 </template>
                                 <template #datetime>
                                     <Tooltip :title="dayjs.unix(chatMsg.timestamp).format('YYYY-MM-DD HH:mm:ss')">

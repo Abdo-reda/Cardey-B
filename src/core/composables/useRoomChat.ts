@@ -15,7 +15,7 @@ const isChatOpen = computed({
 
 function addMessage(chatMsg: IChatMessage) {
 	chatMessages.value.push(chatMsg);
-	if (!chatOpen.value) unReadMessages.value++;
+	if (!chatOpen.value) unReadMessages.value += 1;
 }
 
 function resetMessages() {

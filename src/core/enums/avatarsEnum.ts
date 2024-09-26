@@ -13,8 +13,13 @@ export enum AvatarsEnum {
 	STAR = 'star',
 	TORTOISE = 'tortoise',
 	TURTLE = 'turtle',
-	WHALE = 'whale'
-	//   CAT = 'cat'
+	WHALE = 'whale',
+	CAT = 'cat',
+	PUPPY = 'puppy',
+	MOUSE = 'mouse',
+	NINJA = 'ninja',
+	ROOSTER = 'rooster',
+	PENGUIN = 'penguin'
 	//   RABBIT = 'rabbit'
 	//   BEAR = 'bear',
 	//   FOX = 'fox',
@@ -22,22 +27,3 @@ export enum AvatarsEnum {
 }
 
 export const AvatarsList = Object.values(AvatarsEnum);
-
-// I hate this, we need a way to dynamically import svgs using the avatar enum name, there is lazy loading in vite, we need to check it out
-// export const AvatarSVGMapper: Map<AvatarsEnum, FunctionalComponent> = new Map([
-// 	[AvatarsEnum.BIRD, BirdSVG],
-// 	[AvatarsEnum.BUTTERFLY, BirdSVG],
-// 	[AvatarsEnum.CANARY, BirdSVG],
-// 	[AvatarsEnum.DOG, BirdSVG],
-// 	[AvatarsEnum.ELEPHANT, BirdSVG],
-// 	[AvatarsEnum.FISH, BirdSVG],
-// 	[AvatarsEnum.FLOWER, BirdSVG],
-// 	[AvatarsEnum.KANGAROO, BirdSVG],
-// 	[AvatarsEnum.OSTRICH, BirdSVG],
-// 	[AvatarsEnum.PAPER_PLANE, BirdSVG],
-// 	[AvatarsEnum.PIG, BirdSVG],
-// 	[AvatarsEnum.STAR, BirdSVG],
-// 	[AvatarsEnum.TORTOISE, BirdSVG],
-// 	[AvatarsEnum.TURTLE, BirdSVG],
-// 	[AvatarsEnum.WHALE, BirdSVG]
-// ]);

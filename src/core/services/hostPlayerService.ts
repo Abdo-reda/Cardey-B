@@ -14,9 +14,16 @@ export class HostPlayerService extends BasePlayerService<IHostService> {
 
 	setupListeners(): void {
 		console.log('--- setting up host listeners');
-		this.service.onRecievedMessage = (playerId: string, message: IMessage<any>) => {
+		this.service.onRecievedMessage = (
+			channel: ChannelsEnum,
+			playerId: string,
+			message: IMessage<any>
+		) => {
 			console.log('--- Message recieved from player (client): ', playerId, message);
 			this.handleMessage(message);
+			if (channel === ChannelsEnum.CHAT) {
+				this.service.sendChatMessage(message, [playerId]); //forward chat message to all players
+			}
 		};
 		this.service.onPlayerClosedDataChannel = (playerId: string) => {
 			this.executeAndSendMessage(MessageMethodsEnum.PLAYER_DISCONNECTED, playerId);

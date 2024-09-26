@@ -8,10 +8,12 @@ interface IAvatarProps {
     color: ColorsEnum;
     avatarIcon: AvatarsEnum;
     tooltip?: string;
+    showBorder?: boolean;
     colorBorder?: boolean;
 }
 
 const props = withDefaults(defineProps<IAvatarProps>(), {
+    showBorder: true,
     colorBorder: false,
 });
 
@@ -34,9 +36,8 @@ const styles = computed(() => {
 </script>
 
 <template>
-    <Avatar v-if="!tooltip"
-        class="bg-white dark:bg-gray-800 shadow-md border border-gray-100 flex justify-center items-center"
-        :style="styles">
+    <Avatar v-if="!tooltip" class="bg-white dark:bg-gray-800 shadow-md flex justify-center items-center" :style="styles"
+        :class="{ 'border border-gray-100': showBorder || colorBorder }">
         <template #icon>
             <Transition name="appear" mode="out-in">
                 <component height="60%" width="60%" :color="color" :fill-opacity="0.3" :is="svgComponent" />
@@ -47,8 +48,8 @@ const styles = computed(() => {
         <template #title>
             {{ tooltip }}
         </template>
-        <Avatar class="bg-white dark:bg-gray-800 shadow-md border border-gray-100 flex justify-center items-center"
-            :style="styles">
+        <Avatar class="bg-white dark:bg-gray-800 shadow-md flex justify-center items-center" :style="styles"
+            :class="{ 'border border-gray-100': showBorder || colorBorder }">
             <template #icon>
                 <component height="60%" width="60%" :color="color" :fill-opacity="0.3" :is="svgComponent" />
             </template>

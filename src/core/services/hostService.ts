@@ -27,7 +27,7 @@ export class HostService implements IHostService {
 
 	onPlayerJoinedDataChannel?: (playerId: string) => void;
 	onPlayerClosedDataChannel?: (playerId: string) => void;
-	onRecievedMessage?: (playerId: string, message: IMessage<any>) => void;
+	onRecievedMessage?: (channel: ChannelsEnum, playerId: string, message: IMessage<any>) => void;
 
 	constructor() {
 		this.roomId = '';
@@ -182,7 +182,8 @@ export class HostService implements IHostService {
 		dataChannel.onmessage = (event: MessageEvent<string>) => {
 			// console.log(`Received data from player ${playerId}:`, event.data);
 			const message = JSON.parse(event.data) as IMessage<any>;
-			if (this.onRecievedMessage) this.onRecievedMessage(playerId, message);
+			if (this.onRecievedMessage)
+				this.onRecievedMessage(ChannelsEnum.GAME_DATA, playerId, message);
 		};
 
 		dataChannel.onclose = () => {
@@ -205,7 +206,8 @@ export class HostService implements IHostService {
 		dataChannel.onmessage = (event: MessageEvent<string>) => {
 			// console.log(`Received data from player ${playerId}:`, event.data);
 			const message = JSON.parse(event.data) as IMessage<any>;
-			if (this.onRecievedMessage) this.onRecievedMessage(playerId, message);
+			if (this.onRecievedMessage)
+				this.onRecievedMessage(ChannelsEnum.CHAT, playerId, message);
 		};
 
 		dataChannel.onclose = () => {
@@ -251,8 +253,8 @@ export class HostService implements IHostService {
 		});
 	}
 
-	sendChatMessage(message: IMessage<MessageMethodsEnum.CHAT>) {
-		this.sendMessageToAllExcept(ChannelsEnum.CHAT, message);
+	sendChatMessage(message: IMessage<MessageMethodsEnum.CHAT>, except: string[] = []) {
+		this.sendMessageToAllExcept(ChannelsEnum.CHAT, message, except);
 	}
 
 	disconnect(): void {

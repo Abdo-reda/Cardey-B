@@ -21,18 +21,22 @@ export class ClientPlayerService extends BasePlayerService<IClientService> {
 		this.service.onRecievedMessage = (channel: ChannelsEnum, message: IMessage<any>) => {
 			console.log('----- Client recieved message from host: ', message);
 			this.handleMessage(message);
-			// callback(message);
 		};
 
-		this.service.onDataChannelOpen = () => {
-			console.log('----- Client on Data channel open');
-			this.sendJoinGame();
+		this.service.onDataChannelOpen = (channel: ChannelsEnum) => {
+			console.log(`----- Client on Data channel open ${channel}`);
+			if (channel === ChannelsEnum.GAME_DATA) this.sendJoinGame();
 		};
 
-		this.service.onDataChannelClosed = () => {
-			this.disconnect();
-			router.push({ name: RoutesEnum.HOME });
-			message.error('Lost Connection To Host!');
+		this.service.onDataChannelClosed = (channel: ChannelsEnum) => {
+			if (channel === ChannelsEnum.CHAT) {
+				console.log('--- disconnected from chat channel');
+				return;
+			} else if (channel === ChannelsEnum.GAME_DATA) {
+				this.disconnect();
+				router.push({ name: RoutesEnum.HOME });
+				message.error('Lost Connection To Host!');
+			}
 		};
 	}
 
