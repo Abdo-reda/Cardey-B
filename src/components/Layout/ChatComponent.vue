@@ -1,30 +1,28 @@
 <script setup lang="ts">
 import useGameState from '@/core/composables/useGameState';
-import type { IChatMessage } from '@/core/interfaces/chatMessageInterface';
 import { MessageOutlined, SendOutlined, IeOutlined, CommentOutlined } from '@ant-design/icons-vue';
-import { Button, Comment, Divider, Drawer, FloatButton, Mentions, TypographyParagraph, TypographyTitle } from 'ant-design-vue';
-import { ref } from 'vue';
+import { Button, Comment, Divider, Drawer, FloatButton, Mentions, Tooltip, TypographyParagraph, TypographyTitle } from 'ant-design-vue';
+import { computed, ref } from 'vue';
 import AvatarComponent from '../AvatarComponent.vue';
 import usePlayer from '@/core/composables/usePlayer';
+import useRoomChat from '@/core/composables/useRoomChat';
+import type { IPlayer } from '@/core/interfaces/playerInterface';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import { RoutesEnum } from '@/core/enums/routesEnum';
+import { ColorsEnum } from '@/core/enums/colorsEnum';
 
+dayjs.extend(relativeTime);
+
+//sticky.
+//reverse, make your chat messages reverves
+
+
+const { isChatOpen, chatMessages, unReadMessages } = useRoomChat();
 const { currentPlayer, playerService } = usePlayer();
-const isConnectedToRoom = ref(true);
-const { playerNames } = useGameState();
-const isChatOpen = ref(false);
-const unreadMessages = ref(0);
+const { currentRoute, playerNames, getPlayer, getTeam } = useGameState();
+const isConnectedToRoom = computed(() => currentRoute.value === RoutesEnum.LOBBY); //depending on the peer connection state, I will do this for now.
 const chatMsg = ref('');
-const tempListOfMessages = ref<IChatMessage[]>([
-    {
-        message: 'Hello',
-        senderId: '123',
-        timestamp: Date.now() - 1000 * 60 * 60,
-    },
-    {
-        message: 'why',
-        senderId: '1223',
-        timestamp: Date.now() - 1000 * 60 * 60 * 24,
-    }
-]);
 
 const mentions = playerNames.value.map((name: string) => {
     return {
@@ -33,15 +31,22 @@ const mentions = playerNames.value.map((name: string) => {
     };
 });
 
+const sortedMessages = computed(() => {
+    const chatMessagesClone = [...chatMessages.value]
+    return chatMessagesClone.sort((a, b) => b.timestamp - a.timestamp)
+});
+
 function sendMessage() {
     playerService.value.sendChatMessage(chatMsg.value);
+    chatMsg.value = '';
 }
+const curPlayer = ref<IPlayer>();
 
 </script>
 
 <template>
     <div>
-        <FloatButton @click="isChatOpen = true" :badge="{ dot: !!unreadMessages, color: 'blue' }">
+        <FloatButton @click="isChatOpen = true" :badge="{ dot: !!unReadMessages, color: 'blue' }">
             <template #icon>
                 <CommentOutlined />
             </template>
@@ -51,57 +56,51 @@ function sendMessage() {
                 Room Chat
                 <MessageOutlined class="mx-2" />
             </template>
+            <template #footer>
+                <div class="flex gap-x-4 my-4">
+                    <Mentions @keyup.enter.capture="sendMessage" v-model:value="chatMsg" :options="mentions">
+                    </Mentions>
+                    <Button @click=sendMessage :disabled="!isConnectedToRoom || !chatMsg" type="primary" shape="round"
+                        class="flex items-center justify-center">
+                        <template #icon>
+                            <SendOutlined />
+                        </template>
+                    </Button>
+                </div>
+            </template>
             <template #default>
-                <div class="flex flex-col justify-between h-full">
-                    <div class="flex-1">
-                        <template v-if="!isConnectedToRoom">
-                            <div class="flex flex-col items-center justify-center h-full">
-                                <TypographyTitle :level="1">
-                                    <IeOutlined />
-                                </TypographyTitle>
-                                <Divider :dashed="true" />
-                                <TypographyParagraph :strong="true"> You are not connected to a room
-                                </TypographyParagraph>
-                            </div>
-                        </template>
-                        <template v-else>
-                            <div>
-
-                            </div>
-                            <div v-auto-animate>
-                                <Comment :class="{ 'flex flex-row-reverse': chatMsg.senderId === currentPlayer.id }"
-                                    v-for="chatMsg in tempListOfMessages" :key="chatMsg.timestamp"
-                                    :author="chatMsg.senderId">
-                                    <template #content>
-                                        <TypographyParagraph> {{ chatMsg.message }} </TypographyParagraph>
-                                    </template>
-                                    <template #avatar>
-                                        <!-- <AvatarComponent avatar-icon="" /> -->
-                                    </template>
-                                    <template #datetime>
-                                        <!-- <Tooltip :title="dayjs().format('YYYY-MM-DD HH:mm:ss')">
-                                            <span>{{ dayjs().fromNow() }}</span>
-                                        </Tooltip> -->
-                                    </template>
-                                </Comment>
-                            </div>
-                        </template>
-                    </div>
-                    <div>
-                        <Divider />
-                        <!-- <FormItem class="flex flex-row items-center"> -->
-                        <div class="flex gap-x-4">
-                            <Mentions v-model:value="chatMsg" :options="mentions"> </Mentions>
-                            <Button @click=sendMessage :disabled="!isConnectedToRoom || !chatMsg" type="primary"
-                                shape="round" class="flex items-center justify-center">
-                                <template #icon>
-                                    <SendOutlined />
-                                </template>
-                            </Button>
-                            <!-- <Mentions :value="chatMsg" :options="mentions"> </Mentions> -->
+                <div class="h-full">
+                    <template v-if="!isConnectedToRoom">
+                        <div class="flex flex-col items-center justify-center h-full">
+                            <TypographyTitle :level="1">
+                                <IeOutlined />
+                            </TypographyTitle>
+                            <Divider :dashed="true" />
+                            <TypographyParagraph :strong="true"> You are not connected to a room
+                            </TypographyParagraph>
                         </div>
-                        <!-- </FormItem> -->
-                    </div>
+                    </template>
+                    <template v-else>
+                        <div v-auto-animate class="h-full flex flex-col-reverse overflow-y-scroll">
+                            <Comment v-for="chatMsg in sortedMessages" :key="chatMsg.timestamp"
+                                :set="curPlayer = getPlayer(chatMsg.senderId)" :author="curPlayer.name">
+                                <template #content>
+                                    <TypographyParagraph>
+                                        {{ chatMsg.message }} </TypographyParagraph>
+                                </template>
+                                <template #avatar>
+                                    <AvatarComponent :avatar-icon="curPlayer.avatar"
+                                        :color="getTeam(curPlayer.teamId)?.color ?? ColorsEnum.GRAY"
+                                        :color-border="curPlayer.id === chatMsg.senderId" />
+                                </template>
+                                <template #datetime>
+                                    <Tooltip :title="dayjs.unix(chatMsg.timestamp).format('YYYY-MM-DD HH:mm:ss')">
+                                        <span>{{ dayjs.unix(chatMsg.timestamp).fromNow() }}</span>
+                                    </Tooltip>
+                                </template>
+                            </Comment>
+                        </div>
+                    </template>
                 </div>
             </template>
         </Drawer>

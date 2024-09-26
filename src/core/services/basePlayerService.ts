@@ -6,6 +6,7 @@ import type { IGameState } from '../interfaces/gameStateInterface';
 import { MessageMethodsEnum } from '../enums/methodsEnum';
 import { type MessageMethodPayloadMap, MESSAGES_MAP } from '../constants/messagesMap';
 import type { IBaseWebRTCService } from '../interfaces/baseWebRTCServiceInterface';
+import dayjs from 'dayjs';
 
 export class BasePlayerService<T extends IBaseWebRTCService> implements IPlayerService {
 	protected player: Reactive<IPlayer>;
@@ -38,30 +39,30 @@ export class BasePlayerService<T extends IBaseWebRTCService> implements IPlayerS
 		msg.handle();
 	}
 
-	sendMessage<E extends MessageMethodsEnum>(message: IMessage<E>): void {}
+	sendGameMessage<E extends MessageMethodsEnum>(message: IMessage<E>): void {}
 
 	public executeAndSendMessage<E extends MessageMethodsEnum>(
 		method: E,
 		data: MessageMethodPayloadMap[E]
 	) {
 		this.executeMessage(method, this.player.id, data);
-		this.sendMessage(MESSAGES_MAP.get(method)!);
-	}
-
-	private resetPlayer() {
-		this.player.teamId = '';
-		this.player.words = [];
-		this.player.isHost = false;
+		this.sendGameMessage(MESSAGES_MAP.get(method)!);
 	}
 
 	public sendChatMessage(message: string) {
-		console.log(`${this.player.isHost ? 'host' : 'client'} player ${this.player.id} - ${this.player.name} sending chat message ${message}`);
-		this.service.sendChatMessage(message);
+		console.log(
+			`${this.player.isHost ? 'host' : 'client'} player ${this.player.id} - ${this.player.name} sending chat message ${message}`
+		);
+		this.executeMessage(MessageMethodsEnum.CHAT, this.player.id, {
+			senderId: this.player.id,
+			message: message,
+			timestamp: dayjs().unix()
+		});
+		this.service.sendChatMessage(MESSAGES_MAP.get(MessageMethodsEnum.CHAT)!);
 	}
 
 	public disconnect(): void {
 		this.service.disconnect();
 		this.executeMessage(MessageMethodsEnum.QUIT_GAME, this.player.id, undefined);
-		this.resetPlayer(); //TODO: this should be in the fucking message
 	}
 }

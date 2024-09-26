@@ -8,5 +8,7 @@ export class QuitGameMessage extends BaseMessage<MessageMethodsEnum.QUIT_GAME> {
 
 	handle(): void {
 		this.useGameState.terminateGame();
+		this.useRoomChat.resetMessages();
+		this.usePlayer.resetPlayer();
 	}
 }

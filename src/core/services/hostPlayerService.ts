@@ -5,6 +5,7 @@ import type { IGameState } from '../interfaces/gameStateInterface';
 import { MessageMethodsEnum } from '../enums/methodsEnum';
 import { MESSAGES_MAP } from '../constants/messagesMap';
 import { BasePlayerService } from './basePlayerService';
+import { ChannelsEnum } from '../enums/channelsEnum';
 
 export class HostPlayerService extends BasePlayerService<IHostService> {
 	constructor(hostService: IHostService, player: IPlayer) {
@@ -22,9 +23,9 @@ export class HostPlayerService extends BasePlayerService<IHostService> {
 		};
 	}
 
-	sendMessage<E extends MessageMethodsEnum>(message: IMessage<E>): void {
+	sendGameMessage<E extends MessageMethodsEnum>(message: IMessage<E>): void {
 		console.log('---- Host sending message: ', message);
-		this.service.sendMessageToAllExcept(message, []);
+		this.service.sendMessageToAllExcept(ChannelsEnum.GAME_DATA, message);
 	}
 
 	async joinGameAsync(): Promise<void> {
@@ -36,6 +37,6 @@ export class HostPlayerService extends BasePlayerService<IHostService> {
 	syncGameState(gameState: IGameState): void {
 		const msg = MESSAGES_MAP.get(MessageMethodsEnum.SYNC)!;
 		msg.init(this.player.id, gameState);
-		this.sendMessage(msg);
-	}                                                            
+		this.sendGameMessage(msg);
+	}
 }

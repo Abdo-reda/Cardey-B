@@ -4,10 +4,10 @@ import type { IClientService } from '../interfaces/clientServiceInterface';
 import { MessageMethodsEnum } from '../enums/methodsEnum';
 import { MESSAGES_MAP } from '../constants/messagesMap';
 import { BasePlayerService } from './basePlayerService';
-import { message } from 'ant-design-vue'
-import router from '@/plugins/router'
-import { RoutesEnum } from '@/core/enums/routesEnum'
-import type { ChannelsEnum } from '../enums/channelsEnum';
+import { message } from 'ant-design-vue';
+import router from '@/plugins/router';
+import { RoutesEnum } from '@/core/enums/routesEnum';
+import { ChannelsEnum } from '../enums/channelsEnum';
 
 export class ClientPlayerService extends BasePlayerService<IClientService> {
 	constructor(clientService: IClientService, player: IPlayer) {
@@ -36,9 +36,9 @@ export class ClientPlayerService extends BasePlayerService<IClientService> {
 		};
 	}
 
-	sendMessage<E extends MessageMethodsEnum>(message: IMessage<E>): void {
+	sendGameMessage<E extends MessageMethodsEnum>(message: IMessage<E>): void {
 		console.log('---- Client sending message: ', message);
-		this.service.sendMessageToHost(message);
+		this.service.sendMessageToHost(ChannelsEnum.GAME_DATA, message);
 	}
 
 	async joinGameAsync(): Promise<void> {
@@ -49,6 +49,6 @@ export class ClientPlayerService extends BasePlayerService<IClientService> {
 	private sendJoinGame(): void {
 		const msg = MESSAGES_MAP.get(MessageMethodsEnum.JOIN_GAME)!;
 		msg.init(this.player.id, this.player);
-		this.sendMessage(msg);
+		this.sendGameMessage(msg);
 	}
 }

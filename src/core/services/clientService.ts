@@ -95,7 +95,7 @@ export class ClientService implements IClientService {
 	private registerDataChannels(pc: RTCPeerConnection) {
 		pc.ondatachannel = (event) => {
 			const dataChannel = event.channel;
-			this.handleDataChannel(dataChannel.label as ChannelsEnum, dataChannel)
+			this.handleDataChannel(dataChannel.label as ChannelsEnum, dataChannel);
 			if (dataChannel.label === ChannelsEnum.GAME_DATA) {
 				this.gameDataChannel = dataChannel;
 			} else if (dataChannel.label === ChannelsEnum.CHAT) {
@@ -158,12 +158,16 @@ export class ClientService implements IClientService {
 		});
 	}
 
-	sendMessageToHost<E extends MessageMethodsEnum>(channel: ChannelsEnum, message: IMessage<E>): void {
-		const parsedMessage = JSON.stringify(message, this.jsonParser)
+	sendMessageToHost<E extends MessageMethodsEnum>(
+		channel: ChannelsEnum,
+		message: IMessage<E>
+	): void {
+		const parsedMessage = JSON.stringify(message, this.jsonParser);
+		// If there are too many channels, we should create a map.
 		if (channel === ChannelsEnum.GAME_DATA) {
 			this.gameDataChannel?.send(parsedMessage);
 		} else if (channel === ChannelsEnum.CHAT) {
-			this.chatDataChannel?.send(parsedMessage)
+			this.chatDataChannel?.send(parsedMessage);
 		}
 	}
 
@@ -173,7 +177,8 @@ export class ClientService implements IClientService {
 
 	//TODO: I fucking hate this, but testing to see if this is the problem
 	private jsonParser(key: string, value: any) {
-		if (key == 'useGameState') return undefined;
+		if (key === 'useGameState' || key === 'useRoomChat' || key === 'usePlayer')
+			return undefined;
 		return value;
 	}
 
@@ -182,5 +187,7 @@ export class ClientService implements IClientService {
 		this.gameDataChannel?.close();
 		this.peerConnection?.close(); // close? 🤔
 		this.peerConnection = undefined;
+		this.senderId = '';
+		this.roomId = '';
 	}
 }

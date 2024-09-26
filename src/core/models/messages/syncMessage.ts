@@ -12,7 +12,7 @@ export class SyncMessage extends BaseMessage<MessageMethodsEnum.SYNC> {
 		if (router.currentRoute.value.name !== this.useGameState.currentRoute.value) {
 			router.push({ name: this.useGameState.currentRoute.value });
 		}
-		const updatedPlayer = this.useGameState.getPlayer(this.currentPlayer.id);
-		this.currentPlayer.teamId = updatedPlayer.teamId;
+		const updatedPlayer = this.useGameState.getPlayer(this.usePlayer.currentPlayer.id);
+		this.usePlayer.updateTeamId(updatedPlayer.teamId);
 	}
 }

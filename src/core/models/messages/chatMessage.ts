@@ -7,6 +7,6 @@ export class ChatMessage extends BaseMessage<MessageMethodsEnum.CHAT> {
 	}
 
 	handle(): void {
-	
+		this.useRoomChat.addMessage(this.data);
 	}
 }
