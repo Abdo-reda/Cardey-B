@@ -8,5 +8,6 @@ export enum MessageMethodsEnum {
 	UPDATE_PHASE = 'updatePhase',
 	TEST_MESSAGE = 'sendMessage',
 	PLAYER_DISCONNECTED = 'playerDisconnected',
-	QUIT_GAME = 'quitGame'
+	QUIT_GAME = 'quitGame',
+	CHAT = 'chat',
 }

@@ -39,10 +39,22 @@ function initPlayerState() {
 	Object.assign(currentPlayer, playerSessionState);
 }
 
+function resetPlayer() {
+	currentPlayer.teamId = '';
+	currentPlayer.words = [];
+	currentPlayer.isHost = false;
+}
+
+function updateTeamId(teamId: string) {
+	currentPlayer.teamId = teamId;
+}
+
 export default function usePlayer() {
 	return {
 		currentPlayer,
 		playerService,
-		initPlayerState
+		initPlayerState,
+		resetPlayer,
+		updateTeamId
 	};
 }

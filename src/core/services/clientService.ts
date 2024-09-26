@@ -1,4 +1,3 @@
-import { ref, type Ref } from 'vue';
 import type { IClientService } from '../interfaces/clientServiceInterface';
 import {
 	addDoc,
@@ -17,18 +16,21 @@ import type { IMessage } from '../interfaces/messageInterfaces/messageInterface'
 import type { MessageMethodsEnum } from '../enums/methodsEnum';
 
 export class ClientService implements IClientService {
+	senderId: string = '';
 	roomId: string = '';
 	peerConnection: RTCPeerConnection | undefined;
 	private isDisconnectedFlag = false;
-	dataChannel: RTCDataChannel | undefined;
-	onRecievedMessage?: (message: IMessage<any>) => void;
-	onDataChannelOpen?: () => void;
-	onDataChannelClosed?: () => void;
+	chatDataChannel: RTCDataChannel | undefined;
+	gameDataChannel: RTCDataChannel | undefined;
+	onRecievedMessage?: (channel: ChannelsEnum, message: IMessage<any>) => void;
+	onDataChannelOpen?: (channel: ChannelsEnum) => void;
+	onDataChannelClosed?: (channel: ChannelsEnum) => void;
 
 	async createJoinRequestAsync(roomId: string): Promise<string> {
 		const joinRequestRef = await this.addJoinRequestAsync(roomId);
 		this.listenForJoinRequestChanges(joinRequestRef);
-		return joinRequestRef.id;
+		this.senderId = joinRequestRef.id;
+		return this.senderId;
 	}
 
 	private async addJoinRequestAsync(
@@ -93,26 +95,31 @@ export class ClientService implements IClientService {
 	private registerDataChannels(pc: RTCPeerConnection) {
 		pc.ondatachannel = (event) => {
 			const dataChannel = event.channel;
+			this.handleDataChannel(dataChannel.label as ChannelsEnum, dataChannel);
 			if (dataChannel.label === ChannelsEnum.GAME_DATA) {
-				this.dataChannel = dataChannel;
+				this.gameDataChannel = dataChannel;
+			} else if (dataChannel.label === ChannelsEnum.CHAT) {
+				this.chatDataChannel = dataChannel;
 			}
+		};
+	}
 
-			dataChannel.onopen = () => {
-				console.log('Client webRTC Data channel open', this.onDataChannelOpen);
-				if (this.onDataChannelOpen) this.onDataChannelOpen();
-			};
+	private handleDataChannel(channel: ChannelsEnum, dataChannel: RTCDataChannel) {
+		dataChannel.onopen = () => {
+			console.log('Client webRTC Data channel open', this.onDataChannelOpen);
+			if (this.onDataChannelOpen) this.onDataChannelOpen(channel);
+		};
 
-			dataChannel.onmessage = (event: MessageEvent<string>) => {
-				// console.log('Client webRTC Service - Received message/data:', event.data);
-				const message = JSON.parse(event.data) as IMessage<any>;
-				if (this.onRecievedMessage) this.onRecievedMessage(message);
-			};
+		dataChannel.onmessage = (event: MessageEvent<string>) => {
+			// console.log('Client webRTC Service - Received message/data:', event.data);
+			const message = JSON.parse(event.data) as IMessage<any>;
+			if (this.onRecievedMessage) this.onRecievedMessage(channel, message);
+		};
 
-			dataChannel.onclose = () => {
-				console.log('Data Channel with Host is closed!');
-				if (this.onDataChannelClosed && !this.isDisconnectedFlag)
-					this.onDataChannelClosed();
-			};
+		dataChannel.onclose = () => {
+			console.log(`Data Channel ${channel} with Host is closed!`);
+			if (this.onDataChannelClosed && !this.isDisconnectedFlag)
+				this.onDataChannelClosed(channel);
 		};
 	}
 
@@ -151,21 +158,36 @@ export class ClientService implements IClientService {
 		});
 	}
 
-	sendMessageToHost<E extends MessageMethodsEnum>(message: IMessage<E>): void {
-		// console.log('-- client webRTC sending message', JSON.stringify(message, this.jsonParser));
-		this.dataChannel?.send(JSON.stringify(message, this.jsonParser));
+	sendMessageToHost<E extends MessageMethodsEnum>(
+		channel: ChannelsEnum,
+		message: IMessage<E>
+	): void {
+		const parsedMessage = JSON.stringify(message, this.jsonParser);
+		// If there are too many channels, we should create a map.
+		if (channel === ChannelsEnum.GAME_DATA) {
+			this.gameDataChannel?.send(parsedMessage);
+		} else if (channel === ChannelsEnum.CHAT) {
+			this.chatDataChannel?.send(parsedMessage);
+		}
+	}
+
+	sendChatMessage(message: IMessage<MessageMethodsEnum.CHAT>) {
+		this.sendMessageToHost(ChannelsEnum.CHAT, message);
 	}
 
 	//TODO: I fucking hate this, but testing to see if this is the problem
 	private jsonParser(key: string, value: any) {
-		if (key == 'useGameState') return undefined;
+		if (key === 'useGameState' || key === 'useRoomChat' || key === 'usePlayer')
+			return undefined;
 		return value;
 	}
 
 	disconnect(): void {
 		this.isDisconnectedFlag = true;
-		this.dataChannel?.close();
+		this.gameDataChannel?.close();
 		this.peerConnection?.close(); // close? 🤔
 		this.peerConnection = undefined;
+		this.senderId = '';
+		this.roomId = '';
 	}
 }

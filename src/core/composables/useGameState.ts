@@ -63,6 +63,8 @@ const timePerRound = computed({
 	set: (value) => (gameState.value.gameSettings.timePerRound = value)
 });
 
+const playerNames = computed(() => gameState.value.players.map((p) => p.name));
+
 export default function useGameState() {
 	let onGameStateChangeHandler: ((newGameState: GameState) => void) | undefined;
 
@@ -123,7 +125,6 @@ export default function useGameState() {
 
 	function setPlayerWords(playerId: string, words: string[]): void {
 		const player = getPlayer(playerId);
-		console.log('--- player', playerId, player, words);
 		player.words = words;
 	}
 
@@ -288,6 +289,7 @@ export default function useGameState() {
 		unreadyPlayers,
 		remainingWords,
 		skippedWords,
+		playerNames,
 		onGameStateChange,
 		getGameState,
 		syncGameState,

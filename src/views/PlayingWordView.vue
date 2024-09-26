@@ -51,13 +51,11 @@ watch(() => [...remainingWords.value], (newValue, oldValue) => {
     if (newValue.length !== 0) return;
     if (newValue.length === oldValue.length) return;
     if (skippedWords.value.length === 0) {
-        console.log("ANA HENA")
         wordsAreDone.value = true;
         setTimeout(() => {
             gameService.goToNextGamePhase();
         }, 2000);
     } else if (oldValue.length === 1) {
-        console.log("3ayez ab2a hena")
         gameService.updateTurn(true);
     }
 
