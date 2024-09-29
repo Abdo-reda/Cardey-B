@@ -1,4 +1,5 @@
 import { MessageMethodsEnum } from '../enums/methodsEnum';
+import type { IChatMessage } from '../interfaces/messageInterfaces/chatMessageInterface';
 import type { IGameState } from '../interfaces/gameStateInterface';
 import type { IJoinTeam } from '../interfaces/messageInterfaces/joinTeamInterface';
 import type { IMessage } from '../interfaces/messageInterfaces/messageInterface';
@@ -20,4 +21,5 @@ export type MessageMethodPayloadMap = {
 	[MessageMethodsEnum.TEST_MESSAGE]: string;
 	[MessageMethodsEnum.PLAYER_DISCONNECTED]: string;
 	[MessageMethodsEnum.QUIT_GAME]: void;
+	[MessageMethodsEnum.CHAT]: IChatMessage;
 };

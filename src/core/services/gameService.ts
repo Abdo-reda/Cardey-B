@@ -59,7 +59,7 @@ export class GameService implements IGameService {
 			msg.init(this.player.id, {
 				newTurn: isNewTurn
 			});
-			this.playerService.sendMessage(msg);
+			this.playerService.sendGameMessage(msg);
 		} else {
 			this.playerService.executeAndSendMessage(MessageMethodsEnum.UPDATE_TURN, {
 				newTurn: isNewTurn

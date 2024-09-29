@@ -1,4 +1,3 @@
-import { type Reactive, reactive } from 'vue';
 import type { IHostService } from '../interfaces/hostServiceInterface';
 import {
 	addDoc,
@@ -21,36 +20,52 @@ import type { IPlayerConnectionModel } from '@/core/interfaces/modelInterfaces/p
 //maybe create a wrapper for peer connection? extension methods and so on ... I am not sure
 
 export class HostService implements IHostService {
+	senderId: string = '';
 	roomId: string;
-	peerConnections: Reactive<Map<string, RTCPeerConnection>>;
-	dataChannels: Reactive<Map<string, RTCDataChannel>>;
+	peerConnections: Map<string, RTCPeerConnection>;
+	gameDataChannels: Map<string, RTCDataChannel>;
+	chatDataChannels: Map<string, RTCDataChannel>;
 
 	onPlayerJoinedDataChannel?: (playerId: string) => void;
 	onPlayerClosedDataChannel?: (playerId: string) => void;
-	onRecievedMessage?: (playerId: string, message: IMessage<any>) => void;
+	onRecievedMessage?: (channel: ChannelsEnum, playerId: string, message: IMessage<any>) => void;
 
 	constructor() {
 		this.roomId = '';
-		this.peerConnections = reactive(new Map());
-		this.dataChannels = reactive(new Map());
+		this.peerConnections = new Map();
+		this.gameDataChannels = new Map();
+		this.chatDataChannels = new Map();
 	}
 
 	sendMessageToPlayers<E extends MessageMethodsEnum>(
+		channel: ChannelsEnum,
 		message: IMessage<E>,
 		playerIds: string[] = []
 	): void {
 		playerIds.forEach((playerId) => {
-			const dataChannel = this.dataChannels.get(playerId);
+			let dataChannel;
+			if (channel === ChannelsEnum.GAME_DATA) {
+				dataChannel = this.gameDataChannels.get(playerId);
+			} else if (channel === ChannelsEnum.CHAT) {
+				dataChannel = this.chatDataChannels.get(playerId);
+			}
 			if (dataChannel && dataChannel.readyState === 'open')
 				dataChannel.send(JSON.stringify(message, this.jsonParser));
 		});
 	}
 
 	sendMessageToAllExcept<E extends MessageMethodsEnum>(
+		channel: ChannelsEnum,
 		message: IMessage<E>,
 		exlucdedPlayerIds: string[] = []
 	): void {
-		this.dataChannels.forEach((dataChannel, playerId) => {
+		let dataChannels;
+		if (channel === ChannelsEnum.GAME_DATA) {
+			dataChannels = this.gameDataChannels;
+		} else if (channel === ChannelsEnum.CHAT) {
+			dataChannels = this.chatDataChannels;
+		}
+		dataChannels?.forEach((dataChannel, playerId) => {
 			if (!exlucdedPlayerIds.includes(playerId) && dataChannel.readyState === 'open') {
 				dataChannel.send(JSON.stringify(message, this.jsonParser));
 			}
@@ -66,6 +81,7 @@ export class HostService implements IHostService {
 		console.log('--- Creating New room id: ', roomDocRef.id);
 		this.listenToRoomJoinRequests(roomDocRef);
 		this.roomId = roomDocRef.id;
+		this.senderId = this.roomId;
 		return roomDocRef.id;
 	}
 
@@ -132,6 +148,7 @@ export class HostService implements IHostService {
 		const pc = new RTCPeerConnection(FirestoreConstants.serversConfiguration);
 
 		this.createGameDataChannel(joinRequestDoc.id, pc);
+		this.createChatDataChannel(joinRequestDoc.id, pc);
 
 		pc.onicecandidate = async (event) => {
 			if (event.candidate) await addDoc(offerCandidates, event.candidate.toJSON());
@@ -166,7 +183,8 @@ export class HostService implements IHostService {
 		dataChannel.onmessage = (event: MessageEvent<string>) => {
 			// console.log(`Received data from player ${playerId}:`, event.data);
 			const message = JSON.parse(event.data) as IMessage<any>;
-			if (this.onRecievedMessage) this.onRecievedMessage(playerId, message);
+			if (this.onRecievedMessage)
+				this.onRecievedMessage(ChannelsEnum.GAME_DATA, playerId, message);
 		};
 
 		dataChannel.onclose = () => {
@@ -174,7 +192,30 @@ export class HostService implements IHostService {
 			if (this.onPlayerClosedDataChannel) this.onPlayerClosedDataChannel(playerId);
 		};
 
-		this.dataChannels.set(playerId, dataChannel);
+		this.gameDataChannels.set(playerId, dataChannel);
+	}
+
+	//TODO: imrpove this bls, mix it with the above function
+	private createChatDataChannel(playerId: string, pc: RTCPeerConnection) {
+		console.log('--- Creatingchat Data Channel');
+		const dataChannel = pc.createDataChannel(ChannelsEnum.CHAT);
+
+		dataChannel.onopen = () => {
+			console.log(`Chat Data channel open with player ${playerId}`);
+		};
+
+		dataChannel.onmessage = (event: MessageEvent<string>) => {
+			// console.log(`Received data from player ${playerId}:`, event.data);
+			const message = JSON.parse(event.data) as IMessage<any>;
+			if (this.onRecievedMessage)
+				this.onRecievedMessage(ChannelsEnum.CHAT, playerId, message);
+		};
+
+		dataChannel.onclose = () => {
+			console.log(`Chat Data channel closed with player ${playerId}`);
+		};
+
+		this.chatDataChannels.set(playerId, dataChannel);
 	}
 
 	/**
@@ -213,20 +254,26 @@ export class HostService implements IHostService {
 		});
 	}
 
-	disconnect(): void{
-		this.dataChannels?.forEach((dataChannel) => {
+	sendChatMessage(message: IMessage<MessageMethodsEnum.CHAT>, except: string[] = []) {
+		this.sendMessageToAllExcept(ChannelsEnum.CHAT, message, except);
+	}
+
+	disconnect(): void {
+		this.gameDataChannels?.forEach((dataChannel) => {
 			dataChannel.close();
-		})
+		});
 		this.peerConnections?.forEach((peerConnection) => {
 			peerConnection.close();
 		});
 		this.roomId = '';
-		this.peerConnections = reactive(new Map());
-		this.dataChannels = reactive(new Map());
+		this.peerConnections.clear();
+		this.gameDataChannels.clear();
+		this.chatDataChannels.clear();
 	}
 
 	private jsonParser(key: string, value: any) {
-		if (key == 'useGameState') return undefined;
+		if (key === 'useGameState' || key === 'useRoomChat' || key === 'usePlayer')
+			return undefined;
 		return value;
 	}
 

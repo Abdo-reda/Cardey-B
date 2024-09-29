@@ -1,22 +1,24 @@
-import type { Reactive } from 'vue';
 import type { IMessage } from './messageInterfaces/messageInterface';
 import type { MessageMethodsEnum } from '../enums/methodsEnum';
-import type { IBaseWebRTCService } from '@/core/interfaces/baseWebRTCServiceInterface'
+import type { IBaseWebRTCService } from './baseWebRTCServiceInterface';
+import type { ChannelsEnum } from '../enums/channelsEnum';
 
 export interface IHostService extends IBaseWebRTCService {
-	peerConnections: Reactive<Map<string, RTCPeerConnection>>;
-	dataChannels: Reactive<Map<string, RTCDataChannel>>;
+	peerConnections: Map<string, RTCPeerConnection>;
+	gameDataChannels: Map<string, RTCDataChannel>;
 
 	onPlayerJoinedDataChannel?: (playerId: string) => void;
 	onPlayerClosedDataChannel?: (playerId: string) => void;
-	onRecievedMessage?: (playerId: string, message: IMessage<any>) => void;
+	onRecievedMessage?: (channel: ChannelsEnum, playerId: string, message: IMessage<any>) => void;
 	sendMessageToPlayers: <E extends MessageMethodsEnum>(
+		channel: ChannelsEnum,
 		message: IMessage<E>,
 		playerIds: string[]
 	) => void;
 	sendMessageToAllExcept: <E extends MessageMethodsEnum>(
+		channel: ChannelsEnum,
 		message: IMessage<E>,
-		exlucdedPlayerIds: string[]
+		exlucdedPlayerIds?: string[]
 	) => void;
 	createNewRoomAsync: () => Promise<string>;
 }
