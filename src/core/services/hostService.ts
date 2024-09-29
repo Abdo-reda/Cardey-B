@@ -15,7 +15,7 @@ import { FirestoreConstants } from '../constants/firestoreConstants';
 import { ChannelsEnum } from '../enums/channelsEnum';
 import type { IMessage } from '../interfaces/messageInterfaces/messageInterface';
 import type { MessageMethodsEnum } from '../enums/methodsEnum';
-import type { IPlayerConnectionModel } from '@/core/interfaces/modelInterfaces/playerConnectionModelInterface'
+import type { IPlayerConnectionModel } from '@/core/interfaces/modelInterfaces/playerConnectionModelInterface';
 
 //maybe create a wrapper for peer connection? extension methods and so on ... I am not sure
 
@@ -284,21 +284,20 @@ export class HostService implements IHostService {
 	}
 
 	getDataChannelConnectionState(): RTCDataChannelState | undefined {
-		if (this.dataChannels.size === 0) return undefined;
-		const dataChannel = this.dataChannels.values().next().value;
+		if (this.gameDataChannels.size === 0) return undefined;
+		const dataChannel = this.gameDataChannels.values().next().value;
 		return dataChannel.readyState;
 	}
-	
+
 	getPlayerConnections(): IPlayerConnectionModel[] {
 		const playerConnections: IPlayerConnectionModel[] = [];
-		this.dataChannels.forEach((dataChannel, playerId) => {
-			playerConnections.push(
-				{ 
-					id: playerId,
-					name: playerId,
-					DataChannelState: dataChannel.readyState,
-					RTCPeerConnectionState: this.peerConnections.get(playerId)?.connectionState
-				});
+		this.gameDataChannels.forEach((dataChannel, playerId) => {
+			playerConnections.push({
+				id: playerId,
+				name: playerId,
+				DataChannelState: dataChannel.readyState,
+				RTCPeerConnectionState: this.peerConnections.get(playerId)?.connectionState
+			});
 		});
 		return playerConnections;
 	}

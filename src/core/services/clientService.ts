@@ -14,7 +14,7 @@ import { FirestoreConstants } from '../constants/firestoreConstants';
 import { ChannelsEnum } from '../enums/channelsEnum';
 import type { IMessage } from '../interfaces/messageInterfaces/messageInterface';
 import type { MessageMethodsEnum } from '../enums/methodsEnum';
-import type { IPlayerConnectionModel } from '@/core/interfaces/modelInterfaces/playerConnectionModelInterface'
+import type { IPlayerConnectionModel } from '@/core/interfaces/modelInterfaces/playerConnectionModelInterface';
 
 export class ClientService implements IClientService {
 	senderId: string = '';
@@ -196,17 +196,16 @@ export class ClientService implements IClientService {
 		return this.peerConnection?.connectionState;
 	}
 
-
 	getDataChannelConnectionState(): RTCDataChannelState | undefined {
-		return this.dataChannel?.readyState;
+		return this.gameDataChannel?.readyState;
 	}
-	
+
 	getPlayerConnections(): IPlayerConnectionModel[] {
 		const playerConnections: IPlayerConnectionModel[] = [];
 		playerConnections.push({
 			DataChannelState: this.getDataChannelConnectionState(),
 			RTCPeerConnectionState: this.getPlayerRTCConnectionState()
-		})
+		});
 		return playerConnections;
 	}
 }
