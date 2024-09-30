@@ -25,7 +25,7 @@ export class HostPlayerService extends BasePlayerService<IHostService> {
 				this.service.sendChatMessage(message, [playerId]); //forward chat message to all players
 			}
 		};
-		this.service.onPlayerClosedDataChannel = (playerId: string) => {
+		this.service.onPlayerDisconnected = (playerId: string) => {
 			this.executeAndSendMessage(MessageMethodsEnum.PLAYER_DISCONNECTED, playerId);
 		};
 	}

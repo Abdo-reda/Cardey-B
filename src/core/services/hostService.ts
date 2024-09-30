@@ -193,7 +193,7 @@ export class HostService implements IHostService {
 
 		dataChannel.onclose = () => {
 			console.log(`Data channel closed with player ${playerId}`);
-			if (this.onPlayerDisconnected) this.disconnectPlayer(playerId);
+			this.disconnectPlayer(playerId);
 		};
 
 		this.gameDataChannels.set(playerId, dataChannel);
@@ -318,11 +318,15 @@ export class HostService implements IHostService {
 	private disconnectPlayer(playerId: string) {
 		console.log('--- disconnecting player', playerId);
 		if (this.onPlayerDisconnected) this.onPlayerDisconnected(playerId);
+		
+		console.log('--- closing channels and connections');
 		this.gameDataChannels.get(playerId)?.close();
 		this.gameDataChannels.delete(playerId);
 		this.chatDataChannels.get(playerId)?.close();
 		this.chatDataChannels.delete(playerId);
 		this.peerConnections.get(playerId)?.close();
 		this.peerConnections.delete(playerId);
+		
+		console.log('--- player disconnected');
 	}
 }
