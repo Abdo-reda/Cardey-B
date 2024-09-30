@@ -212,7 +212,7 @@ export class ClientService implements IClientService {
 
 	private registerPeerConnectionListener(pc: RTCPeerConnection) {
 		pc.onconnectionstatechange = () => {
-			if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') this.disconnect();
+			if (pc.connectionState === 'failed') this.disconnect();
 		}
 	}
 }
