@@ -309,7 +309,7 @@ export class HostService implements IHostService {
 	private registerPeerConnectionListeners(peerConnection: RTCPeerConnection, playerId: string) {
 		peerConnection.onconnectionstatechange = () => {
 			console.log('--- player connection state changed', peerConnection.connectionState);
-			if ((peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected')) {
+			if ((peerConnection.connectionState === 'failed')) {
 				this.disconnectPlayer(playerId)
 			}
 		};
