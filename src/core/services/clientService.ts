@@ -73,6 +73,7 @@ export class ClientService implements IClientService {
 				this.registerAnswerCandidates(pc, joinRequestRef);
 				this.registerDataChannels(pc);
 				this.listenToOfferCandidates(pc, joinRequestRef);
+				this.registerPeerConnectionListener(pc);
 
 				// setting the remote data with offerDescription
 				const offerDescription = joinRequestDoc.offer;
@@ -207,5 +208,11 @@ export class ClientService implements IClientService {
 			RTCPeerConnectionState: this.getPlayerRTCConnectionState()
 		});
 		return playerConnections;
+	}
+
+	private registerPeerConnectionListener(pc: RTCPeerConnection) {
+		pc.onconnectionstatechange = () => {
+			if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') this.disconnect();
+		}
 	}
 }

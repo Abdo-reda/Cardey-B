@@ -226,7 +226,7 @@ export default function useGameState() {
 		});
 	}
 
-	function removePlayer(playerId: string): void {
+	function obliteratePlayer(playerId: string): void {
 		// Update game state
 		// Remove from players array
 		// If Current player, new turn
@@ -308,7 +308,7 @@ export default function useGameState() {
 		initWords,
 		resetWords,
 		nextPhase,
-		removePlayer,
+		obliteratePlayer,
 		terminateGame,
 		randomiseTeams
 	};

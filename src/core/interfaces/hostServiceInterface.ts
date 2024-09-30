@@ -8,7 +8,7 @@ export interface IHostService extends IBaseWebRTCService {
 	gameDataChannels: Map<string, RTCDataChannel>;
 
 	onPlayerJoinedDataChannel?: (playerId: string) => void;
-	onPlayerClosedDataChannel?: (playerId: string) => void;
+	onPlayerDisconnected?: (playerId: string) => void;
 	onRecievedMessage?: (channel: ChannelsEnum, playerId: string, message: IMessage<any>) => void;
 	sendMessageToPlayers: <E extends MessageMethodsEnum>(
 		channel: ChannelsEnum,

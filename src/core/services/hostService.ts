@@ -27,7 +27,7 @@ export class HostService implements IHostService {
 	chatDataChannels: Map<string, RTCDataChannel>;
 
 	onPlayerJoinedDataChannel?: (playerId: string) => void;
-	onPlayerClosedDataChannel?: (playerId: string) => void;
+	onPlayerDisconnected?: (playerId: string) => void;
 	onRecievedMessage?: (channel: ChannelsEnum, playerId: string, message: IMessage<any>) => void;
 
 	constructor() {
@@ -153,6 +153,7 @@ export class HostService implements IHostService {
 		pc.onicecandidate = async (event) => {
 			if (event.candidate) await addDoc(offerCandidates, event.candidate.toJSON());
 		};
+		
 
 		// create offer
 		const offerDescription = await pc.createOffer();
@@ -167,7 +168,10 @@ export class HostService implements IHostService {
 		await updateDoc(joinRequestDoc, { offer });
 
 		this.listenToAnswerCandidates(pc, joinRequestDoc);
-		this.peerConnections.set(joinRequestDoc.id, pc);
+
+		// Register peer connection listeners
+		this.registerPeerConnectionListeners(pc, joinRequestDoc.id);
+		this.peerConnections.set(joinRequestDoc.id, pc);	
 	}
 
 	private createGameDataChannel(playerId: string, pc: RTCPeerConnection) {
@@ -189,7 +193,7 @@ export class HostService implements IHostService {
 
 		dataChannel.onclose = () => {
 			console.log(`Data channel closed with player ${playerId}`);
-			if (this.onPlayerClosedDataChannel) this.onPlayerClosedDataChannel(playerId);
+			if (this.onPlayerDisconnected) this.disconnectPlayer(playerId);
 		};
 
 		this.gameDataChannels.set(playerId, dataChannel);
@@ -300,5 +304,25 @@ export class HostService implements IHostService {
 			});
 		});
 		return playerConnections;
+	}
+
+	private registerPeerConnectionListeners(peerConnection: RTCPeerConnection, playerId: string) {
+		peerConnection.onconnectionstatechange = () => {
+			console.log('--- player connection state changed', peerConnection.connectionState);
+			if ((peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected')) {
+				this.disconnectPlayer(playerId)
+			}
+		};
+	}
+	
+	private disconnectPlayer(playerId: string) {
+		console.log('--- disconnecting player', playerId);
+		if (this.onPlayerDisconnected) this.onPlayerDisconnected(playerId);
+		this.gameDataChannels.get(playerId)?.close();
+		this.gameDataChannels.delete(playerId);
+		this.chatDataChannels.get(playerId)?.close();
+		this.chatDataChannels.delete(playerId);
+		this.peerConnections.get(playerId)?.close();
+		this.peerConnections.delete(playerId);
 	}
 }
