@@ -1,11 +1,11 @@
-import { computed, ref, watch } from 'vue';
-import { GameState } from '@/core/models/gameState';
-import type { IPlayer } from '../interfaces/playerInterface';
-import type { ITeam } from '../interfaces/teamInterface';
-import { ColorsEnum } from '../enums/colorsEnum';
-import { RoutesEnum } from '../enums/routesEnum';
-import { GAME_PHASES, GAME_PHASES_DESCRIPTIONS } from '../enums/gamePhasesEnum';
-import type { IGameState } from '../interfaces/gameStateInterface';
+import { computed, ref, watch } from 'vue'
+import { GameState } from '@/core/models/gameState'
+import type { IPlayer } from '../interfaces/playerInterface'
+import type { ITeam } from '../interfaces/teamInterface'
+import { ColorsEnum } from '../enums/colorsEnum'
+import { RoutesEnum } from '../enums/routesEnum'
+import { GAME_PHASES, GAME_PHASES_DESCRIPTIONS } from '../enums/gamePhasesEnum'
+import type { IGameState } from '../interfaces/gameStateInterface'
 
 const gameState = ref(new GameState());
 
@@ -89,6 +89,11 @@ export default function useGameState() {
 
 	function getTeam(id: string): ITeam {
 		return gameState.value.teams.find((team) => team.id === id)!;
+	}
+	
+	function getRandomTeamId(): string {
+		const randomIndex = Math.floor(Math.random() * gameState.value.teams.length);
+		return gameState.value.teams[randomIndex].id;
 	}
 
 	function addPlayerToTeam(playerId: string, newTeamId: string): void {
@@ -270,6 +275,10 @@ export default function useGameState() {
 			player.teamId = teams[teamIndex].id;
 		});
 	}
+	
+	function addPlayerTurn(id: string) {
+		gameState.value.turns.playersOrder.push(id);
+	}
 
 	return {
 		activeWord,
@@ -310,6 +319,8 @@ export default function useGameState() {
 		nextPhase,
 		obliteratePlayer,
 		terminateGame,
-		randomiseTeams
+		randomiseTeams,
+		getRandomTeamId,
+		addPlayerTurn
 	};
 }
