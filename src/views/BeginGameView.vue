@@ -109,7 +109,7 @@ initWords(wordsPerPlayer.value);
                                 trigger: 'change',
                             }">
                             <div class="flex items-center justify-center gap-x-4">
-                                <Input :placeholder="`word ${index}`" :disabled="readyState"
+                                <Input :placeholder="`word ${index + 1}`" :disabled="readyState"
                                     v-model:value="word.value" />
                             </div>
                         </FormItem>

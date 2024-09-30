@@ -13,8 +13,8 @@ export class PlayerDisconnectedMessage extends BaseMessage<MessageMethodsEnum.PL
 		if (player.isHost) {
 			this.useGameState.terminateGame();
 		} else {
-			console.log('--- removing player', player.id);
-			this.useGameState.removePlayer(player.id);
+			console.log('--- obliterating player', player.id);
+			this.useGameState.obliteratePlayer(player.id);
 		}
 	}
 }

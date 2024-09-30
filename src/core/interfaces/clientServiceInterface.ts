@@ -10,5 +10,8 @@ export interface IClientService extends IBaseWebRTCService {
 	onDataChannelOpen?: (channel: ChannelsEnum) => void;
 	onDataChannelClosed?: (channel: ChannelsEnum) => void;
 	createJoinRequestAsync: (roomId: string) => Promise<string>;
-	sendMessageToHost: <E extends MessageMethodsEnum>(channel: ChannelsEnum, message: IMessage<E>) => void;
+	sendMessageToHost: <E extends MessageMethodsEnum>(
+		channel: ChannelsEnum,
+		message: IMessage<E>
+	) => void;
 }

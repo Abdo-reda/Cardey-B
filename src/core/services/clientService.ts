@@ -14,6 +14,7 @@ import { FirestoreConstants } from '../constants/firestoreConstants';
 import { ChannelsEnum } from '../enums/channelsEnum';
 import type { IMessage } from '../interfaces/messageInterfaces/messageInterface';
 import type { MessageMethodsEnum } from '../enums/methodsEnum';
+import type { IPlayerConnectionModel } from '@/core/interfaces/modelInterfaces/playerConnectionModelInterface';
 
 export class ClientService implements IClientService {
 	senderId: string = '';
@@ -72,6 +73,7 @@ export class ClientService implements IClientService {
 				this.registerAnswerCandidates(pc, joinRequestRef);
 				this.registerDataChannels(pc);
 				this.listenToOfferCandidates(pc, joinRequestRef);
+				this.registerPeerConnectionListener(pc);
 
 				// setting the remote data with offerDescription
 				const offerDescription = joinRequestDoc.offer;
@@ -189,5 +191,28 @@ export class ClientService implements IClientService {
 		this.peerConnection = undefined;
 		this.senderId = '';
 		this.roomId = '';
+	}
+
+	getPlayerRTCConnectionState(): RTCPeerConnectionState | undefined {
+		return this.peerConnection?.connectionState;
+	}
+
+	getDataChannelConnectionState(): RTCDataChannelState | undefined {
+		return this.gameDataChannel?.readyState;
+	}
+
+	getPlayerConnections(): IPlayerConnectionModel[] {
+		const playerConnections: IPlayerConnectionModel[] = [];
+		playerConnections.push({
+			DataChannelState: this.getDataChannelConnectionState(),
+			RTCPeerConnectionState: this.getPlayerRTCConnectionState()
+		});
+		return playerConnections;
+	}
+
+	private registerPeerConnectionListener(pc: RTCPeerConnection) {
+		pc.onconnectionstatechange = () => {
+			if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') this.disconnect();
+		}
 	}
 }

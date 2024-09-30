@@ -7,6 +7,7 @@ import { MessageMethodsEnum } from '../enums/methodsEnum';
 import { type MessageMethodPayloadMap, MESSAGES_MAP } from '../constants/messagesMap';
 import type { IBaseWebRTCService } from '../interfaces/baseWebRTCServiceInterface';
 import dayjs from 'dayjs';
+import type { IPlayerConnectionModel } from '@/core/interfaces/modelInterfaces/playerConnectionModelInterface';
 
 export class BasePlayerService<T extends IBaseWebRTCService> implements IPlayerService {
 	protected player: Reactive<IPlayer>;
@@ -64,5 +65,17 @@ export class BasePlayerService<T extends IBaseWebRTCService> implements IPlayerS
 	public disconnect(): void {
 		this.service.disconnect();
 		this.executeMessage(MessageMethodsEnum.QUIT_GAME, this.player.id, undefined);
+	}
+
+	getPlayerRTCConnectionState(): RTCPeerConnectionState | undefined {
+		return this.service.getPlayerRTCConnectionState();
+	}
+
+	getDataChannelState(): RTCDataChannelState | undefined {
+		return this.service.getDataChannelConnectionState();
+	}
+
+	getPlayersConnections(): IPlayerConnectionModel[] {
+		return this.service.getPlayerConnections();
 	}
 }
