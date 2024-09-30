@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button, ConfigProvider, Modal, PageHeader, Result } from 'ant-design-vue';
 import { RouterView } from 'vue-router'
-import { SettingOutlined, FormatPainterOutlined, PauseCircleFilled, PlayCircleFilled, BugOutlined, ArrowLeftOutlined } from '@ant-design/icons-vue';
+import { SettingOutlined, FormatPainterOutlined, PauseCircleFilled, PlayCircleFilled, ArrowLeftOutlined, QuestionOutlined } from '@ant-design/icons-vue';
 import { inject, ref } from 'vue';
 import router from '@/plugins/router'
 import useTheme from './core/composables/useTheme';
@@ -10,12 +10,14 @@ import useGameState from './core/composables/useGameState';
 import usePlayer from './core/composables/usePlayer';
 import { RoutesEnum } from './core/enums/routesEnum';
 import ChatComponent from './components/Layout/ChatComponent.vue';
+import SettingsModalComponent from './components/Modals/SettingsModalComponent.vue';
 
 const gameService = inject(GameServiceKey)!;
 const { currentPlayer } = usePlayer();
 
-const settingsOpen = ref(false);
+const settingsModalOpen = ref(false);
 const quitModalOpen = ref(false);
+const helpModalOpen = ref(false);
 
 const { currentThemeAlgorithm, switchTheme, setTheme } = useTheme();
 setTheme();
@@ -33,11 +35,6 @@ function quitGame() {
 
 function togglePause() {
   gameService.togglePause();
-}
-
-function goToDebug() {
-  settingsOpen.value = false;
-  router.push({ name: RoutesEnum.DEBUG });
 }
 
 function handleGoBack() {
@@ -70,6 +67,13 @@ function handleGoBack() {
           </template>
           <template #extra>
             <div v-auto-animate class=" flex gap-x-2">
+              <Button @click="helpModalOpen = true" size="large"
+                class="flex flex-col justify-center items-center text-gray-400 dark:text-gray-300" type="default"
+                shape="circle">
+                <template #icon>
+                  <QuestionOutlined />
+                </template>
+              </Button>
               <Button @click="switchTheme" size="large"
                 class="flex flex-col justify-center items-center text-gray-400 dark:text-gray-300" type="default"
                 shape="circle">
@@ -77,7 +81,7 @@ function handleGoBack() {
                   <FormatPainterOutlined />
                 </template>
               </Button>
-              <Button @click="settingsOpen = true" size="large"
+              <Button @click="settingsModalOpen = true" size="large"
                 class="flex flex-col justify-center items-center text-gray-400 dark:text-gray-300" type="default"
                 shape="circle">
                 <template #icon>
@@ -105,21 +109,7 @@ function handleGoBack() {
     <!-- CHAT -->
     <ChatComponent />
     <!-- Setting Modal -->
-    <Modal v-model:open="settingsOpen" title="Settings" :closable="false">
-      <div>
-        <div class="m-8">
-          <p>Random settings like audio</p>
-        </div>
-        <Button @click="goToDebug" danger class="flex justify-center items-center">
-          Debug
-          <template #icon>
-            <BugOutlined />
-          </template>
-        </Button>
-      </div>
-      <template #footer>
-      </template>
-    </Modal>
+    <SettingsModalComponent v-model="settingsModalOpen" />
     <!-- Pause Modal -->
     <Modal :centered="true" :keyboard="false" :maskClosable="false" v-model:open="isPaused" :closable="false">
       <Result sub-title="only the host can unpause">

@@ -6,7 +6,6 @@ import { computed, ref } from 'vue';
 import AvatarComponent from '../AvatarComponent.vue';
 import usePlayer from '@/core/composables/usePlayer';
 import useRoomChat from '@/core/composables/useRoomChat';
-import type { IPlayer } from '@/core/interfaces/playerInterface';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { RoutesEnum } from '@/core/enums/routesEnum';
@@ -49,7 +48,7 @@ function sendMessage() {
         </FloatButton>
         <Drawer class="max-w-lg" :open="isChatOpen" @close="isChatOpen = false">
             <template #title>
-                Room Chat
+                Room [{{currentPlayer.roomId}}] Chat
                 <MessageOutlined class="mx-2" />
             </template>
             <template #footer>
