@@ -2,6 +2,7 @@ import type { IClientService } from '../interfaces/clientServiceInterface';
 import {
 	addDoc,
 	collection,
+	deleteField,
 	doc,
 	DocumentReference,
 	getDoc,
@@ -64,24 +65,33 @@ export class ClientService implements IClientService {
 			const joinRequestDoc = doc.data();
 
 			console.log('---- peer connection', this.peerConnection);
-			if (!this.peerConnection && joinRequestDoc?.offer) {
+			if ((!this.peerConnection && joinRequestDoc?.offer) || joinRequestDoc?.restartIce) {
 				console.log('Offer has been set:', joinRequestDoc.offer);
+				
+				if(!joinRequestDoc?.restartIce){		
+					const pc = new RTCPeerConnection(FirestoreConstants.serversConfiguration);
+					this.peerConnection = pc;
+				}
 
-				const pc = new RTCPeerConnection(FirestoreConstants.serversConfiguration);
-				this.peerConnection = pc;
-
-				this.registerAnswerCandidates(pc, joinRequestRef);
-				this.registerDataChannels(pc);
-				this.listenToOfferCandidates(pc, joinRequestRef);
-				this.registerPeerConnectionListener(pc);
+				this.registerAnswerCandidates(this.peerConnection!, joinRequestRef);
+				
+				if(!joinRequestDoc?.restartIce){
+					this.registerDataChannels(this.peerConnection!);
+				}else{
+					const data = {
+						restartIce: deleteField()
+					};
+					await updateDoc(joinRequestRef, data)
+				}
+				this.listenToOfferCandidates(this.peerConnection!, joinRequestRef);
 
 				// setting the remote data with offerDescription
 				const offerDescription = joinRequestDoc.offer;
-				await pc.setRemoteDescription(new RTCSessionDescription(offerDescription));
+				await this.peerConnection!.setRemoteDescription(new RTCSessionDescription(offerDescription));
 
 				// setting the local data as the answer
-				const answerDescription = await pc.createAnswer();
-				await pc.setLocalDescription(new RTCSessionDescription(answerDescription));
+				const answerDescription = await this.peerConnection!.createAnswer();
+				await this.peerConnection!.setLocalDescription(new RTCSessionDescription(answerDescription));
 				// answer config
 				const answer = {
 					type: answerDescription.type,
@@ -210,6 +220,7 @@ export class ClientService implements IClientService {
 		return playerConnections;
 	}
 
+	//deprecated
 	private registerPeerConnectionListener(pc: RTCPeerConnection) {
 		pc.onconnectionstatechange = () => {
 			if (pc.connectionState === 'failed') this.disconnect();
