@@ -25,6 +25,7 @@ export class HostService implements IHostService {
 	peerConnections: Map<string, RTCPeerConnection>;
 	gameDataChannels: Map<string, RTCDataChannel>;
 	chatDataChannels: Map<string, RTCDataChannel>;
+	restartIce: boolean = false;
 
 	onPlayerJoinedDataChannel?: (playerId: string) => void;
 	onPlayerDisconnected?: (playerId: string) => void;
@@ -153,8 +154,15 @@ export class HostService implements IHostService {
 		pc.onicecandidate = async (event) => {
 			if (event.candidate) await addDoc(offerCandidates, event.candidate.toJSON());
 		};
-		
 
+		pc.onconnectionstatechange = async () => {
+			const state = pc.connectionState;
+			console.log('connection state changed, state: ', state)
+			if (state === "disconnected" || state === "failed") {
+				console.log(`ICE connection is in state: ${state}. Starting ICE restart...`);
+				await this.performRestart(pc, joinRequestDoc);
+			  }
+		}
 		// create offer
 		const offerDescription = await pc.createOffer();
 		await pc.setLocalDescription(new RTCSessionDescription(offerDescription));
@@ -170,8 +178,25 @@ export class HostService implements IHostService {
 		this.listenToAnswerCandidates(pc, joinRequestDoc);
 
 		// Register peer connection listeners
-		this.registerPeerConnectionListeners(pc, joinRequestDoc.id);
+		//this.registerPeerConnectionListeners(pc, joinRequestDoc.id);
 		this.peerConnections.set(joinRequestDoc.id, pc);	
+	}
+
+	private async performRestart(pc: RTCPeerConnection, joinRequestDoc: DocumentReference<DocumentData>){
+			// create offer
+			this.restartIce = true;
+			const offerDescription = await pc.createOffer({iceRestart: true});
+			await pc.setLocalDescription(new RTCSessionDescription(offerDescription));
+			// config for offer
+			const offer = {
+				sdp: offerDescription.sdp,
+				type: offerDescription.type
+			};
+			const restartIce = {
+				restart: true
+			};
+	
+			await updateDoc(joinRequestDoc, { offer, restartIce });
 	}
 
 	private createGameDataChannel(playerId: string, pc: RTCPeerConnection) {
@@ -241,14 +266,17 @@ export class HostService implements IHostService {
 			console.log('-- join request changed');
 			const data = snapshot.data();
 
-			if (!pc.currentRemoteDescription && data?.answer) {
+			if ((!pc.currentRemoteDescription || this.restartIce) && data?.answer) {
+				console.log('--- setting remote Description, answer: ', data.answer)
 				const answerDescription = new RTCSessionDescription(data.answer);
 				pc.setRemoteDescription(answerDescription);
+				this.restartIce = false;
 			}
 		});
 
 		// if answered add candidates to peer connection
 		onSnapshot(answerCandidates, (snapshot) => {
+			console.log('--- answer Candidates Added or modified')
 			snapshot.docChanges().forEach((change) => {
 				if (change.type === 'added') {
 					const candidate = new RTCIceCandidate(change.doc.data());
@@ -284,13 +312,13 @@ export class HostService implements IHostService {
 	getPlayerRTCConnectionState(): RTCPeerConnectionState | undefined {
 		if (this.peerConnections.size === 0) return undefined;
 		const playerConnection = this.peerConnections.values().next().value;
-		return playerConnection.connectionState;
+		return playerConnection!.connectionState;
 	}
 
 	getDataChannelConnectionState(): RTCDataChannelState | undefined {
 		if (this.gameDataChannels.size === 0) return undefined;
 		const dataChannel = this.gameDataChannels.values().next().value;
-		return dataChannel.readyState;
+		return dataChannel!.readyState;
 	}
 
 	getPlayerConnections(): IPlayerConnectionModel[] {
@@ -305,7 +333,7 @@ export class HostService implements IHostService {
 		});
 		return playerConnections;
 	}
-
+	//deprecated
 	private registerPeerConnectionListeners(peerConnection: RTCPeerConnection, playerId: string) {
 		peerConnection.onconnectionstatechange = () => {
 			console.log('--- player connection state changed', peerConnection.connectionState);
