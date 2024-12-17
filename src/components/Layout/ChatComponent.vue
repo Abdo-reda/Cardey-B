@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import useGameState from '@/core/composables/useGameState';
 import { MessageOutlined, SendOutlined, IeOutlined, CommentOutlined } from '@ant-design/icons-vue';
-import { Button, Comment, Divider, Drawer, FloatButton, Mentions, Tooltip, TypographyParagraph, TypographyTitle } from 'ant-design-vue';
+import { Button, Comment, Divider, Drawer, FloatButton, Mentions, Tooltip, TypographyParagraph, TypographyTitle, Tag } from 'ant-design-vue';
 import { computed, ref } from 'vue';
 import AvatarComponent from '../AvatarComponent.vue';
 import usePlayer from '@/core/composables/usePlayer';
 import useRoomChat from '@/core/composables/useRoomChat';
-import type { IPlayer } from '@/core/interfaces/playerInterface';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { RoutesEnum } from '@/core/enums/routesEnum';
@@ -28,6 +27,14 @@ const mentions = playerNames.value.map((name: string) => {
     };
 });
 
+const peerConnectionState = computed(() => {
+    return playerService.value.getPlayerRTCConnectionState();
+});
+
+const dataChannelState = computed(() => {
+    return playerService.value.getDataChannelState();
+});
+
 const sortedMessages = computed(() => {
     const chatMessagesClone = [...chatMessages.value]
     return chatMessagesClone.sort((a, b) => b.timestamp - a.timestamp)
@@ -42,7 +49,7 @@ function sendMessage() {
 
 <template>
     <div>
-        <FloatButton @click="isChatOpen = true" :badge="{ dot: !!unReadMessages, color: 'blue' }">
+        <FloatButton class="mx-6 my-2" @click="isChatOpen = true" :badge="{ dot: !!unReadMessages, color: 'blue' }">
             <template #icon>
                 <CommentOutlined />
             </template>
@@ -51,6 +58,13 @@ function sendMessage() {
             <template #title>
                 Room Chat
                 <MessageOutlined class="mx-2" />
+                <div class="m-1">
+                    <Tag :color="peerConnectionState == 'connected' ? 'success' : 'error'"> Peer Connection: {{
+                        peerConnectionState ?? 'N/A' }}
+                    </Tag>
+                    <Tag :color="dataChannelState == 'open' ? 'success' : 'error'"> Data Channel: {{ dataChannelState ?? 'N/A' }}
+                    </Tag> 
+                </div>
             </template>
             <template #footer>
                 <div class="flex gap-x-4 my-4">

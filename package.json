@@ -1,6 +1,12 @@
 {
 	"name": "cardey-b",
-	"version": "0.0.0",
+	"version": "0.7.0",
+	"displayName": "Cardy-B",
+	"description": "Online Party Card Games!",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Abdo-reda/cardey-b"
+	},
 	"private": true,
 	"type": "module",
 	"scripts": {
