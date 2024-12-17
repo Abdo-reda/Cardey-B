@@ -61,8 +61,8 @@ const isOpen = defineModel<boolean>();
 									<a :href="item.github">{{ item.title }}</a>
 								</template>
 								<template #avatar>
-									<a :href="item.github"
-										><Avatar :src="`src/assets/images/${item.img}`" />
+									<a :href="item.github">
+										<Avatar :src="`images/${item.img}`" />
 									</a>
 								</template>
 							</ListItemMeta>

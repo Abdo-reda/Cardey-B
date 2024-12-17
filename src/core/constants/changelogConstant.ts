@@ -7,5 +7,7 @@ export const CHANGELOG: IChangelog[] = [
 		changes: [
 			'Initial Release :O'
 		]
+		//TODO: add link to PR
+		//TODO: create tags
 	}
 ] 
