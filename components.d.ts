@@ -7,10 +7,16 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AAvatar: typeof import('ant-design-vue/es')['Avatar']
+    AListItemMeta: typeof import('ant-design-vue/es')['ListItemMeta']
     AvatarComponent: typeof import('./src/components/AvatarComponent.vue')['default']
     ChatComponent: typeof import('./src/components/Layout/ChatComponent.vue')['default']
+    copy: typeof import('./src/components/Modals/SettingModalComponent copy.vue')['default']
     IncrementorComponent: typeof import('./src/components/IncrementorComponent.vue')['default']
+    InfoModalComponent: typeof import('./src/components/Modals/InfoModalComponent.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SettingComponent: typeof import('./src/components/Modals/SettingComponent.vue')['default']
+    SettingModalComponent: typeof import('./src/components/Modals/SettingModalComponent.vue')['default']
   }
 }

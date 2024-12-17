@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import useGameState from '@/core/composables/useGameState';
-import { Button, Collapse, CollapsePanel, FormItem, Input, Select, Tag, Textarea, TypographyTitle } from 'ant-design-vue';
+import { Button, Collapse, CollapsePanel, FormItem, Input, Tag, TypographyTitle } from 'ant-design-vue';
 import { ApiOutlined, BugOutlined, BuildOutlined, SendOutlined, ExperimentOutlined } from '@ant-design/icons-vue';
 import { computed, inject, ref } from 'vue';
 import usePlayer from '@/core/composables/usePlayer';
@@ -20,24 +20,13 @@ const dataChannelState = computed(() => {
     return playerService.value.getDataChannelState();
 });
 
-
-
-
 const playerConnections = computed(() => {
     return playerService.value.getPlayersConnections();
 });
+
 function sendTestMsg() {
     gameService.testMessage(testMsg.value);
 }
-
-function executeAndSendMsg() {
-}
-
-
-
-//connected if:
-//- there is internet connection
-//- the room is not null and exists in firebase
 
 </script>
 
@@ -62,9 +51,9 @@ function executeAndSendMsg() {
             <CollapsePanel>
                 <template #extra>
                     <Tag :color="peerConnectionState == 'connected' ? 'success' : 'error'"> Peer Connection: {{
-                        peerConnectionState }}
+                        peerConnectionState ?? 'N/A' }}
                     </Tag>
-                    <Tag :color="dataChannelState == 'open' ? 'success' : 'error'"> Data Channel: {{ dataChannelState }}
+                    <Tag :color="dataChannelState == 'open' ? 'success' : 'error'"> Data Channel: {{ dataChannelState ?? 'N/A' }}
                     </Tag>
                 </template>
                 <template #header>

@@ -21,8 +21,8 @@ export default defineConfig({
 				globPatterns: ['**/*.{js,css,html,ico,png,svg,ttf}']
 			},
 			manifest: {
-				name: 'Cardy B',
-				short_name: 'Cardy B',
+				name: 'Cardy-B',
+				short_name: 'Cardy-B',
 				start_url: '/?mode=standalone',
 				display: 'standalone',
 				background_color: '#FFFFFF',
@@ -103,21 +103,3 @@ export default defineConfig({
 		}
 	}
 });
-
-// pwaAssets: {
-//   disabled: false,
-//   config: true,
-// },
-
-// workbox: {
-//   globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
-//   cleanupOutdatedCaches: true,
-//   clientsClaim: true,
-// },
-
-// devOptions: {
-//   enabled: false,
-//   navigateFallback: 'index.html',
-//   suppressWarnings: true,
-//   type: 'module',
-// },

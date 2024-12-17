@@ -310,7 +310,7 @@ export class HostService implements IHostService {
 	}
 
 	getPlayerRTCConnectionState(): RTCPeerConnectionState | undefined {
-		if (this.peerConnections.size === 0) return undefined;
+		if (this.peerConnections.size === 0) return "new";
 		const playerConnection = this.peerConnections.values().next().value;
 		return playerConnection!.connectionState;
 	}
