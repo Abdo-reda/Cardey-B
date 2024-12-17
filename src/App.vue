@@ -27,7 +27,7 @@ import ChatComponent from './components/Layout/ChatComponent.vue';
 import SettingModalComponent from './components/Modals/SettingModalComponent.vue';
 import InfoModalComponent from './components/Modals/InfoModalComponent.vue';
 
-const version = import.meta.env.VITE_APP_VERSION
+const version =  __APP_VERSION__;
 const gameService = inject(GameServiceKey)!;
 const { currentPlayer } = usePlayer();
 const settingsOpen = ref(false);
